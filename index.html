@@ -25,7 +25,6 @@
     --rounded: 14px;
   }
 
-  /* Base */
   body {
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -38,7 +37,6 @@
     align-items: center;
   }
 
-  /* Headline with attractive font */
   h1 {
     font-family: 'Bebas Neue', system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
     font-size: 3.2rem;
@@ -52,7 +50,7 @@
     width: 100%;
   }
 
-  /* Container for sidebar + main content */
+  /* Container: reversed flex order so sidebar is on right */
   .page-container {
     display: flex;
     max-width: 1100px;
@@ -60,9 +58,9 @@
     gap: 28px;
     align-items: flex-start;
     padding: 0 10px;
+    flex-direction: row-reverse; /* <-- change here */
   }
 
-  /* Sidebar */
   .sidebar {
     flex: 0 0 220px;
     background: var(--panel);
@@ -117,7 +115,6 @@
     border-radius: 3px;
   }
 
-  /* Main content */
   .main-content {
     flex: 1 1 auto;
     display: flex;
@@ -125,7 +122,6 @@
     gap: 24px;
   }
 
-  /* Controls top bar */
   .top-controls {
     display: flex;
     flex-wrap: wrap;
@@ -173,7 +169,6 @@
     outline: none;
   }
 
-  /* Products list */
   .products {
     display: flex;
     flex-direction: column;
@@ -260,7 +255,6 @@
     transform: translateY(-2px);
   }
 
-  /* Responsive adjustments */
   @media (max-width: 900px) {
     .page-container {
       flex-direction: column;
@@ -1139,6 +1133,109 @@
 
   <div class="page-container" role="main" aria-label="Main content and filters">
 
+    <!-- Sidebar moved to right by flex-direction: row-reverse -->
+
+    <section class="main-content">
+
+      <form class="top-controls" role="search" aria-label="Search and sort products" onsubmit="return false;">
+        <input 
+          list="keywordsList" 
+          id="searchInput" 
+          type="search" 
+          placeholder="Search by keyword or title…" 
+          aria-label="Search products" 
+          autocomplete="off"
+          name="search" />
+        <datalist id="keywordsList">
+          <option value="4k tv">
+<option value="accessory">
+<option value="adjustable dumbbells">
+<option value="air fryer">
+<option value="baby">
+<option value="baby monitor">
+<option value="back to school supplies">
+<option value="beauty">
+<option value="best seller">
+<option value="bluetooth speaker">
+<option value="camera">
+<option value="camping gear">
+<option value="car phone mount">
+<option value="cheap">
+<option value="clearance">
+<option value="coffee maker">
+<option value="computer">
+<option value="deal">
+<option value="desk lamp">
+<option value="discount">
+<option value="electronics">
+<option value="external hard drive">
+<option value="fan">
+<option value="fashion">
+<option value="fathers day gifts">
+<option value="fire stick">
+<option value="fitness">
+<option value="fitness tracker">
+<option value="gaming">
+<option value="gaming headset">
+<option value="gift">
+<option value="hair dryer">
+<option value="headphones">
+<option value="home">
+<option value="home office desk">
+<option value="keyboard">
+<option value="kindle">
+<option value="kitchen">
+<option value="kitchen organizer">
+<option value="labubu">
+<option value="laptop">
+<option value="led strip lights">
+<option value="lego">
+<option value="memory foam pillow">
+<option value="monitor">
+<option value="mothers day gifts">
+<option value="new arrival">
+<option value="offer">
+<option value="office chair">
+<option value="outdoor">
+<option value="outdoor plastic straw rug">
+<option value="popular">
+<option value="portable charger">
+<option value="reacher">
+<option value="resistance bands">
+<option value="robot vacuum">
+<option value="save">
+<option value="skincare">
+<option value="smartwatch">
+<option value="sport">
+<option value="streaming device">
+<option value="switch">
+<option value="tablet">
+<option value="tech gadgets">
+<option value="tools">
+<option value="toys">
+<option value="usb c hub">
+<option value="water">
+<option value="water bottle">
+<option value="wireless earbuds">
+        </datalist>
+
+        <select id="sortSelect" aria-label="Sort products" name="sort">
+          <option value="percentDesc">Discount (%) - descending</option>
+          <option value="percentAsc">Discount (%) - ascending</option>
+          <option value="priceAsc">Price - ascending</option>
+          <option value="priceDesc">Price - descending</option>
+          <option value="keywordAsc">Category (A-Z)</option>
+          <option value="keywordDesc">Category (Z-A)</option>
+        </select>
+      </form>
+
+      <section class="intro-text" style="max-width: 900px; margin: 0 auto 24px; font-size: 1.1rem; color: #374151; line-height: 1.5;">
+        <p>Welcome to <strong>Dealnest.ca</strong>, your go-to source for the best daily Amazon deals. We carefully curate exclusive offers to help you save big on products you love. All links on this site are affiliate links, which means we may earn a small commission at no extra cost to you. Happy shopping!</p>
+      </section>
+
+      <section id="products" class="products" role="list" aria-live="polite" aria-relevant="additions removals"></section>
+    </section>
+
     <aside class="sidebar" aria-label="Filter products by category">
       <fieldset>
         <legend>Filter by category</legend>
@@ -1498,101 +1595,6 @@
       </fieldset>
     </aside>
 
-    <section class="main-content">
-      <form class="top-controls" role="search" aria-label="Search and sort products" onsubmit="return false;">
-        <input 
-          list="keywordsList" 
-          id="searchInput" 
-          type="search" 
-          placeholder="Search by keyword or title…" 
-          aria-label="Search products" 
-          autocomplete="off"
-          name="search" />
-        <datalist id="keywordsList">
-          <option value="4k tv">
-<option value="accessory">
-<option value="adjustable dumbbells">
-<option value="air fryer">
-<option value="baby">
-<option value="baby monitor">
-<option value="back to school supplies">
-<option value="beauty">
-<option value="best seller">
-<option value="bluetooth speaker">
-<option value="camera">
-<option value="camping gear">
-<option value="car phone mount">
-<option value="cheap">
-<option value="clearance">
-<option value="coffee maker">
-<option value="computer">
-<option value="deal">
-<option value="desk lamp">
-<option value="discount">
-<option value="electronics">
-<option value="external hard drive">
-<option value="fan">
-<option value="fashion">
-<option value="fathers day gifts">
-<option value="fire stick">
-<option value="fitness">
-<option value="fitness tracker">
-<option value="gaming">
-<option value="gaming headset">
-<option value="gift">
-<option value="hair dryer">
-<option value="headphones">
-<option value="home">
-<option value="home office desk">
-<option value="keyboard">
-<option value="kindle">
-<option value="kitchen">
-<option value="kitchen organizer">
-<option value="labubu">
-<option value="laptop">
-<option value="led strip lights">
-<option value="lego">
-<option value="memory foam pillow">
-<option value="monitor">
-<option value="mothers day gifts">
-<option value="new arrival">
-<option value="offer">
-<option value="office chair">
-<option value="outdoor">
-<option value="outdoor plastic straw rug">
-<option value="popular">
-<option value="portable charger">
-<option value="reacher">
-<option value="resistance bands">
-<option value="robot vacuum">
-<option value="save">
-<option value="skincare">
-<option value="smartwatch">
-<option value="sport">
-<option value="streaming device">
-<option value="switch">
-<option value="tablet">
-<option value="tech gadgets">
-<option value="tools">
-<option value="toys">
-<option value="usb c hub">
-<option value="water">
-<option value="water bottle">
-<option value="wireless earbuds">
-        </datalist>
-
-        <select id="sortSelect" aria-label="Sort products" name="sort">
-          <option value="percentDesc">Discount (%) - descending</option>
-          <option value="percentAsc">Discount (%) - ascending</option>
-          <option value="priceAsc">Price - ascending</option>
-          <option value="priceDesc">Price - descending</option>
-          <option value="keywordAsc">Category (A-Z)</option>
-          <option value="keywordDesc">Category (Z-A)</option>
-        </select>
-      </form>
-
-      <section id="products" class="products" role="list" aria-live="polite" aria-relevant="additions removals"></section>
-    </section>
   </div>
 
   <script>
