@@ -1434,8 +1434,13 @@
   <div class="page-container" role="main" aria-label="Main content and filters">
 
     <aside class="sidebar" aria-label="Filter products by category">
-      <fieldset>
+      
+	    <!-- === Ajout Google Translate ici === -->
+        <div id="google_translate_element" style="margin-bottom: 16px;"></div>
+
+	  <fieldset>
         <legend>Filter by category</legend>
+		
         <div class="checkbox-group" role="group">
           
             <label class="checkbox-label" for="cat_4k tv">
@@ -2037,7 +2042,7 @@
             </span> Happy shopping!
         </p>
         <p style="font-size: 0.9rem; color: red; margin-top: 8px;">
-          Deals updated on: August 11, 2025 02:38:06 PM
+          Deals updated on: August 11, 2025 03:25:24 PM
         </p>
       </section>
 
@@ -2174,6 +2179,17 @@
     // Initial render
     updateDisplay();
   </script>
+
+<script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',            // Ta page est en anglais dans ce code (lang="en")
+      layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 </html>
   
