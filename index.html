@@ -142,7 +142,7 @@
   
   #content {
     flex: 1;
-    padding: 20px;
+    padding: 10px 20px 20px 20px;
     overflow-y: auto;
     background: white;
     max-height: var(--vh);
@@ -151,7 +151,8 @@
   }
   
   #content h2 {
-    margin-top: 20px;
+    margin-top: 0px;
+    margin-bottom: 15px;
     color: #222;
   }
   
@@ -249,7 +250,7 @@
     }
     
     #content {
-      padding-top: 60px;
+      padding: 50px 20px 20px 20px;
       width: 100%;
     }
   }
@@ -269,26 +270,42 @@
   body.messenger-webview #content {
     height: var(--vh) !important;
     max-height: var(--vh) !important;
+    padding: 5px 15px 15px 15px !important;
+  }
+
+  body.messenger-webview #content h2 {
+    margin-top: 0px !important;
+    margin-bottom: 10px !important;
   }
 
   body.messenger-webview #toggleSidebarBtn {
-    top: 8px !important;
-    left: 8px !important;
+    top: 5px !important;
+    left: 5px !important;
     width: 36px !important;
     height: 36px !important;
     font-size: 24px !important;
     line-height: 32px !important;
   }
 
+  @media (max-width: 700px) {
+    body.messenger-webview #content {
+      padding: 45px 15px 15px 15px !important;
+    }
+  }
+
   /* Fix pour les safe areas iOS */
   @supports(padding-top: env(safe-area-inset-top)) {
     @media (max-width: 700px) {
       #content {
-        padding-top: max(60px, env(safe-area-inset-top, 60px));
+        padding-top: max(45px, env(safe-area-inset-top, 45px));
       }
       
       body.messenger-webview #toggleSidebarBtn {
-        top: max(8px, env(safe-area-inset-top, 8px)) !important;
+        top: max(5px, env(safe-area-inset-top, 5px)) !important;
+      }
+      
+      body.messenger-webview #content {
+        padding: max(40px, env(safe-area-inset-top, 40px)) 15px 15px 15px !important;
       }
     }
   }
