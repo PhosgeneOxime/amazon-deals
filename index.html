@@ -54,6 +54,18 @@
     margin-bottom: 8px;
     font-style: italic;
   }
+
+  /* Nouvelle boîte de recherche */
+  #searchBox {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
   #btnTopDeals {
     width: 100%;
     background: #007bff;
@@ -237,6 +249,9 @@
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
 
+  <!-- Boîte de recherche -->
+  <input type="search" id="searchBox" placeholder="Search products..." aria-label="Search products" autocomplete="off" />
+
   <!-- Bouton Top Deals -->
   <button id="btnTopDeals" aria-label="Show Top Deals">Top Deals</button>
 
@@ -305,6 +320,7 @@ const sidebar = document.getElementById('sidebar');
 const toggleBtn = document.getElementById('toggleSidebarBtn');
 const mainTitle = document.getElementById('mainTitle');
 const btnTopDeals = document.getElementById('btnTopDeals');
+const searchBox = document.getElementById('searchBox');
 
 let data = [];
 let keywordsSet = new Set();
@@ -342,6 +358,7 @@ function displayKeywords(keywords) {
     li.textContent = capitalizeWords(kw);
     li.addEventListener('click', () => {
       selectedKeyword = kw;
+      searchBox.value = ''; // reset recherche
       mainTitle.textContent = capitalizeWords(kw);
       displayProductsByKeyword(kw);
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
@@ -413,11 +430,73 @@ function displayRandomTopDeals() {
   });
 }
 
+function displayFilteredProductsBySearch(term) {
+  const lowerTerm = term.toLowerCase().trim();
+  if(lowerTerm.length === 0) {
+    // si recherche vide, retourne affichage normal
+    if(selectedKeyword) {
+      displayProductsByKeyword(selectedKeyword);
+      mainTitle.textContent = capitalizeWords(selectedKeyword);
+      highlightActiveKeyword();
+    } else {
+      mainTitle.textContent = 'Top Deals';
+      displayRandomTopDeals();
+      removeKeywordHighlight();
+    }
+    return;
+  }
+
+  // Filtrer par titre contenant le terme
+  const filtered = data.filter(p => p.title.toLowerCase().includes(lowerTerm));
+
+  // Trier par pourcentage rabais décroissant
+  filtered.sort((a,b) => Number(b.percent) - Number(a.percent));
+
+  mainTitle.textContent = `Search results for: "${term}"`;
+  removeKeywordHighlight();
+
+  if(filtered.length === 0) {
+    productsDiv.innerHTML = '<p>No products found.</p>';
+    return;
+  }
+
+  productsDiv.innerHTML = '';
+  filtered.forEach(p => {
+    const linkUrl = p.link ? p.link : '#';
+    const prodLink = document.createElement('a');
+    prodLink.href = linkUrl;
+    prodLink.target = '_blank';
+    prodLink.rel = 'noopener noreferrer';
+    prodLink.classList.add('product');
+    prodLink.innerHTML = `
+      <strong>${p.title}</strong>
+      <p>Price: <span class="price">${p.price}</span></p>
+      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
+    `;
+    productsDiv.appendChild(prodLink);
+  });
+}
+
+function highlightActiveKeyword() {
+  document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+  if(!selectedKeyword) return;
+  document.querySelectorAll('#keywordList li').forEach(el => {
+    if(el.textContent.toLowerCase() === selectedKeyword.toLowerCase()) {
+      el.classList.add('active');
+    }
+  });
+}
+
+function removeKeywordHighlight() {
+  document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+}
+
 btnTopDeals.addEventListener('click', () => {
   selectedKeyword = null;
+  searchBox.value = '';
   mainTitle.textContent = 'Top Deals';
   displayRandomTopDeals();
-  document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+  removeKeywordHighlight();
   if(window.innerWidth <= 700) {
     sidebar.classList.remove('open');
     toggleBtn.setAttribute('aria-expanded', 'false');
@@ -433,6 +512,11 @@ toggleBtn.addEventListener('click', () => {
     sidebar.classList.add('open');
     toggleBtn.setAttribute('aria-expanded', 'true');
   }
+});
+
+searchBox.addEventListener('input', (e) => {
+  const val = e.target.value;
+  displayFilteredProductsBySearch(val);
 });
 
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
