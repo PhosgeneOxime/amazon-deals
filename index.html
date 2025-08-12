@@ -8,13 +8,17 @@
 <link rel="canonical" href="https://dealnest.ca/" />
 
 <style>
+  /* Basic layout */
   body {
     font-family: Arial, sans-serif;
     margin: 0;
     display: flex;
     height: 100vh;
     background: #f5f5f5;
+    overflow-x: hidden;
   }
+
+  /* Sidebar styles */
   #sidebar {
     width: 250px;
     background: #f0f0f0;
@@ -26,22 +30,70 @@
     flex-direction: column;
     align-items: center;
     border-right: 1px solid #ccc;
+    position: relative;
+    transition: width 0.3s ease;
+    flex-shrink: 0;
   }
+  /* Collapsed sidebar (desktop) */
+  #sidebar.collapsed {
+    width: 60px;
+  }
+  #sidebar.collapsed #logo,
+  #sidebar.collapsed #productCount,
+  #sidebar.collapsed #updateDate,
+  #sidebar.collapsed ul.keyword-list,
+  #sidebar.collapsed #google_translate_element,
+  #sidebar.collapsed .ads-block {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Toggle button */
+  #toggleSidebarBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #bbb;
+    border: none;
+    border-radius: 4px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+    color: #222;
+    user-select: none;
+    transition: background-color 0.3s;
+    z-index: 2100;
+  }
+  #toggleSidebarBtn:hover,
+  #toggleSidebarBtn:focus {
+    background: #999;
+  }
+
+  /* Sidebar content */
   #logo {
     width: 150px;
     margin-bottom: 8px;
     cursor: pointer;
+    transition: opacity 0.3s ease;
   }
   #productCount {
     font-size: 14px;
     color: #555;
     margin-bottom: 4px;
+    transition: opacity 0.3s ease;
   }
   #updateDate {
     font-size: 12px;
     color: #777;
     margin-bottom: 15px;
     font-style: italic;
+    transition: opacity 0.3s ease;
   }
   ul.keyword-list {
     list-style: none;
@@ -49,21 +101,37 @@
     max-height: calc(100vh - 230px);
     overflow-y: auto;
     width: 100%;
+    transition: opacity 0.3s ease;
   }
   ul.keyword-list li {
     cursor: pointer;
-    padding: 8px 10px;
-    margin-bottom: 6px;
+    padding: 12px 10px; /* un peu plus grand tactile */
+    margin-bottom: 8px;
     background: #ddd;
     border-radius: 6px;
     color: #222;
     transition: background-color 0.3s, color 0.3s;
+    user-select: none;
   }
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
     background: #bbb;
     color: #000;
   }
+
+  #google_translate_element {
+    margin-top: auto;
+    width: 100%;
+    transition: opacity 0.3s ease;
+  }
+  .ads-block {
+    margin: 15px 0;
+    width: 100%;
+    text-align: center;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Content area */
   #content {
     flex: 1;
     padding: 20px;
@@ -98,14 +166,67 @@
   .savings {
     color: #cc0000;
   }
-  #google_translate_element {
-    margin-top: auto;
-    width: 100%;
+
+  /* Overlay for mobile menu */
+  #overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1500;
   }
-  .ads-block {
-    margin: 15px 0;
-    width: 100%;
-    text-align: center;
+  #overlay.visible {
+    display: block;
+  }
+
+  /* Responsive behavior */
+  @media (max-width: 700px) {
+    /* Sidebar becomes offscreen, overlay menu */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      width: 250px;
+      background: #f0f0f0;
+      border-right: none;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 2000;
+      padding-top: 60px; /* espace pour bouton toggle */
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+    #sidebar.collapsed {
+      width: 250px; /* ignore collapsed on mobile */
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      user-select: auto !important;
+    }
+    /* Toggle button stays fixed top-left */
+    #toggleSidebarBtn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: auto;
+      z-index: 2101;
+      background: #007a00;
+      color: white;
+      border-radius: 4px;
+      width: 40px;
+      height: 40px;
+      font-size: 28px;
+      line-height: 36px;
+    }
+    #toggleSidebarBtn:hover,
+    #toggleSidebarBtn:focus {
+      background: #005f00;
+    }
+    /* Content padding reduced */
+    #content {
+      padding: 15px 10px;
+    }
   }
 </style>
 
@@ -114,11 +235,15 @@
 </head>
 <body>
 
-<div id="sidebar">
+<!-- Overlay for mobile menu -->
+<div id="overlay"></div>
+
+<div id="sidebar" class="collapsed" aria-label="Navigation menu">
   <img id="logo" src="logo.png" alt="Logo" title="Homepage" />
+  <button id="toggleSidebarBtn" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle menu">&#9776;</button>
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
-  <ul class="keyword-list" id="keywordList"></ul>
+  <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
   <div id="google_translate_element"></div>
 
   <!-- Google Ads in Sidebar -->
@@ -132,7 +257,7 @@
   </div>
 </div>
 
-<div id="content">
+<div id="content" tabindex="0">
   <!-- Google Ads at top of content -->
   <div class="ads-block">
     <ins class="adsbygoogle"
@@ -149,130 +274,204 @@
 </div>
 
 <script>
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines.shift().split(',').map(h => h.replace(/(^"|"$)/g, ''));
+  // CSV parsing and data display - inchangé
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines.shift().split(',').map(h => h.replace(/(^"|"$)/g, ''));
 
-  return lines.map(line => {
-    const regex = /("([^"]|"")*"|[^,]+)/g;
-    const matches = line.match(regex);
-    if (!matches) return null;
-    const obj = {};
-    headers.forEach((h, i) => {
-      let val = matches[i];
-      if (val === undefined) val = '';
-      if(val.startsWith('"') && val.endsWith('"')) {
-        val = val.slice(1, -1).replace(/""/g, '"');
-      }
-      obj[h] = val;
-    });
-    return obj;
-  }).filter(item => item !== null);
-}
-
-const keywordList = document.getElementById('keywordList');
-const productsDiv = document.getElementById('products');
-const productCountDiv = document.getElementById('productCount');
-const updateDateDiv = document.getElementById('updateDate');
-
-let data = [];
-let keywordsSet = new Set();
-
-fetch('deals_clean.csv')
-  .then(res => {
-    if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    return res.text();
-  })
-  .then(text => {
-    data = parseCSV(text);
-    productCountDiv.textContent = `Total products: ${data.length}`;
-
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    updateDateDiv.textContent = `Product list updated on : ${yyyy}-${mm}-${dd}`;
-
-    data.forEach(item => keywordsSet.add(item.keyword));
-    displayKeywords([...keywordsSet].sort());
-    displayRandomTopDeals();
-  })
-  .catch(err => {
-    productsDiv.innerHTML = `<p style="color:red;">Error loading CSV file: ${err.message}</p>`;
-    productCountDiv.textContent = 'Failed to load products.';
-    updateDateDiv.textContent = '';
-  });
-
-function displayKeywords(keywords) {
-  keywordList.innerHTML = '';
-  keywords.forEach(kw => {
-    const li = document.createElement('li');
-    li.textContent = kw;
-    li.addEventListener('click', () => {
-      document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-      li.classList.add('active');
-      displayProductsByKeyword(kw);
-    });
-    keywordList.appendChild(li);
-  });
-}
-
-function displayProductsByKeyword(keyword) {
-  const filtered = data.filter(p => p.keyword === keyword);
-  if(filtered.length === 0) {
-    productsDiv.innerHTML = '<p>No products found.</p>';
-    return;
+    return lines.map(line => {
+      const regex = /("([^"]|"")*"|[^,]+)/g;
+      const matches = line.match(regex);
+      if (!matches) return null;
+      const obj = {};
+      headers.forEach((h, i) => {
+        let val = matches[i];
+        if (val === undefined) val = '';
+        if(val.startsWith('"') && val.endsWith('"')) {
+          val = val.slice(1, -1).replace(/""/g, '"');
+        }
+        obj[h] = val;
+      });
+      return obj;
+    }).filter(item => item !== null);
   }
-  productsDiv.innerHTML = '';
-  filtered.forEach(p => {
-    const prodDiv = document.createElement('div');
-    prodDiv.classList.add('product');
-    prodDiv.innerHTML = `
-      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
-      <p>Price: <span class="price">${p.price}</span></p>
-      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
-    `;
-    productsDiv.appendChild(prodDiv);
-  });
-}
 
-function displayRandomTopDeals() {
-  const sorted = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
-  const top30 = sorted.slice(0,30);
+  const keywordList = document.getElementById('keywordList');
+  const productsDiv = document.getElementById('products');
+  const productCountDiv = document.getElementById('productCount');
+  const updateDateDiv = document.getElementById('updateDate');
 
-  function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex != 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  let data = [];
+  let keywordsSet = new Set();
+
+  fetch('deals_clean.csv')
+    .then(res => {
+      if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.text();
+    })
+    .then(text => {
+      data = parseCSV(text);
+      productCountDiv.textContent = `Total products: ${data.length}`;
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      updateDateDiv.textContent = `Product list updated on : ${yyyy}-${mm}-${dd}`;
+
+      data.forEach(item => keywordsSet.add(item.keyword));
+      displayKeywords([...keywordsSet].sort());
+      displayRandomTopDeals();
+    })
+    .catch(err => {
+      productsDiv.innerHTML = `<p style="color:red;">Error loading CSV file: ${err.message}</p>`;
+      productCountDiv.textContent = 'Failed to load products.';
+      updateDateDiv.textContent = '';
+    });
+
+  function displayKeywords(keywords) {
+    keywordList.innerHTML = '';
+    keywords.forEach(kw => {
+      const li = document.createElement('li');
+      li.textContent = kw;
+      li.addEventListener('click', () => {
+        document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+        li.classList.add('active');
+        displayProductsByKeyword(kw);
+        // On mobile, close menu after selection
+        if(window.innerWidth <= 700) {
+          toggleMenu(false);
+        }
+      });
+      keywordList.appendChild(li);
+    });
+  }
+
+  function displayProductsByKeyword(keyword) {
+    const filtered = data.filter(p => p.keyword === keyword);
+    if(filtered.length === 0) {
+      productsDiv.innerHTML = '<p>No products found.</p>';
+      return;
     }
-    return array;
+    productsDiv.innerHTML = '';
+    filtered.forEach(p => {
+      const prodDiv = document.createElement('div');
+      prodDiv.classList.add('product');
+      prodDiv.innerHTML = `
+        <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+        <p>Price: <span class="price">${p.price}</span></p>
+        <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
+      `;
+      productsDiv.appendChild(prodDiv);
+    });
   }
 
-  const shuffled = shuffle(top30);
-  const selected = shuffled.slice(0,10);
+  function displayRandomTopDeals() {
+    const sorted = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
+    const top30 = sorted.slice(0,30);
 
-  productsDiv.innerHTML = '<h3>Random Top Deals</h3>';
+    function shuffle(array) {
+      let currentIndex = array.length, randomIndex;
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+      return array;
+    }
 
-  selected.forEach(p => {
-    const prodDiv = document.createElement('div');
-    prodDiv.classList.add('product');
-    prodDiv.innerHTML = `
-      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
-      <p>Price: <span class="price">${p.price}</span></p>
-      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
-    `;
-    productsDiv.appendChild(prodDiv);
+    const shuffled = shuffle(top30);
+    const selected = shuffled.slice(0,10);
+
+    productsDiv.innerHTML = '<h3>Random Top Deals</h3>';
+
+    selected.forEach(p => {
+      const prodDiv = document.createElement('div');
+      prodDiv.classList.add('product');
+      prodDiv.innerHTML = `
+        <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+        <p>Price: <span class="price">${p.price}</span></p>
+        <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
+      `;
+      productsDiv.appendChild(prodDiv);
+    });
+  }
+
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+    }, 'google_translate_element');
+  }
+
+  // Sidebar toggle & overlay logic
+
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggleSidebarBtn');
+  const overlay = document.getElementById('overlay');
+
+  function toggleMenu(open) {
+    const isMobile = window.innerWidth <= 700;
+
+    if (isMobile) {
+      if(open) {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.innerHTML = '×'; // changer icône en "fermer"
+        // focus dans le menu pour accessibilité
+        sidebar.focus();
+      } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        document.body.style.overflow = '';
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.innerHTML = '&#9776;'; // hamburger
+        toggleBtn.focus();
+      }
+    } else {
+      // Desktop : toggle collapsed class
+      if(open) {
+        sidebar.classList.remove('collapsed');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        sidebar.classList.add('collapsed');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+      // Pas d'overlay ni scroll lock desktop
+    }
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    const isMobile = window.innerWidth <= 700;
+    if (isMobile) {
+      const isOpen = sidebar.classList.contains('open');
+      toggleMenu(!isOpen);
+    } else {
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      toggleMenu(isCollapsed);
+    }
   });
-}
 
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'en',
-    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
-  }, 'google_translate_element');
-}
+  overlay.addEventListener('click', () => toggleMenu(false));
+
+  // Fermer le menu si redimensionnement au-delà mobile
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 700) {
+      toggleMenu(false); // ferme overlay, ouvre sidebar en mode desktop (collapsed)
+    }
+  });
+
+  // Initial state
+  window.addEventListener('load', () => {
+    if(window.innerWidth <= 700) {
+      toggleMenu(false); // mobile menu fermé au départ
+    } else {
+      toggleMenu(false); // desktop menu collapsed au départ
+    }
+  });
+
 </script>
 
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
