@@ -2,40 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>DealNest.CA - Best Daily Amazon Deals</title>
 <meta name="description" content="Discover the best daily Amazon deals on Dealnest.ca, updated daily with exclusive promotions and discounts." />
 <meta name="theme-color" content="#007bff" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <style>
-  /* Reset global et base */
-  html, body, #sidebar, #content {
+  html, body {
+    height: 100% !important;
+    min-height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    height: var(--vh, 100vh) !important;
-    min-height: var(--vh, 100vh) !important;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
     box-sizing: border-box;
+    position: relative;
   }
-
-  /* Reset spécifiquement pour Messenger WebView */
-  body.messenger-webview {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-    height: var(--vh, 100vh) !important;
-    min-height: var(--vh, 100vh) !important;
-    overflow: hidden !important;
-  }
-
+  
   body {
     font-family: Arial, sans-serif;
     display: flex;
     background: #f5f5f5;
     min-height: 100vh;
+    /* Fix pour Messenger WebView */
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
   }
+
+  /* Variables CSS pour hauteur dynamique */
+  :root {
+    --vh: 100vh;
+    --sidebar-width: 250px;
+  }
+
   #sidebar {
-    width: 250px;
+    width: var(--sidebar-width);
     background: #f0f0f0;
     color: #222;
     padding: 15px;
@@ -45,19 +46,25 @@
     align-items: center;
     border-right: 1px solid #ccc;
     flex-shrink: 0;
-    overflow-y: auto; /* scroll interne sidebar */
-    max-height: var(--vh, 100vh);
+    overflow-y: auto;
+    max-height: var(--vh);
+    height: var(--vh);
+    /* Fix scroll iOS/Messenger */
+    -webkit-overflow-scrolling: touch;
   }
+  
   #logo {
     width: 150px;
     margin-bottom: 8px;
     cursor: pointer;
   }
+  
   #productCount, #updateDate {
     font-size: 14px;
     color: #555;
     margin-bottom: 4px;
   }
+  
   #updateDate {
     font-size: 12px;
     color: #777;
@@ -65,7 +72,6 @@
     font-style: italic;
   }
 
-  /* Boîte de recherche */
   #searchBox {
     width: 100%;
     padding: 8px 12px;
@@ -89,11 +95,13 @@
     user-select: none;
     transition: background-color 0.3s ease;
   }
+  
   #btnTopDeals:hover,
   #btnTopDeals:focus {
     background: #0056b3;
     outline: none;
   }
+  
   ul.keyword-list {
     list-style: none;
     padding-left: 0;
@@ -101,7 +109,9 @@
     overflow-y: auto;
     width: 100%;
     flex: 1 1 auto;
+    -webkit-overflow-scrolling: touch;
   }
+  
   ul.keyword-list li {
     cursor: pointer;
     padding: 12px 10px;
@@ -112,31 +122,39 @@
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
   }
+  
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
     background: #bbb;
     color: #000;
   }
+  
   #google_translate_element {
     margin-top: auto;
     width: 100%;
   }
+  
   .ads-block {
     margin: 15px 0;
     width: 100%;
     text-align: center;
   }
+  
   #content {
     flex: 1;
     padding: 20px;
-    overflow-y: auto; /* scroll interne content */
+    overflow-y: auto;
     background: white;
-    max-height: var(--vh, 100vh);
+    max-height: var(--vh);
+    height: var(--vh);
+    -webkit-overflow-scrolling: touch;
   }
+  
   #content h2 {
-    margin-top: 40px;
+    margin-top: 20px;
     color: #222;
   }
+  
   a.product {
     background: #fafafa;
     margin-bottom: 15px;
@@ -149,120 +167,161 @@
     text-decoration: none;
     transition: background-color 0.3s ease;
   }
+  
   a.product:hover {
     background: #e1eaff;
   }
+  
   a.product strong {
     font-weight: 600;
     color: #007bff;
   }
+  
   .price {
     font-weight: bold;
     color: #007a00;
   }
+  
   .savings {
     color: #cc0000;
   }
 
-  /* Responsive & toggle */
+  #toggleSidebarBtn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 2101;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+    line-height: 36px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    padding: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  /* Desktop */
   @media (min-width: 701px) {
     #sidebar {
-      transform: translateX(0) !important;
+      transform: translateX(0);
       position: relative;
     }
     #toggleSidebarBtn {
       display: none !important;
     }
   }
+
+  /* Mobile normal */
   @media (max-width: 700px) {
     #sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      height: var(--vh, 100vh);
-      width: 250px;
+      height: var(--vh);
+      width: var(--sidebar-width);
       background: #f0f0f0;
       border-right: none;
       box-shadow: 2px 0 8px rgba(0,0,0,0.3);
       transform: translateX(-100%);
       z-index: 2000;
       padding-top: 60px;
-      flex-direction: column;
-      overflow-y: auto;
+      transition: transform 0.3s ease;
     }
+    
     #sidebar.open {
       transform: translateX(0);
     }
+    
     #toggleSidebarBtn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 2101;
-      background: #007bff !important;
-      color: white !important;
-      border: none;
-      border-radius: 4px;
-      width: 40px;
-      height: 40px;
-      font-size: 28px;
-      line-height: 36px;
-      cursor: pointer;
-      user-select: none;
-      display: block !important;
-      text-align: center;
-      padding: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+      display: block;
     }
+    
     #toggleSidebarBtn:hover,
     #toggleSidebarBtn:focus {
-      background: #0056b3 !important;
+      background: #0056b3;
     }
+    
     #content {
-      padding-top: max(70px, env(safe-area-inset-top));
-    }
-  }
-
-  @supports(padding-top: env(safe-area-inset-top)) {
-    #content {
-      padding-top: max(20px, env(safe-area-inset-top));
+      padding-top: 60px;
+      width: 100%;
     }
   }
 
   /* Messenger WebView spécifique */
   body.messenger-webview {
-    padding: 0 !important;
-    margin: 0 !important;
-    height: var(--vh, 100vh) !important;
     overflow: hidden !important;
+    height: var(--vh) !important;
+    min-height: var(--vh) !important;
   }
-  body.messenger-webview #sidebar,
+
+  body.messenger-webview #sidebar {
+    height: var(--vh) !important;
+    max-height: var(--vh) !important;
+  }
+
   body.messenger-webview #content {
-    max-height: var(--vh, 100vh) !important;
-    height: var(--vh, 100vh) !important;
-    overflow-y: auto !important;
+    height: var(--vh) !important;
+    max-height: var(--vh) !important;
   }
+
   body.messenger-webview #toggleSidebarBtn {
-    top: 6px !important;
-    left: 6px !important;
+    top: 8px !important;
+    left: 8px !important;
     width: 36px !important;
     height: 36px !important;
     font-size: 24px !important;
     line-height: 32px !important;
+  }
+
+  /* Fix pour les safe areas iOS */
+  @supports(padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 700px) {
+      #content {
+        padding-top: max(60px, env(safe-area-inset-top, 60px));
+      }
+      
+      body.messenger-webview #toggleSidebarBtn {
+        top: max(8px, env(safe-area-inset-top, 8px)) !important;
+      }
+    }
+  }
+
+  /* Overlay pour fermer sidebar sur mobile */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1999;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
   }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div id="sidebar" aria-label="Navigation menu">
   <img id="logo" src="logo.png" alt="Logo" title="Homepage" />
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
 
-  <!-- Boîte de recherche -->
   <input type="search" id="searchBox" placeholder="Search products..." aria-label="Search products" autocomplete="off" />
 
-  <!-- Bouton Top Deals -->
   <button id="btnTopDeals" aria-label="Show Top Deals">Top Deals</button>
 
   <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
@@ -296,6 +355,58 @@
 </div>
 
 <script>
+// Fix pour Messenger WebView - Détection améliorée
+function detectMessengerWebView() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return /FBAN|FBAV|Messenger|FB_IAB|FB4A|Instagram/.test(ua) || 
+         window.parent !== window || 
+         window.name === 'facebookExternalHit';
+}
+
+// Gestion hauteur viewport dynamique
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
+  
+  // Fix spécifique Messenger
+  if (document.body.classList.contains('messenger-webview')) {
+    document.body.style.height = window.innerHeight + 'px';
+    document.getElementById('sidebar').style.height = window.innerHeight + 'px';
+    document.getElementById('content').style.height = window.innerHeight + 'px';
+  }
+}
+
+// Debounce function pour éviter trop d'appels
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+const debouncedSetViewportHeight = debounce(setViewportHeight, 100);
+
+// Initialisation Messenger WebView
+if (detectMessengerWebView()) {
+  document.body.classList.add('messenger-webview');
+  setViewportHeight();
+  
+  // Event listeners avec debounce
+  window.addEventListener('resize', debouncedSetViewportHeight);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(debouncedSetViewportHeight, 300); // Délai pour orientation
+  });
+  
+  // Fix pour le scroll iOS
+  document.addEventListener('touchstart', {}, { passive: true });
+  document.addEventListener('touchmove', {}, { passive: true });
+}
+
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -327,6 +438,7 @@ const productsDiv = document.getElementById('products');
 const productCountDiv = document.getElementById('productCount');
 const updateDateDiv = document.getElementById('updateDate');
 const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
 const toggleBtn = document.getElementById('toggleSidebarBtn');
 const mainTitle = document.getElementById('mainTitle');
 const btnTopDeals = document.getElementById('btnTopDeals');
@@ -336,30 +448,52 @@ let data = [];
 let keywordsSet = new Set();
 let selectedKeyword = null;
 
-fetch('deals_clean.csv')
-  .then(res => {
-    if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    return res.text();
-  })
-  .then(text => {
-    data = parseCSV(text);
-    productCountDiv.textContent = `Total products: ${data.length}`;
+// Chargement des données avec retry
+function loadData(retries = 3) {
+  fetch('deals_clean.csv')
+    .then(res => {
+      if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.text();
+    })
+    .then(text => {
+      data = parseCSV(text);
+      productCountDiv.textContent = `Total products: ${data.length}`;
 
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    updateDateDiv.textContent = `Product list updated on : ${yyyy}-${mm}-${dd}`;
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      updateDateDiv.textContent = `Updated: ${yyyy}-${mm}-${dd}`;
 
-    data.forEach(item => keywordsSet.add(item.keyword));
-    displayKeywords([...keywordsSet].sort());
-    displayRandomTopDeals();
-  })
-  .catch(err => {
-    productsDiv.innerHTML = `<p style="color:red;">Error loading CSV file: ${err.message}</p>`;
-    productCountDiv.textContent = 'Failed to load products.';
-    updateDateDiv.textContent = '';
-  });
+      data.forEach(item => keywordsSet.add(item.keyword));
+      displayKeywords([...keywordsSet].sort());
+      displayRandomTopDeals();
+    })
+    .catch(err => {
+      console.error('Error loading CSV:', err);
+      if (retries > 0) {
+        setTimeout(() => loadData(retries - 1), 1000);
+      } else {
+        productsDiv.innerHTML = `<p style="color:red;">Error loading data. Please refresh the page.</p>`;
+        productCountDiv.textContent = 'Failed to load products.';
+        updateDateDiv.textContent = '';
+      }
+    });
+}
+
+// Fonction pour fermer la sidebar
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  sidebarOverlay.classList.remove('active');
+  toggleBtn.setAttribute('aria-expanded', 'false');
+}
+
+// Fonction pour ouvrir la sidebar
+function openSidebar() {
+  sidebar.classList.add('open');
+  sidebarOverlay.classList.add('active');
+  toggleBtn.setAttribute('aria-expanded', 'true');
+}
 
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
@@ -368,14 +502,13 @@ function displayKeywords(keywords) {
     li.textContent = capitalizeWords(kw);
     li.addEventListener('click', () => {
       selectedKeyword = kw;
-      searchBox.value = ''; // reset recherche
+      searchBox.value = '';
       mainTitle.textContent = capitalizeWords(kw);
       displayProductsByKeyword(kw);
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
       if(window.innerWidth <= 700) {
-        sidebar.classList.remove('open');
-        toggleBtn.setAttribute('aria-expanded', 'false');
+        closeSidebar();
       }
     });
     keywordList.appendChild(li);
@@ -388,21 +521,35 @@ function displayProductsByKeyword(keyword) {
     productsDiv.innerHTML = '<p>No products found.</p>';
     return;
   }
-  productsDiv.innerHTML = '';
+  
+  // Utilisation de DocumentFragment pour performance
+  const fragment = document.createDocumentFragment();
   filtered.forEach(p => {
-    const linkUrl = p.link ? p.link : '#';
+    const linkUrl = p.link || '#';
     const prodLink = document.createElement('a');
     prodLink.href = linkUrl;
     prodLink.target = '_blank';
     prodLink.rel = 'noopener noreferrer';
     prodLink.classList.add('product');
-    prodLink.innerHTML = `
-      <strong>${p.title}</strong>
-      <p>Price: <span class="price">${p.price}</span></p>
-      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
-    `;
-    productsDiv.appendChild(prodLink);
+    
+    // Sécurisation du contenu
+    const titleEl = document.createElement('strong');
+    titleEl.textContent = p.title || 'No title';
+    
+    const priceP = document.createElement('p');
+    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
+    
+    const savingsP = document.createElement('p');
+    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
+    
+    prodLink.appendChild(titleEl);
+    prodLink.appendChild(priceP);
+    prodLink.appendChild(savingsP);
+    fragment.appendChild(prodLink);
   });
+  
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(fragment);
 }
 
 function displayRandomTopDeals() {
@@ -410,40 +557,53 @@ function displayRandomTopDeals() {
   const top30 = sorted.slice(0,30);
 
   function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex != 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    return array;
+    return newArray;
   }
 
   const shuffled = shuffle(top30);
   const selected = shuffled.slice(0,10);
 
-  productsDiv.innerHTML = '<h3>Random Top Deals</h3>';
+  const fragment = document.createDocumentFragment();
+  const title = document.createElement('h3');
+  title.textContent = 'Random Top Deals';
+  fragment.appendChild(title);
 
   selected.forEach(p => {
-    const linkUrl = p.link ? p.link : '#';
+    const linkUrl = p.link || '#';
     const prodLink = document.createElement('a');
     prodLink.href = linkUrl;
     prodLink.target = '_blank';
     prodLink.rel = 'noopener noreferrer';
     prodLink.classList.add('product');
-    prodLink.innerHTML = `
-      <strong>${p.title}</strong>
-      <p>Price: <span class="price">${p.price}</span></p>
-      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
-    `;
-    productsDiv.appendChild(prodLink);
+    
+    const titleEl = document.createElement('strong');
+    titleEl.textContent = p.title || 'No title';
+    
+    const priceP = document.createElement('p');
+    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
+    
+    const savingsP = document.createElement('p');
+    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
+    
+    prodLink.appendChild(titleEl);
+    prodLink.appendChild(priceP);
+    prodLink.appendChild(savingsP);
+    fragment.appendChild(prodLink);
   });
+  
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(fragment);
 }
 
-function displayFilteredProductsBySearch(term) {
+// Debounce pour la recherche
+const debouncedSearch = debounce(function(term) {
   const lowerTerm = term.toLowerCase().trim();
   if(lowerTerm.length === 0) {
-    // si recherche vide, retourne affichage normal
     if(selectedKeyword) {
       displayProductsByKeyword(selectedKeyword);
       mainTitle.textContent = capitalizeWords(selectedKeyword);
@@ -456,13 +616,10 @@ function displayFilteredProductsBySearch(term) {
     return;
   }
 
-  // Filtrer par titre contenant le terme
   const filtered = data.filter(p => p.title.toLowerCase().includes(lowerTerm));
-
-  // Trier par pourcentage rabais décroissant
   filtered.sort((a,b) => Number(b.percent) - Number(a.percent));
 
-  mainTitle.textContent = `Search results for: "${term}"`;
+  mainTitle.textContent = `Search: "${term}"`;
   removeKeywordHighlight();
 
   if(filtered.length === 0) {
@@ -470,22 +627,33 @@ function displayFilteredProductsBySearch(term) {
     return;
   }
 
-  productsDiv.innerHTML = '';
+  const fragment = document.createDocumentFragment();
   filtered.forEach(p => {
-    const linkUrl = p.link ? p.link : '#';
+    const linkUrl = p.link || '#';
     const prodLink = document.createElement('a');
     prodLink.href = linkUrl;
     prodLink.target = '_blank';
     prodLink.rel = 'noopener noreferrer';
     prodLink.classList.add('product');
-    prodLink.innerHTML = `
-      <strong>${p.title}</strong>
-      <p>Price: <span class="price">${p.price}</span></p>
-      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
-    `;
-    productsDiv.appendChild(prodLink);
+    
+    const titleEl = document.createElement('strong');
+    titleEl.textContent = p.title || 'No title';
+    
+    const priceP = document.createElement('p');
+    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
+    
+    const savingsP = document.createElement('p');
+    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
+    
+    prodLink.appendChild(titleEl);
+    prodLink.appendChild(priceP);
+    prodLink.appendChild(savingsP);
+    fragment.appendChild(prodLink);
   });
-}
+  
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(fragment);
+}, 300);
 
 function highlightActiveKeyword() {
   document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
@@ -501,6 +669,7 @@ function removeKeywordHighlight() {
   document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
 }
 
+// Event Listeners
 btnTopDeals.addEventListener('click', () => {
   selectedKeyword = null;
   searchBox.value = '';
@@ -508,56 +677,55 @@ btnTopDeals.addEventListener('click', () => {
   displayRandomTopDeals();
   removeKeywordHighlight();
   if(window.innerWidth <= 700) {
-    sidebar.classList.remove('open');
-    toggleBtn.setAttribute('aria-expanded', 'false');
+    closeSidebar();
   }
 });
 
 toggleBtn.addEventListener('click', () => {
-  const isOpen = sidebar.classList.toggle('open');
-  toggleBtn.setAttribute('aria-expanded', isOpen.toString());
-});
-
-searchBox.addEventListener('input', e => {
-  const val = e.target.value;
-  displayFilteredProductsBySearch(val);
-});
-
-function detectMessengerWebView() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  if (/FBAN|FBAV|Messenger|FB_IAB|FB4A/.test(ua)) {
-    document.body.classList.add('messenger-webview');
+  const isOpen = sidebar.classList.contains('open');
+  if(isOpen) {
+    closeSidebar();
+  } else {
+    openSidebar();
   }
+});
+
+// Fermer sidebar en cliquant sur l'overlay
+sidebarOverlay.addEventListener('click', closeSidebar);
+
+searchBox.addEventListener('input', (e) => {
+  debouncedSearch(e.target.value);
+});
+
+// Gestion du clavier pour accessibilité
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+    closeSidebar();
+  }
+});
+
+// Google Translate
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
 }
 
-function setMessengerHeight() {
-  const vh = window.innerHeight;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-  document.body.style.height = `${vh}px`;
-  document.body.style.minHeight = `${vh}px`;
-  sidebar.style.height = `${vh}px`;
-  sidebar.style.minHeight = `${vh}px`;
-  document.getElementById('content').style.height = `${vh}px`;
-  document.getElementById('content').style.minHeight = `${vh}px`;
-}
-
-window.addEventListener('resize', () => {
-  if(document.body.classList.contains('messenger-webview')) {
-    setMessengerHeight();
-  }
-});
-window.addEventListener('orientationchange', () => {
-  if(document.body.classList.contains('messenger-webview')) {
-    setMessengerHeight();
-  }
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+  setViewportHeight();
+  loadData();
 });
 
-window.addEventListener('load', () => {
-  detectMessengerWebView();
-  if(document.body.classList.contains('messenger-webview')) {
-    setMessengerHeight();
-  }
+// Gestion des erreurs globales
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error);
 });
+
 </script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+
 </body>
 </html>
