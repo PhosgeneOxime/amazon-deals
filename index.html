@@ -14,24 +14,50 @@
     width: 250px; background: #f0f0f0; color: #222;
     overflow-y: auto; padding: 15px; box-sizing: border-box;
     display: flex; flex-direction: column; align-items: center;
-    border-right: 1px solid #ccc; position: relative; transition: transform 0.3s ease;
+    border-right: 1px solid #ccc; position: relative;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
   }
-  #sidebar.collapsed {
-    transform: translateX(-100%);
+  /* Desktop: menu toujours visible */
+  @media (min-width: 701px) {
+    #sidebar {
+      transform: translateX(0) !important;
+      position: relative;
+    }
+    #toggleSidebarBtn {
+      display: none;
+    }
   }
-  #toggleSidebarBtn {
-    position: absolute; top: 10px; right: 10px;
-    background: #bbb; border: none; border-radius: 4px;
-    width: 40px; height: 40px; cursor: pointer; font-weight: bold;
-    font-size: 24px; line-height: 36px; text-align: center; color: #222;
-    user-select: none; transition: background-color 0.3s;
-    z-index: 2100;
+  /* Mobile: menu caché par défaut */
+  @media (max-width: 700px) {
+    #sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh;
+      width: 250px; background: #f0f0f0; border-right: none;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+      transform: translateX(-100%);
+      z-index: 2000; padding-top: 60px;
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+    #toggleSidebarBtn {
+      position: fixed; top: 10px; left: 10px; z-index: 2101;
+      background: #007a00; color: white;
+      border: none; border-radius: 4px;
+      width: 40px; height: 40px;
+      font-size: 28px; line-height: 36px;
+      cursor: pointer;
+      user-select: none;
+      display: block; /* Important : bouton visible sur mobile */
+      text-align: center;
+      padding: 0;
+    }
+    #toggleSidebarBtn:hover,
+    #toggleSidebarBtn:focus {
+      background: #005f00;
+    }
   }
-  #toggleSidebarBtn:hover,
-  #toggleSidebarBtn:focus {
-    background: #999;
-  }
+
   #logo {
     width: 150px; margin-bottom: 8px; cursor: pointer;
   }
@@ -85,31 +111,6 @@
   .savings {
     color: #cc0000;
   }
-  @media (max-width: 700px) {
-    #sidebar {
-      position: fixed; top: 0; left: 0; height: 100vh;
-      width: 250px; background: #f0f0f0; border-right: none;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.3);
-      transform: translateX(-100%);
-      z-index: 2000; padding-top: 60px;
-    }
-    #sidebar.open {
-      transform: translateX(0);
-    }
-    #toggleSidebarBtn {
-      position: fixed; top: 10px; left: 10px; right: auto;
-      z-index: 2101; background: #007a00; color: white;
-      border-radius: 4px; width: 40px; height: 40px;
-      font-size: 28px; line-height: 36px;
-    }
-    #toggleSidebarBtn:hover,
-    #toggleSidebarBtn:focus {
-      background: #005f00;
-    }
-    #content {
-      padding: 15px 10px;
-    }
-  }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
@@ -117,7 +118,6 @@
 
 <div id="sidebar" aria-label="Navigation menu">
   <img id="logo" src="logo.png" alt="Logo" title="Homepage" />
-  <button id="toggleSidebarBtn" aria-expanded="true" aria-controls="sidebar" aria-label="Toggle menu">&#171;</button>
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
   <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
@@ -132,6 +132,8 @@
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 </div>
+
+<button id="toggleSidebarBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
 
 <div id="content" tabindex="0">
   <div class="ads-block">
@@ -173,6 +175,8 @@ const keywordList = document.getElementById('keywordList');
 const productsDiv = document.getElementById('products');
 const productCountDiv = document.getElementById('productCount');
 const updateDateDiv = document.getElementById('updateDate');
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('toggleSidebarBtn');
 
 let data = [];
 let keywordsSet = new Set();
@@ -183,10 +187,7 @@ fetch('deals_clean.csv')
     return res.text();
   })
   .then(text => {
-    console.log('CSV loaded:', text.length, 'characters');
     data = parseCSV(text);
-    console.log('Parsed data:', data.length, 'products');
-
     productCountDiv.textContent = `Total products: ${data.length}`;
 
     const today = new Date();
@@ -200,7 +201,6 @@ fetch('deals_clean.csv')
     displayRandomTopDeals();
   })
   .catch(err => {
-    console.error('Error loading CSV:', err);
     productsDiv.innerHTML = `<p style="color:red;">Error loading CSV file: ${err.message}</p>`;
     productCountDiv.textContent = 'Failed to load products.';
     updateDateDiv.textContent = '';
@@ -215,8 +215,10 @@ function displayKeywords(keywords) {
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
       displayProductsByKeyword(kw);
+      // Sur mobile, ferme menu après sélection
       if(window.innerWidth <= 700) {
-        toggleMenu(false);
+        sidebar.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
       }
     });
     keywordList.appendChild(li);
@@ -273,70 +275,23 @@ function displayRandomTopDeals() {
   });
 }
 
+toggleBtn.addEventListener('click', () => {
+  const isOpen = sidebar.classList.contains('open');
+  if(isOpen) {
+    sidebar.classList.remove('open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  } else {
+    sidebar.classList.add('open');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+  }
+});
+
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
     layout: google.translate.TranslateElement.InlineLayout.VERTICAL
   }, 'google_translate_element');
 }
-
-const sidebar = document.getElementById('sidebar');
-const toggleBtn = document.getElementById('toggleSidebarBtn');
-
-function toggleMenu(open) {
-  const isMobile = window.innerWidth <= 700;
-
-  if(isMobile) {
-    if(open) {
-      sidebar.classList.add('open');
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      toggleBtn.innerHTML = '×';
-      document.body.style.overflow = 'hidden';
-    } else {
-      sidebar.classList.remove('open');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.innerHTML = '&#9776;';
-      document.body.style.overflow = '';
-    }
-  } else {
-    if(open) {
-      sidebar.classList.remove('collapsed');
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      toggleBtn.innerHTML = '«';
-    } else {
-      sidebar.classList.add('collapsed');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.innerHTML = '»';
-    }
-  }
-}
-
-toggleBtn.addEventListener('click', () => {
-  const isMobile = window.innerWidth <= 700;
-  if(isMobile) {
-    const isOpen = sidebar.classList.contains('open');
-    toggleMenu(!isOpen);
-  } else {
-    const isCollapsed = sidebar.classList.contains('collapsed');
-    toggleMenu(!isCollapsed);
-  }
-});
-
-window.addEventListener('resize', () => {
-  if(window.innerWidth > 700) {
-    toggleMenu(true);
-  } else {
-    toggleMenu(false);
-  }
-});
-
-window.addEventListener('load', () => {
-  if(window.innerWidth <= 700) {
-    toggleMenu(false);
-  } else {
-    toggleMenu(true);
-  }
-});
 </script>
 
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
