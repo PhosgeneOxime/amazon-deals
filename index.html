@@ -25,10 +25,10 @@
       position: relative;
     }
     #toggleSidebarBtn {
-      display: none;
+      display: none !important;
     }
     #content {
-      padding-top: 20px; /* normal padding sur desktop */
+      padding-top: 20px !important; /* normal padding sur desktop */
     }
   }
   /* Mobile: menu caché par défaut */
@@ -45,25 +45,25 @@
     }
     #toggleSidebarBtn {
       position: fixed; top: 10px; left: 10px; z-index: 2101;
-      background: #007bff; /* bouton bleu */
-      color: white;
+      background: #007bff !important; /* forcer bleu */
+      color: white !important;
       border: none; border-radius: 4px;
       width: 40px; height: 40px;
       font-size: 28px; line-height: 36px;
       cursor: pointer;
       user-select: none;
-      display: block;
+      display: block !important;
       text-align: center;
       padding: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
     }
     #toggleSidebarBtn:hover,
     #toggleSidebarBtn:focus {
-      background: #0056b3;
+      background: #0056b3 !important;
     }
     /* Décaler contenu pour ne pas être caché par bouton */
     #content {
-      padding-top: 60px;
+      padding-top: 70px !important;
     }
   }
 
@@ -81,11 +81,22 @@
     list-style: none; padding-left: 0; max-height: calc(100vh - 230px);
     overflow-y: auto; width: 100%;
   }
-  ul.keyword-list li {
+  ul.keyword-list li,
+  ul.keyword-list li.home-button {
     cursor: pointer; padding: 12px 10px; margin-bottom: 8px;
     background: #ddd; border-radius: 6px; color: #222;
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
+  }
+  ul.keyword-list li.home-button {
+    font-weight: bold;
+    background: #007bff;
+    color: white;
+    text-align: center;
+  }
+  ul.keyword-list li.home-button:hover {
+    background: #0056b3;
+    color: white;
   }
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
@@ -101,7 +112,8 @@
     flex: 1; padding: 20px; overflow-y: auto; background: white;
   }
   #content h2 {
-    margin-top: 0; color: #222;
+    margin-top: 40px;
+    color: #222;
   }
   .product {
     background: #fafafa; margin-bottom: 15px; padding: 12px;
@@ -155,11 +167,15 @@
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <h2>Products</h2>
+  <h2 id="mainTitle">Top Deals</h2>
   <div id="products">Loading top deals...</div>
 </div>
 
 <script>
+function capitalizeWords(str) {
+  return str.replace(/\b\w/g, c => c.toUpperCase());
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const headers = lines.shift().split(',').map(h => h.replace(/(^"|"$)/g, ''));
@@ -186,9 +202,11 @@ const productCountDiv = document.getElementById('productCount');
 const updateDateDiv = document.getElementById('updateDate');
 const sidebar = document.getElementById('sidebar');
 const toggleBtn = document.getElementById('toggleSidebarBtn');
+const mainTitle = document.getElementById('mainTitle');
 
 let data = [];
 let keywordsSet = new Set();
+let selectedKeyword = null;
 
 fetch('deals_clean.csv')
   .then(res => {
@@ -217,14 +235,37 @@ fetch('deals_clean.csv')
 
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
+
+  // Bouton Top Deals en 1ère position
+  const homeLi = document.createElement('li');
+  homeLi.textContent = 'Top Deals';
+  homeLi.classList.add('home-button');
+  homeLi.addEventListener('click', () => {
+    selectedKeyword = null;
+    mainTitle.textContent = 'Top Deals';
+    displayRandomTopDeals();
+    // Désactive la sélection active
+    document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+    homeLi.classList.add('active');
+    // Ferme menu mobile
+    if(window.innerWidth <= 700) {
+      sidebar.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  keywordList.appendChild(homeLi);
+
   keywords.forEach(kw => {
     const li = document.createElement('li');
-    li.textContent = kw;
+    li.textContent = capitalizeWords(kw);
     li.addEventListener('click', () => {
+      selectedKeyword = kw;
+      mainTitle.textContent = capitalizeWords(kw);
+      displayProductsByKeyword(kw);
+      // Met à jour la sélection active
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
-      displayProductsByKeyword(kw);
-      // Sur mobile, ferme menu après sélection
+      // Ferme menu mobile
       if(window.innerWidth <= 700) {
         sidebar.classList.remove('open');
         toggleBtn.setAttribute('aria-expanded', 'false');
