@@ -9,14 +9,19 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <style>
+  html, body {
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important; /* Désactive scroll vertical global */
+  }
   body {
     font-family: Arial, sans-serif;
     margin: 0;
     display: flex;
     height: 100vh;
     background: #f5f5f5;
-    overflow-x: hidden;
-    padding-top: env(safe-area-inset-top, 20px);
     box-sizing: border-box;
     min-height: 100vh;
   }
@@ -24,7 +29,7 @@
     width: 250px;
     background: #f0f0f0;
     color: #222;
-    overflow: hidden; /* cacher scrollbar hors zone keywords */
+    overflow: hidden; /* cache scroll hors zone keywords */
     padding: 15px;
     box-sizing: border-box;
     display: flex;
@@ -53,7 +58,7 @@
     font-style: italic;
   }
 
-  /* Nouveau bouton Top Deals sous la date */
+  /* Bouton Top Deals sous la date */
   #btnTopDeals {
     width: 100%;
     background: #007bff;
@@ -132,6 +137,7 @@
   }
   a.product strong {
     font-weight: 600;
+    color: #007bff; /* texte produit en bleu */
   }
   .price {
     font-weight: bold;
@@ -209,21 +215,24 @@
   body.messenger-webview {
     padding-top: 0 !important;
     margin-top: 0 !important;
-    overflow-x: hidden;
+    height: 100vh !important;
+    overflow: hidden !important;
   }
-  @media screen and (max-width: 700px) {
-    body.messenger-webview #sidebar {
-      padding-top: 48px !important;
-      height: 100vh !important;
-    }
-    body.messenger-webview #toggleSidebarBtn {
-      top: 6px !important;
-      left: 6px !important;
-      width: 36px !important;
-      height: 36px !important;
-      font-size: 24px !important;
-      line-height: 32px !important;
-    }
+  body.messenger-webview #sidebar {
+    padding-top: 48px !important;
+    height: 100vh !important;
+    overflow-y: auto !important; /* scroll uniquement ici */
+  }
+  body.messenger-webview #content {
+    overflow-y: auto !important; /* scroll contenu */
+  }
+  body.messenger-webview #toggleSidebarBtn {
+    top: 6px !important;
+    left: 6px !important;
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 24px !important;
+    line-height: 32px !important;
   }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
@@ -235,7 +244,7 @@
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
 
-  <!-- Nouveau bouton Top Deals -->
+  <!-- Bouton Top Deals -->
   <button id="btnTopDeals" aria-label="Show Top Deals">Top Deals</button>
 
   <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
@@ -417,7 +426,6 @@ btnTopDeals.addEventListener('click', () => {
   mainTitle.textContent = 'Top Deals';
   displayRandomTopDeals();
   document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-  // Pas d’élément à activer ici (pas dans la liste)
   if(window.innerWidth <= 700) {
     sidebar.classList.remove('open');
     toggleBtn.setAttribute('aria-expanded', 'false');
@@ -437,7 +445,6 @@ toggleBtn.addEventListener('click', () => {
 
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
 if (isInMessenger) {
-  // document.body.style.paddingTop = '20px'; // supprimée
   document.body.classList.add('messenger-webview');
 
   function adjustSidebarForMessenger() {
