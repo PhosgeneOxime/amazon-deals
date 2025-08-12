@@ -871,7 +871,142 @@
     }
   }
 
-  /* États de focus améliorés pour l'accessibilité */
+  /* Styles pour la pagination */
+  .pagination-controls {
+    animation: slideInUp 0.6s ease forwards !important;
+  }
+
+  .pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .items-per-page-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .items-per-page-container label {
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 14px;
+  }
+
+  #itemsPerPageSelect {
+    padding: 8px 12px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 8px;
+    background: white;
+    font-weight: 600;
+    color: #2d3748;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  #itemsPerPageSelect:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .page-info {
+    font-size: 14px;
+    color: #4a5568;
+    font-weight: 600;
+  }
+
+  .pagination-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pagination-btn {
+    padding: 10px 15px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 10px;
+    background: white;
+    color: #667eea;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 16px;
+    min-width: 44px;
+  }
+
+  .pagination-btn:hover:not(:disabled) {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+
+  .pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f7fafc;
+    color: #a0aec0;
+  }
+
+  .page-numbers {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .page-number-btn {
+    padding: 10px 14px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 10px;
+    background: white;
+    color: #667eea;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 44px;
+    font-size: 14px;
+  }
+
+  .page-number-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+
+  .page-number-btn.active {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  @media (max-width: 600px) {
+    .pagination-info {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .pagination-buttons {
+      gap: 5px;
+    }
+
+    .pagination-btn, .page-number-btn {
+      padding: 8px 12px;
+      min-width: 40px;
+      font-size: 14px;
+    }
+
+    .page-numbers {
+      gap: 3px;
+    }
+  }
   *:focus {
     outline: none;
   }
@@ -911,7 +1046,7 @@
 
     <input type="search" id="searchBox" placeholder="🔍 Search amazing deals..." aria-label="Search products" autocomplete="off" />
 
-    <button id="btnTopDeals" aria-label="Show Top Deals">🔥 Top Deals</button>
+    <button id="btnTopDeals" aria-label="Show All Deals">🔥 All Deals</button>
   </div>
 
   <div class="sidebar-content">
@@ -943,7 +1078,28 @@
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <h2 id="mainTitle">🔥 Top Deals</h2>
+  <h2 id="mainTitle">🔥 All Deals</h2>
+  
+  <div class="welcome-section" style="
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px);
+    margin-bottom: 25px;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-left: 6px solid #667eea;
+  ">
+    <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6; color: #2d3748;">
+      Welcome to <strong style="color: #667eea;">Dealnest.ca</strong>, your go-to source for the best daily Amazon deals. We carefully curate exclusive offers to help you save big on products you love.
+    </p>
+    <p style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.6; color: #4a5568; font-style: italic;">
+      All links on this site are affiliate links, which means we may earn a small commission at no extra cost to you.
+    </p>
+    <p style="margin: 0; font-size: 16px; font-weight: 600; color: #667eea;">
+      Happy shopping! 🛒
+    </p>
+  </div>
   <div id="products">
     <div class="loading">
       <div class="loading-spinner"></div>
@@ -1082,6 +1238,12 @@ const searchBox = document.getElementById('searchBox');
 let data = [];
 let keywordsSet = new Set();
 let selectedKeyword = null;
+
+// Variables de pagination
+let currentPage = 1;
+let itemsPerPage = 20;
+let currentDisplayData = [];
+let isTopDealsMode = true;
 
 // Chargement des données amélioré avec retry et feedback
 function loadData(retries = 3) {
@@ -1270,7 +1432,7 @@ function displayKeywords(keywords) {
   keywordList.appendChild(fragment);
 }
 
-// Affichage des produits par mot-clé amélioré
+// Affichage des produits par mot-clé amélioré avec pagination
 function displayProductsByKeyword(keyword) {
   const filtered = data.filter(p => p.keyword === keyword);
   
@@ -1285,25 +1447,14 @@ function displayProductsByKeyword(keyword) {
     return;
   }
   
+  isTopDealsMode = false;
   // Tri par pourcentage de réduction
-  filtered.sort((a, b) => Number(b.percent) - Number(a.percent));
+  const sortedFiltered = filtered.sort((a, b) => Number(b.percent) - Number(a.percent));
   
-  const fragment = document.createDocumentFragment();
-  
-  filtered.forEach((p, index) => {
-    const prodLink = createProductElement(p, index);
-    fragment.appendChild(prodLink);
-  });
-  
-  productsDiv.innerHTML = '';
-  productsDiv.appendChild(fragment);
-  
-  // Animation d'entrée en cascade
-  setTimeout(() => {
-    document.querySelectorAll('a.product').forEach((el, index) => {
-      el.style.animationDelay = `${index * 0.1}s`;
-    });
-  }, 100);
+  displayDataWithPagination(
+    sortedFiltered, 
+    `📂 ${capitalizeWords(keyword)} (${sortedFiltered.length} deals)`
+  );
 }
 
 // Création d'élément produit améliorée
@@ -1330,7 +1481,7 @@ function createProductElement(product, index = 0) {
   priceP.innerHTML = `💰 Price: <span class="price">${price}</span>`;
   
   const savingsP = document.createElement('p');
-  savingsP.innerHTML = `💎 Save: <span class="savings">${savings} (${percent}% off)</span>`;
+  savingsP.innerHTML = `💎 Save: <span class="savings">${savings} </span>`;
   
   // Badge pour les gros pourcentages
   if (Number(percent) >= 50) {
@@ -1360,7 +1511,208 @@ function createProductElement(product, index = 0) {
   return prodLink;
 }
 
-// Affichage des top deals aléatoires amélioré
+// Création des contrôles de pagination
+function createPaginationControls() {
+  const controlsDiv = document.createElement('div');
+  controlsDiv.className = 'pagination-controls';
+  controlsDiv.innerHTML = `
+    <div class="pagination-info">
+      <div class="items-per-page-container">
+        <label for="itemsPerPageSelect">Items per page:</label>
+        <select id="itemsPerPageSelect">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="page-info">
+        Showing <span id="startItem">1</span>-<span id="endItem">20</span> of <span id="totalItems">0</span> deals
+      </div>
+    </div>
+    <div class="pagination-buttons">
+      <button id="firstPageBtn" class="pagination-btn">⏮️</button>
+      <button id="prevPageBtn" class="pagination-btn">◀️</button>
+      <span id="pageNumbers" class="page-numbers"></span>
+      <button id="nextPageBtn" class="pagination-btn">▶️</button>
+      <button id="lastPageBtn" class="pagination-btn">⏭️</button>
+    </div>
+  `;
+  
+  // Styles pour la pagination
+  controlsDiv.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px);
+    margin-bottom: 25px;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+  `;
+  
+  return controlsDiv;
+}
+
+// Mise à jour des informations de pagination
+function updatePaginationInfo() {
+  const totalItems = currentDisplayData.length;
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  
+  document.getElementById('totalItems').textContent = totalItems;
+  document.getElementById('startItem').textContent = startItem;
+  document.getElementById('endItem').textContent = endItem;
+  
+  // Mettre à jour les boutons
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  document.getElementById('firstPageBtn').disabled = currentPage === 1;
+  document.getElementById('prevPageBtn').disabled = currentPage === 1;
+  document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+  document.getElementById('lastPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+  
+  // Générer les numéros de pages
+  generatePageNumbers(totalPages);
+}
+
+// Génération des numéros de pages
+function generatePageNumbers(totalPages) {
+  const pageNumbersSpan = document.getElementById('pageNumbers');
+  let pageNumbersHTML = '';
+  
+  // Logique pour afficher les numéros de pages (max 7 numéros)
+  let startPage = Math.max(1, currentPage - 3);
+  let endPage = Math.min(totalPages, startPage + 6);
+  
+  if (endPage - startPage < 6) {
+    startPage = Math.max(1, endPage - 6);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const isActive = i === currentPage ? 'active' : '';
+    pageNumbersHTML += `<button class="page-number-btn ${isActive}" data-page="${i}">${i}</button>`;
+  }
+  
+  pageNumbersSpan.innerHTML = pageNumbersHTML;
+}
+
+// Affichage des données avec pagination
+function displayDataWithPagination(dataToDisplay, title = '🔥 All Top Deals') {
+  currentDisplayData = dataToDisplay;
+  currentPage = 1; // Reset à la première page
+  
+  mainTitle.innerHTML = title;
+  
+  if (dataToDisplay.length === 0) {
+    productsDiv.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: #4a5568;">
+        <div style="font-size: 64px; margin-bottom: 20px;">😕</div>
+        <h3 style="margin-bottom: 16px; color: #2d3748;">No deals found</h3>
+        <p>Try a different search or category.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  renderCurrentPage();
+}
+
+// Rendu de la page courante
+function renderCurrentPage() {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const pageData = currentDisplayData.slice(startIndex, endIndex);
+  
+  const fragment = document.createDocumentFragment();
+  
+  // Ajouter les contrôles de pagination en haut
+  const topControls = createPaginationControls();
+  fragment.appendChild(topControls);
+  
+  // Ajouter les produits
+  pageData.forEach((p, index) => {
+    const prodLink = createProductElement(p, startIndex + index);
+    fragment.appendChild(prodLink);
+  });
+  
+  // Ajouter les contrôles de pagination en bas (copie)
+  const bottomControls = createPaginationControls();
+  fragment.appendChild(bottomControls);
+  
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(fragment);
+  
+  // Mettre à jour les informations
+  updatePaginationInfo();
+  
+  // Ajouter les event listeners
+  addPaginationEventListeners();
+  
+  // Scroll vers le haut du contenu
+  document.getElementById('content').scrollTop = 0;
+}
+
+// Event listeners pour la pagination
+function addPaginationEventListeners() {
+  // Sélecteur d'items par page
+  document.querySelectorAll('#itemsPerPageSelect').forEach(select => {
+    select.value = itemsPerPage;
+    select.addEventListener('change', (e) => {
+      itemsPerPage = parseInt(e.target.value);
+      currentPage = 1; // Reset à la première page
+      renderCurrentPage();
+      showNotification(`📄 Showing ${itemsPerPage} items per page`, 'info');
+    });
+  });
+  
+  // Boutons de navigation
+  document.querySelectorAll('#firstPageBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPage = 1;
+      renderCurrentPage();
+    });
+  });
+  
+  document.querySelectorAll('#prevPageBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderCurrentPage();
+      }
+    });
+  });
+  
+  document.querySelectorAll('#nextPageBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const totalPages = Math.ceil(currentDisplayData.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderCurrentPage();
+      }
+    });
+  });
+  
+  document.querySelectorAll('#lastPageBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const totalPages = Math.ceil(currentDisplayData.length / itemsPerPage);
+      currentPage = totalPages;
+      renderCurrentPage();
+    });
+  });
+  
+  // Numéros de pages
+  document.querySelectorAll('.page-number-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      currentPage = parseInt(e.target.dataset.page);
+      renderCurrentPage();
+    });
+  });
+}
+
+// Affichage des top deals avec pagination
 function displayRandomTopDeals() {
   if (data.length === 0) {
     productsDiv.innerHTML = `
@@ -1372,43 +1724,22 @@ function displayRandomTopDeals() {
     return;
   }
   
-  const sorted = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
-  const top50 = sorted.slice(0, 50); // Plus de choix pour plus de variété
-
-  function shuffle(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  }
-
-  const shuffled = shuffle(top50);
-  const selected = shuffled.slice(0, 15); // Afficher plus de produits
-
-  const fragment = document.createDocumentFragment();
+  isTopDealsMode = true;
+  // Trier tous les deals par pourcentage de réduction (meilleurs en premier)
+  const sortedData = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
   
-  selected.forEach((p, index) => {
-    const prodLink = createProductElement(p, index);
-    fragment.appendChild(prodLink);
-  });
-  
-  productsDiv.innerHTML = '';
-  productsDiv.appendChild(fragment);
+  displayDataWithPagination(sortedData, `🔥 All Deals (${sortedData.length} deals)`);
 }
 
-// Recherche améliorée avec debounce
+// Recherche améliorée avec pagination
 const debouncedSearch = debounce(function(term) {
   const lowerTerm = term.toLowerCase().trim();
   
   if(lowerTerm.length === 0) {
     if(selectedKeyword) {
       displayProductsByKeyword(selectedKeyword);
-      mainTitle.innerHTML = `📂 ${capitalizeWords(selectedKeyword)}`;
       highlightActiveKeyword();
     } else {
-      mainTitle.innerHTML = '🔥 Top Deals';
       displayRandomTopDeals();
       removeKeywordHighlight();
     }
@@ -1422,10 +1753,9 @@ const debouncedSearch = debounce(function(term) {
     return title.includes(lowerTerm) || keyword.includes(lowerTerm);
   });
   
-  filtered.sort((a,b) => Number(b.percent) - Number(a.percent));
-
-  mainTitle.innerHTML = `🔍 Search: "${term}" (${filtered.length} results)`;
+  const sortedFiltered = filtered.sort((a,b) => Number(b.percent) - Number(a.percent));
   removeKeywordHighlight();
+  isTopDealsMode = false;
 
   if(filtered.length === 0) {
     productsDiv.innerHTML = `
@@ -1448,14 +1778,10 @@ const debouncedSearch = debounce(function(term) {
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-  filtered.forEach((p, index) => {
-    const prodLink = createProductElement(p, index);
-    fragment.appendChild(prodLink);
-  });
-  
-  productsDiv.innerHTML = '';
-  productsDiv.appendChild(fragment);
+  displayDataWithPagination(
+    sortedFiltered, 
+    `🔍 Search: "${term}" (${sortedFiltered.length} results)`
+  );
 }, 300);
 
 // Fonctions d'aide pour les mots-clés actifs
@@ -1478,13 +1804,12 @@ function removeKeywordHighlight() {
 btnTopDeals.addEventListener('click', () => {
   selectedKeyword = null;
   searchBox.value = '';
-  mainTitle.innerHTML = '🔥 Top Deals';
   displayRandomTopDeals();
   removeKeywordHighlight();
   if(window.innerWidth <= 700) {
     closeSidebar();
   }
-  showNotification('🔥 Showing top deals!', 'success');
+  showNotification('🔥 Showing all top deals!', 'success');
 });
 
 toggleBtn.addEventListener('click', () => {
@@ -1574,4 +1899,5 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 
 </body>
+</html>
 </html>
