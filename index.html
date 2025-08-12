@@ -294,9 +294,9 @@ fetch('deals_clean.csv')
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
 
-  // Bouton Accueil en 1ère position
+  // Bouton Top Deals en 1ère position
   const homeLi = document.createElement('li');
-  homeLi.textContent = 'Accueil';
+  homeLi.textContent = 'Top Deals';
   homeLi.classList.add('home-button');
   homeLi.addEventListener('click', () => {
     selectedKeyword = null;
