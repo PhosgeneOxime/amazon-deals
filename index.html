@@ -190,6 +190,26 @@
   .savings {
     color: #cc0000;
   }
+
+  /* Ajustements spécifiques pour Messenger WebView */
+  @media screen and (max-width: 700px) and (orientation: landscape) {
+    body.messenger-webview {
+      padding-top: 8px !important;
+    }
+    body.messenger-webview #sidebar {
+      padding-top: 48px !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+    }
+    body.messenger-webview #toggleSidebarBtn {
+      top: 6px !important;
+      left: 6px !important;
+      width: 36px !important;
+      height: 36px !important;
+      font-size: 24px !important;
+      line-height: 32px !important;
+    }
+  }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
@@ -392,10 +412,26 @@ toggleBtn.addEventListener('click', () => {
 
 // Détection WebView Messenger et ajustement padding
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
-if(isInMessenger){
+if (isInMessenger) {
   document.body.style.paddingTop = '20px'; // limite padding en haut pour Messenger
-}
+  document.body.classList.add('messenger-webview');
   
+  // Forcer l'ouverture du sidebar en paysage sur Messenger
+  function adjustSidebarForMessenger() {
+    if (window.innerWidth <= 700 && window.matchMedia("(orientation: landscape)").matches) {
+      sidebar.classList.add('open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+    } else if (!sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+  }
+  
+  window.addEventListener('resize', adjustSidebarForMessenger);
+  window.addEventListener('orientationchange', adjustSidebarForMessenger);
+  adjustSidebarForMessenger();
+}
+
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
