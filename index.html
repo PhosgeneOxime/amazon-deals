@@ -166,7 +166,7 @@
     margin-top: 40px;
     color: #222;
   }
-  .product {
+  a.product {
     background: #fafafa;
     margin-bottom: 15px;
     padding: 12px;
@@ -174,14 +174,15 @@
     box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
     display: flex;
     flex-direction: column;
-  }
-  .product a {
-    color: #0066c0;
+    color: inherit;
     text-decoration: none;
-    font-weight: 600;
+    transition: background-color 0.3s ease;
   }
-  .product a:hover {
-    text-decoration: underline;
+  a.product:hover {
+    background: #e1eaff;
+  }
+  a.product strong {
+    font-weight: 600;
   }
   .price {
     font-weight: bold;
@@ -256,10 +257,12 @@ function capitalizeWords(str) {
 
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  const headers = lines.shift().split(',').map(h => h.replace(/(^"|"$)/g, ''));
+  const headerLine = lines.shift();
+
+  const regex = /("([^"]|"")*"|[^,]+)/g;
+  const headers = headerLine.match(regex).map(h => h.replace(/(^"|"$)/g, ''));
 
   return lines.map(line => {
-    const regex = /("([^"]|"")*"|[^,]+)/g;
     const matches = line.match(regex);
     if (!matches) return null;
     const obj = {};
@@ -293,6 +296,7 @@ fetch('deals_clean.csv')
   })
   .then(text => {
     data = parseCSV(text);
+    console.log('Sample product:', data[0]); // Debug : vérifier que link est bien là
     productCountDiv.textContent = `Total products: ${data.length}`;
 
     const today = new Date();
@@ -314,7 +318,6 @@ fetch('deals_clean.csv')
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
 
-  // Bouton Top Deals en 1ère position
   const homeLi = document.createElement('li');
   homeLi.textContent = 'Top Deals';
   homeLi.classList.add('home-button');
@@ -357,14 +360,18 @@ function displayProductsByKeyword(keyword) {
   }
   productsDiv.innerHTML = '';
   filtered.forEach(p => {
-    const prodDiv = document.createElement('div');
-    prodDiv.classList.add('product');
-    prodDiv.innerHTML = `
-      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+    const linkUrl = p.link ? p.link : '#';
+    const prodLink = document.createElement('a');
+    prodLink.href = linkUrl;
+    prodLink.target = '_blank';
+    prodLink.rel = 'noopener noreferrer';
+    prodLink.classList.add('product');
+    prodLink.innerHTML = `
+      <strong>${p.title}</strong>
       <p>Price: <span class="price">${p.price}</span></p>
       <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
     `;
-    productsDiv.appendChild(prodDiv);
+    productsDiv.appendChild(prodLink);
   });
 }
 
@@ -388,14 +395,18 @@ function displayRandomTopDeals() {
   productsDiv.innerHTML = '<h3>Random Top Deals</h3>';
 
   selected.forEach(p => {
-    const prodDiv = document.createElement('div');
-    prodDiv.classList.add('product');
-    prodDiv.innerHTML = `
-      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+    const linkUrl = p.link ? p.link : '#';
+    const prodLink = document.createElement('a');
+    prodLink.href = linkUrl;
+    prodLink.target = '_blank';
+    prodLink.rel = 'noopener noreferrer';
+    prodLink.classList.add('product');
+    prodLink.innerHTML = `
+      <strong>${p.title}</strong>
       <p>Price: <span class="price">${p.price}</span></p>
       <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
     `;
-    productsDiv.appendChild(prodDiv);
+    productsDiv.appendChild(prodLink);
   });
 }
 
@@ -410,13 +421,11 @@ toggleBtn.addEventListener('click', () => {
   }
 });
 
-// Détection WebView Messenger et ajustement padding
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
 if (isInMessenger) {
-  document.body.style.paddingTop = '20px'; // limite padding en haut pour Messenger
+  document.body.style.paddingTop = '20px';
   document.body.classList.add('messenger-webview');
-  
-  // Forcer l'ouverture du sidebar en paysage sur Messenger
+
   function adjustSidebarForMessenger() {
     if (window.innerWidth <= 700 && window.matchMedia("(orientation: landscape)").matches) {
       sidebar.classList.add('open');
@@ -426,7 +435,7 @@ if (isInMessenger) {
       toggleBtn.setAttribute('aria-expanded', 'false');
     }
   }
-  
+
   window.addEventListener('resize', adjustSidebarForMessenger);
   window.addEventListener('orientationchange', adjustSidebarForMessenger);
   adjustSidebarForMessenger();
