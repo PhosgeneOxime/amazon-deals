@@ -27,6 +27,9 @@
     #toggleSidebarBtn {
       display: none;
     }
+    #content {
+      padding-top: 20px; /* normal padding sur desktop */
+    }
   }
   /* Mobile: menu caché par défaut */
   @media (max-width: 700px) {
@@ -42,19 +45,25 @@
     }
     #toggleSidebarBtn {
       position: fixed; top: 10px; left: 10px; z-index: 2101;
-      background: #007a00; color: white;
+      background: #007bff; /* bouton bleu */
+      color: white;
       border: none; border-radius: 4px;
       width: 40px; height: 40px;
       font-size: 28px; line-height: 36px;
       cursor: pointer;
       user-select: none;
-      display: block; /* Important : bouton visible sur mobile */
+      display: block;
       text-align: center;
       padding: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     #toggleSidebarBtn:hover,
     #toggleSidebarBtn:focus {
-      background: #005f00;
+      background: #0056b3;
+    }
+    /* Décaler contenu pour ne pas être caché par bouton */
+    #content {
+      padding-top: 60px;
     }
   }
 
