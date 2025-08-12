@@ -3,211 +3,104 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DealNest.CA - your go-to source for the best daily Amazon deals.</title>
-<meta name="description" content="Discover the best daily Amazon deals on Dealnest.ca, updated every day. Enjoy exclusive promotions and discounts." />
-<link rel="canonical" href="https://dealnest.ca/" />
-
+<title>DealNest.CA - Best Daily Amazon Deals</title>
+<meta name="description" content="Discover the best daily Amazon deals on Dealnest.ca, updated daily with exclusive promotions and discounts." />
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-    height: 100vh;
-    background: #f5f5f5;
-    overflow-x: hidden;
+    margin: 0; display: flex; height: 100vh; background: #f5f5f5; overflow-x: hidden;
   }
-
   #sidebar {
-    width: 250px;
-    background: #f0f0f0;
-    color: #222;
-    overflow-y: auto;
-    padding: 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-right: 1px solid #ccc;
-    position: relative;
-    transition: width 0.3s ease;
+    width: 250px; background: #f0f0f0; color: #222;
+    overflow-y: auto; padding: 15px; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center;
+    border-right: 1px solid #ccc; position: relative; transition: transform 0.3s ease;
     flex-shrink: 0;
   }
   #sidebar.collapsed {
-    width: 60px;
+    transform: translateX(-100%);
   }
-  #sidebar.collapsed #logo,
-  #sidebar.collapsed #productCount,
-  #sidebar.collapsed #updateDate,
-  #sidebar.collapsed ul.keyword-list,
-  #sidebar.collapsed #google_translate_element,
-  #sidebar.collapsed .ads-block {
-    opacity: 0;
-    pointer-events: none;
-    user-select: none;
-    transition: opacity 0.3s ease;
-  }
-
   #toggleSidebarBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #bbb;
-    border: none;
-    border-radius: 4px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 24px;
-    line-height: 36px;
-    text-align: center;
-    color: #222;
-    user-select: none;
-    transition: background-color 0.3s;
+    position: absolute; top: 10px; right: 10px;
+    background: #bbb; border: none; border-radius: 4px;
+    width: 40px; height: 40px; cursor: pointer; font-weight: bold;
+    font-size: 24px; line-height: 36px; text-align: center; color: #222;
+    user-select: none; transition: background-color 0.3s;
     z-index: 2100;
   }
   #toggleSidebarBtn:hover,
   #toggleSidebarBtn:focus {
     background: #999;
   }
-
   #logo {
-    width: 150px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
+    width: 150px; margin-bottom: 8px; cursor: pointer;
   }
-  #productCount {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 4px;
+  #productCount, #updateDate {
+    font-size: 14px; color: #555; margin-bottom: 4px;
     transition: opacity 0.3s ease;
   }
   #updateDate {
-    font-size: 12px;
-    color: #777;
-    margin-bottom: 15px;
-    font-style: italic;
-    transition: opacity 0.3s ease;
+    font-size: 12px; color: #777; margin-bottom: 15px; font-style: italic;
   }
   ul.keyword-list {
-    list-style: none;
-    padding-left: 0;
-    max-height: calc(100vh - 230px);
-    overflow-y: auto;
-    width: 100%;
-    transition: opacity 0.3s ease;
+    list-style: none; padding-left: 0; max-height: calc(100vh - 230px);
+    overflow-y: auto; width: 100%;
   }
   ul.keyword-list li {
-    cursor: pointer;
-    padding: 12px 10px;
-    margin-bottom: 8px;
-    background: #ddd;
-    border-radius: 6px;
-    color: #222;
+    cursor: pointer; padding: 12px 10px; margin-bottom: 8px;
+    background: #ddd; border-radius: 6px; color: #222;
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
   }
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
-    background: #bbb;
-    color: #000;
+    background: #bbb; color: #000;
   }
-
   #google_translate_element {
-    margin-top: auto;
-    width: 100%;
-    transition: opacity 0.3s ease;
+    margin-top: auto; width: 100%;
   }
   .ads-block {
-    margin: 15px 0;
-    width: 100%;
-    text-align: center;
-    transition: opacity 0.3s ease;
+    margin: 15px 0; width: 100%; text-align: center;
   }
-
   #content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background: white;
+    flex: 1; padding: 20px; overflow-y: auto; background: white;
   }
   #content h2 {
-    margin-top: 0;
-    color: #222;
+    margin-top: 0; color: #222;
   }
   .product {
-    background: #fafafa;
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-    display: flex;
-    flex-direction: column;
+    background: #fafafa; margin-bottom: 15px; padding: 12px;
+    border-radius: 8px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    display: flex; flex-direction: column;
   }
   .product a {
-    color: #0066c0;
-    text-decoration: none;
-    font-weight: 600;
+    color: #0066c0; text-decoration: none; font-weight: 600;
   }
   .product a:hover {
     text-decoration: underline;
   }
   .price {
-    font-weight: bold;
-    color: #007a00;
+    font-weight: bold; color: #007a00;
   }
   .savings {
     color: #cc0000;
   }
-
-  #overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    display: none;
-    z-index: 1500;
-  }
-  #overlay.visible {
-    display: block;
-  }
-
   @media (max-width: 700px) {
     #sidebar {
-      position: fixed;
-      top: 0; left: 0;
-      height: 100vh;
-      width: 250px;
-      background: #f0f0f0;
-      border-right: none;
+      position: fixed; top: 0; left: 0; height: 100vh;
+      width: 250px; background: #f0f0f0; border-right: none;
       box-shadow: 2px 0 8px rgba(0,0,0,0.3);
       transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 2000;
-      padding-top: 60px;
+      z-index: 2000; padding-top: 60px;
     }
     #sidebar.open {
       transform: translateX(0);
     }
-    #sidebar.collapsed {
-      width: 250px !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      user-select: auto !important;
-    }
     #toggleSidebarBtn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      right: auto;
-      z-index: 2101;
-      background: #007a00;
-      color: white;
-      border-radius: 4px;
-      width: 40px;
-      height: 40px;
-      font-size: 28px;
-      line-height: 36px;
+      position: fixed; top: 10px; left: 10px; right: auto;
+      z-index: 2101; background: #007a00; color: white;
+      border-radius: 4px; width: 40px; height: 40px;
+      font-size: 28px; line-height: 36px;
     }
     #toggleSidebarBtn:hover,
     #toggleSidebarBtn:focus {
@@ -218,13 +111,9 @@
     }
   }
 </style>
-
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
-
 </head>
 <body>
-
-<div id="overlay"></div>
 
 <div id="sidebar" aria-label="Navigation menu">
   <img id="logo" src="logo.png" alt="Logo" title="Homepage" />
@@ -238,4 +127,219 @@
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-7699432575717413"
-         data-a
+         data-ad-slot="1234567890"
+         data-ad-format="auto"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</div>
+
+<div id="content" tabindex="0">
+  <div class="ads-block">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7699432575717413"
+         data-ad-slot="0987654321"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <h2>Products</h2>
+  <div id="products">Loading top deals...</div>
+</div>
+
+<script>
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines.shift().split(',').map(h => h.replace(/(^"|"$)/g, ''));
+
+  return lines.map(line => {
+    const regex = /("([^"]|"")*"|[^,]+)/g;
+    const matches = line.match(regex);
+    if (!matches) return null;
+    const obj = {};
+    headers.forEach((h, i) => {
+      let val = matches[i] || '';
+      if(val.startsWith('"') && val.endsWith('"')) {
+        val = val.slice(1, -1).replace(/""/g, '"');
+      }
+      obj[h] = val;
+    });
+    return obj;
+  }).filter(item => item !== null);
+}
+
+const keywordList = document.getElementById('keywordList');
+const productsDiv = document.getElementById('products');
+const productCountDiv = document.getElementById('productCount');
+const updateDateDiv = document.getElementById('updateDate');
+
+let data = [];
+let keywordsSet = new Set();
+
+fetch('deals_clean.csv')
+  .then(res => {
+    if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.text();
+  })
+  .then(text => {
+    console.log('CSV loaded:', text.length, 'characters');
+    data = parseCSV(text);
+    console.log('Parsed data:', data.length, 'products');
+
+    productCountDiv.textContent = `Total products: ${data.length}`;
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    updateDateDiv.textContent = `Product list updated on : ${yyyy}-${mm}-${dd}`;
+
+    data.forEach(item => keywordsSet.add(item.keyword));
+    displayKeywords([...keywordsSet].sort());
+    displayRandomTopDeals();
+  })
+  .catch(err => {
+    console.error('Error loading CSV:', err);
+    productsDiv.innerHTML = `<p style="color:red;">Error loading CSV file: ${err.message}</p>`;
+    productCountDiv.textContent = 'Failed to load products.';
+    updateDateDiv.textContent = '';
+  });
+
+function displayKeywords(keywords) {
+  keywordList.innerHTML = '';
+  keywords.forEach(kw => {
+    const li = document.createElement('li');
+    li.textContent = kw;
+    li.addEventListener('click', () => {
+      document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+      li.classList.add('active');
+      displayProductsByKeyword(kw);
+      if(window.innerWidth <= 700) {
+        toggleMenu(false);
+      }
+    });
+    keywordList.appendChild(li);
+  });
+}
+
+function displayProductsByKeyword(keyword) {
+  const filtered = data.filter(p => p.keyword === keyword);
+  if(filtered.length === 0) {
+    productsDiv.innerHTML = '<p>No products found.</p>';
+    return;
+  }
+  productsDiv.innerHTML = '';
+  filtered.forEach(p => {
+    const prodDiv = document.createElement('div');
+    prodDiv.classList.add('product');
+    prodDiv.innerHTML = `
+      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+      <p>Price: <span class="price">${p.price}</span></p>
+      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
+    `;
+    productsDiv.appendChild(prodDiv);
+  });
+}
+
+function displayRandomTopDeals() {
+  const sorted = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
+  const top30 = sorted.slice(0,30);
+
+  function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex != 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
+  const shuffled = shuffle(top30);
+  const selected = shuffled.slice(0,10);
+
+  productsDiv.innerHTML = '<h3>Random Top Deals</h3>';
+
+  selected.forEach(p => {
+    const prodDiv = document.createElement('div');
+    prodDiv.classList.add('product');
+    prodDiv.innerHTML = `
+      <a href="${p.link}" target="_blank" rel="noopener noreferrer"><strong>${p.title}</strong></a>
+      <p>Price: <span class="price">${p.price}</span></p>
+      <p>Savings: <span class="savings">${p.savings}</span> (${p.percent}%)</p>
+    `;
+    productsDiv.appendChild(prodDiv);
+  });
+}
+
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+}
+
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('toggleSidebarBtn');
+
+function toggleMenu(open) {
+  const isMobile = window.innerWidth <= 700;
+
+  if(isMobile) {
+    if(open) {
+      sidebar.classList.add('open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.innerHTML = '×';
+      document.body.style.overflow = 'hidden';
+    } else {
+      sidebar.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.innerHTML = '&#9776;';
+      document.body.style.overflow = '';
+    }
+  } else {
+    if(open) {
+      sidebar.classList.remove('collapsed');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.innerHTML = '«';
+    } else {
+      sidebar.classList.add('collapsed');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.innerHTML = '»';
+    }
+  }
+}
+
+toggleBtn.addEventListener('click', () => {
+  const isMobile = window.innerWidth <= 700;
+  if(isMobile) {
+    const isOpen = sidebar.classList.contains('open');
+    toggleMenu(!isOpen);
+  } else {
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    toggleMenu(!isCollapsed);
+  }
+});
+
+window.addEventListener('resize', () => {
+  if(window.innerWidth > 700) {
+    toggleMenu(true);
+  } else {
+    toggleMenu(false);
+  }
+});
+
+window.addEventListener('load', () => {
+  if(window.innerWidth <= 700) {
+    toggleMenu(false);
+  } else {
+    toggleMenu(true);
+  }
+});
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+
+</body>
+</html>
