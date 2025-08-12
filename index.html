@@ -211,6 +211,29 @@
       line-height: 32px !important;
     }
   }
+
+  /* Nouveau : correction espace blanc trop grand en Messenger WebView portrait */
+  body.messenger-webview {
+    padding-top: 6px !important;
+    overflow-x: hidden;
+  }
+  @media screen and (max-width: 700px) and (orientation: portrait) {
+    body.messenger-webview {
+      padding-top: 6px !important;
+    }
+    body.messenger-webview #sidebar {
+      padding-top: 48px !important;
+      height: 100vh !important;
+    }
+    body.messenger-webview #toggleSidebarBtn {
+      top: 6px !important;
+      left: 6px !important;
+      width: 36px !important;
+      height: 36px !important;
+      font-size: 24px !important;
+      line-height: 32px !important;
+    }
+  }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
@@ -423,7 +446,8 @@ toggleBtn.addEventListener('click', () => {
 
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
 if (isInMessenger) {
-  document.body.style.paddingTop = '20px';
+  // document.body.style.paddingTop = '20px';  <-- ligne supprimée
+
   document.body.classList.add('messenger-webview');
 
   function adjustSidebarForMessenger() {
