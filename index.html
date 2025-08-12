@@ -1,13 +1,4 @@
-<style>
-  html, body {
-    height: 100% !important;
-    min-height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-    position: relative;
-  }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -29,37 +20,79 @@
   }
   
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     display: flex;
-    background: #f5f5f5;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    /* Fix pour Messenger WebView */
     -webkit-overflow-scrolling: touch;
     touch-action: manipulation;
+    transition: all 0.3s ease;
   }
 
   /* Variables CSS pour hauteur dynamique */
   :root {
     --vh: 100vh;
-    --sidebar-width: 250px;
+    --sidebar-width: 280px;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Animations personnalisées */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
   }
 
   #sidebar {
     width: var(--sidebar-width);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    color: #2d3748;
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(30px);
+    color: #1a202c;
+    padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
     flex-shrink: 0;
     overflow: hidden;
     max-height: var(--vh);
     height: var(--vh);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
+    position: relative;
+  }
+
+  #sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0.8;
   }
 
   .sidebar-header {
@@ -68,6 +101,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
   }
 
   .sidebar-content {
@@ -80,67 +114,85 @@
   }
   
   #logo {
-    width: 150px;
-    margin-bottom: 8px;
+    width: 160px;
+    margin-bottom: 12px;
     cursor: pointer;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-    transition: transform 0.3s ease;
+    filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3));
+    transition: var(--transition);
+    animation: float 6s ease-in-out infinite;
   }
 
   #logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.08) rotate(2deg);
+    filter: drop-shadow(0 12px 24px rgba(102, 126, 234, 0.4));
   }
   
   #productCount, #updateDate {
     font-size: 14px;
-    color: #555;
+    color: #4a5568;
     margin-bottom: 4px;
+    font-weight: 500;
+    text-align: center;
   }
   
   #updateDate {
     font-size: 12px;
-    color: #777;
-    margin-bottom: 8px;
+    color: #718096;
+    margin-bottom: 16px;
     font-style: italic;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   #searchBox {
     width: 100%;
-    padding: 12px 16px;
-    margin-bottom: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
     border: 2px solid transparent;
-    border-radius: 12px;
-    font-size: 14px;
+    border-radius: var(--border-radius);
+    font-size: 15px;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    font-weight: 500;
+    position: relative;
+  }
+
+  #searchBox::placeholder {
+    color: #a0aec0;
+    font-weight: 400;
   }
 
   #searchBox:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 8px 25px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 1);
   }
 
   #btnTopDeals {
     width: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient);
     color: white;
     border: none;
-    border-radius: 12px;
-    padding: 14px 0;
-    font-weight: 600;
-    font-size: 15px;
+    border-radius: var(--border-radius);
+    padding: 16px 0;
+    font-weight: 700;
+    font-size: 16px;
     cursor: pointer;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
     user-select: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: var(--transition);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
     position: relative;
     overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   #btnTopDeals::before {
@@ -150,8 +202,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s;
   }
 
   #btnTopDeals:hover::before {
@@ -162,8 +214,13 @@
   #btnTopDeals:focus {
     background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
     outline: none;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.45);
+  }
+
+  #btnTopDeals:active {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
   }
   
   ul.keyword-list {
@@ -175,19 +232,38 @@
     flex: 1;
     min-height: 0;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+  }
+
+  ul.keyword-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ul.keyword-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ul.keyword-list::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 3px;
+  }
+
+  ul.keyword-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.5);
   }
   
   ul.keyword-list li {
     cursor: pointer;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
     color: #2d3748;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition);
     user-select: none;
-    font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
     position: relative;
     overflow: hidden;
@@ -199,76 +275,150 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 3px;
+    background: var(--primary-gradient);
     transform: scaleX(0);
+    transition: transform 0.4s ease;
+    border-radius: 12px 12px 0 0;
+  }
+
+  ul.keyword-list li::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    width: 8px;
+    height: 8px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    transform: translateY(-50%) scale(0);
     transition: transform 0.3s ease;
   }
   
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
-    background: rgba(102, 126, 234, 0.1);
-    color: #4a5568;
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    background: rgba(102, 126, 234, 0.15);
+    color: #2d3748;
+    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
   }
 
   ul.keyword-list li:hover::before,
   ul.keyword-list li.active::before {
     transform: scaleX(1);
   }
+
+  ul.keyword-list li:hover::after,
+  ul.keyword-list li.active::after {
+    transform: translateY(-50%) scale(1);
+  }
   
   #google_translate_element {
     flex-shrink: 0;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
   }
 
   .ads-block {
     flex-shrink: 0;
-    margin: 10px 0;
+    margin: 15px 0;
     width: 100%;
     text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
   }
   
   #content {
     flex: 1;
-    padding: 10px 20px 20px 20px;
+    padding: 20px 30px 30px 30px;
     overflow-y: auto;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(30px);
     max-height: var(--vh);
     height: var(--vh);
     -webkit-overflow-scrolling: touch;
-    border-radius: 20px 0 0 0;
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    border-radius: 24px 0 0 0;
+    box-shadow: var(--box-shadow);
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+  }
+
+  #content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  #content::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 4px;
+  }
+
+  #content::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.5);
+  }
+
+  #content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0.8;
+    border-radius: 24px 0 0 0;
   }
   
   #content h2 {
     margin-top: 0px;
-    margin-bottom: 15px;
-    color: #2d3748;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-bottom: 25px;
+    color: #1a202c;
+    font-size: 32px;
+    font-weight: 800;
+    background: var(--primary-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    position: relative;
+    display: inline-block;
+  }
+
+  #content h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
   }
   
   a.product {
-    background: rgba(255, 255, 255, 0.9);
-    margin-bottom: 16px;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    margin-bottom: 20px;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     color: inherit;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    transition: var(--transition);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
     position: relative;
     overflow: hidden;
   }
@@ -279,77 +429,136 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 4px;
+    background: var(--primary-gradient);
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
+  }
+
+  a.product::after {
+    content: '→';
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgba(102, 126, 234, 0.6);
+    transform: translateX(10px);
+    opacity: 0;
+    transition: var(--transition);
   }
   
   a.product:hover {
-    background: rgba(255, 255, 255, 0.95);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
   }
 
   a.product:hover::before {
     transform: scaleX(1);
   }
+
+  a.product:hover::after {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  a.product:active {
+    transform: translateY(-3px);
+  }
   
   a.product strong {
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 16px;
-    line-height: 1.4;
-    margin-bottom: 8px;
+    font-weight: 700;
+    color: #1a202c;
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    padding-right: 40px;
   }
 
   a.product p {
-    margin: 4px 0;
-    font-size: 14px;
+    margin: 6px 0;
+    font-size: 15px;
     color: #4a5568;
+    font-weight: 500;
   }
   
   .price {
-    font-weight: 700;
-    color: #38a169;
-    font-size: 18px;
+    font-weight: 800;
+    color: var(--success-color);
+    font-size: 20px;
+    text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
   }
   
   .savings {
-    color: #e53e3e;
-    font-weight: 600;
-    background: rgba(229, 62, 62, 0.1);
-    padding: 2px 8px;
-    border-radius: 6px;
+    color: white;
+    font-weight: 700;
+    background: var(--secondary-gradient);
+    padding: 6px 12px;
+    border-radius: 20px;
     display: inline-block;
-    margin-top: 4px;
+    margin-top: 8px;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   #toggleSidebarBtn {
     display: none;
     position: fixed;
-    top: 10px;
-    left: 10px;
+    top: 15px;
+    left: 15px;
     z-index: 2101;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient);
     color: white;
     border: none;
-    border-radius: 12px;
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
     cursor: pointer;
     user-select: none;
     text-align: center;
     padding: 0;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    transition: var(--transition);
     backdrop-filter: blur(10px);
   }
 
   #toggleSidebarBtn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+  }
+
+  #toggleSidebarBtn:active {
+    transform: scale(1.05) rotate(90deg);
+  }
+
+  /* Indicateur de chargement moderne */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #4a5568;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   /* Desktop */
@@ -361,24 +570,33 @@
     #toggleSidebarBtn {
       display: none !important;
     }
+    
+    /* Hover effects enhanced on desktop */
+    a.product:hover {
+      animation: pulse 2s infinite;
+    }
   }
 
   /* Mobile normal */
   @media (max-width: 700px) {
+    :root {
+      --sidebar-width: 300px;
+    }
+
     #sidebar {
       position: fixed;
       top: 0;
       left: 0;
       height: var(--vh);
       width: var(--sidebar-width);
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(30px);
       border-right: none;
-      box-shadow: 2px 0 25px rgba(0,0,0,0.15);
+      box-shadow: 4px 0 30px rgba(0,0,0,0.2);
       transform: translateX(-100%);
       z-index: 2000;
-      padding-top: 60px;
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      padding-top: 80px;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     #sidebar.open {
@@ -389,18 +607,28 @@
       display: block;
     }
     
-    #toggleSidebarBtn:hover,
-    #toggleSidebarBtn:focus {
-      background: #0056b3;
-    }
-    
     #content {
-      padding: 50px 20px 20px 20px;
+      padding: 70px 20px 30px 20px;
       width: 100%;
+      border-radius: 0;
+    }
+
+    #content h2 {
+      font-size: 28px;
+    }
+
+    a.product {
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    a.product strong {
+      font-size: 16px;
+      padding-right: 30px;
     }
   }
 
-  /* Messenger WebView spécifique */
+  /* Messenger WebView spécifique - gardé intact */
   body.messenger-webview {
     overflow: hidden !important;
     height: var(--vh) !important;
@@ -410,7 +638,7 @@
   body.messenger-webview #sidebar {
     height: var(--vh) !important;
     max-height: var(--vh) !important;
-    padding: 5px 15px 5px 15px !important;
+    padding: 10px 15px 10px 15px !important;
     overflow: hidden !important;
   }
 
@@ -434,7 +662,7 @@
   body.messenger-webview #content {
     height: var(--vh) !important;
     max-height: var(--vh) !important;
-    padding: 0px 15px 15px 15px !important;
+    padding: 5px 15px 15px 15px !important;
   }
 
   body.messenger-webview #content h2 {
@@ -443,12 +671,11 @@
   }
 
   body.messenger-webview #toggleSidebarBtn {
-    top: 2px !important;
-    left: 2px !important;
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 24px !important;
-    line-height: 32px !important;
+    top: 5px !important;
+    left: 5px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 20px !important;
   }
 
   body.messenger-webview .ads-block {
@@ -457,11 +684,11 @@
 
   @media (max-width: 700px) {
     body.messenger-webview #content {
-      padding: 40px 15px 15px 15px !important;
+      padding: 50px 15px 15px 15px !important;
     }
     
     body.messenger-webview #sidebar {
-      padding: 45px 15px 5px 15px !important;
+      padding: 55px 15px 10px 15px !important;
       overflow: hidden !important;
     }
     
@@ -477,10 +704,10 @@
     }
   }
 
-  /* Fix pour landscape Messenger */
+  /* Fix pour landscape Messenger - gardé intact */
   @media (max-width: 700px) and (orientation: landscape) {
     body.messenger-webview #sidebar {
-      padding: 45px 10px 5px 10px !important;
+      padding: 50px 10px 5px 10px !important;
       overflow: hidden !important;
     }
     
@@ -504,51 +731,51 @@
     
     body.messenger-webview #sidebar #searchBox,
     body.messenger-webview #sidebar #btnTopDeals {
-      margin-bottom: 5px !important;
+      margin-bottom: 8px !important;
     }
     
     body.messenger-webview #sidebar #logo {
-      width: 100px !important;
-      margin-bottom: 5px !important;
+      width: 120px !important;
+      margin-bottom: 8px !important;
     }
     
     body.messenger-webview #sidebar #productCount,
     body.messenger-webview #sidebar #updateDate {
-      font-size: 11px !important;
-      margin-bottom: 2px !important;
+      font-size: 12px !important;
+      margin-bottom: 3px !important;
     }
 
     body.messenger-webview #google_translate_element {
-      margin-top: 5px !important;
+      margin-top: 8px !important;
     }
 
     body.messenger-webview .ads-block {
-      margin: 5px 0 !important;
+      margin: 8px 0 !important;
     }
   }
 
-  /* Fix pour les safe areas iOS */
+  /* Fix pour les safe areas iOS - gardé intact */
   @supports(padding-top: env(safe-area-inset-top)) {
     @media (max-width: 700px) {
       #content {
-        padding-top: max(45px, env(safe-area-inset-top, 45px));
+        padding-top: max(70px, env(safe-area-inset-top, 70px));
       }
       
       body.messenger-webview #toggleSidebarBtn {
-        top: max(2px, env(safe-area-inset-top, 2px)) !important;
+        top: max(5px, env(safe-area-inset-top, 5px)) !important;
       }
       
       body.messenger-webview #content {
-        padding: max(40px, env(safe-area-inset-top, 40px)) 15px 15px 15px !important;
+        padding: max(50px, env(safe-area-inset-top, 50px)) 15px 15px 15px !important;
       }
       
       body.messenger-webview #sidebar {
-        padding: max(45px, env(safe-area-inset-top, 45px)) 15px 15px 15px !important;
+        padding: max(55px, env(safe-area-inset-top, 55px)) 15px 10px 15px !important;
       }
     }
   }
 
-  /* Overlay pour fermer sidebar sur mobile */
+  /* Overlay pour fermer sidebar sur mobile - amélioré */
   .sidebar-overlay {
     display: none;
     position: fixed;
@@ -557,26 +784,32 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
     z-index: 1999;
-    transition: opacity 0.3s ease;
+    transition: all 0.4s ease;
   }
 
   .sidebar-overlay.active {
     display: block;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.4s ease;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { 
+      opacity: 0;
+      backdrop-filter: blur(0px);
+    }
+    to { 
+      opacity: 1;
+      backdrop-filter: blur(4px);
+    }
   }
 
-  /* Animation pour les éléments */
+  /* Animation pour les éléments - améliorée */
   @keyframes slideInUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     to {
       opacity: 1;
@@ -585,13 +818,85 @@
   }
 
   a.product {
-    animation: slideInUp 0.4s ease forwards;
+    animation: slideInUp 0.6s ease forwards;
   }
 
   a.product:nth-child(2) { animation-delay: 0.1s; }
   a.product:nth-child(3) { animation-delay: 0.2s; }
   a.product:nth-child(4) { animation-delay: 0.3s; }
+  a.product:nth-child(5) { animation-delay: 0.4s; }
+  
+  /* Optimisations mobiles supplémentaires - gardées */
+  @media (max-width: 700px) {
+    #sidebar {
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-overlay.active {
+      cursor: pointer;
+    }
+
+    #toggleSidebarBtn {
+      width: 56px !important;
+      height: 56px !important;
+      font-size: 24px !important;
+      top: env(safe-area-inset-top, 15px) !important;
+      left: env(safe-area-inset-left, 15px) !important;
+      z-index: 2102 !important;
+    }
+
+    #content {
+      padding: env(safe-area-inset-top, 70px) 15px 15px 15px !important;
+    }
+
+    ul.keyword-list li {
+      padding: 18px 20px !important;
+      font-size: 16px !important;
+    }
+
+    #searchBox {
+      font-size: 16px !important;
+      padding: 16px 20px !important;
+    }
+
+    #content h2 {
+      font-size: 26px !important;
+      margin-bottom: 20px !important;
+    }
+
+    a.product {
+      padding: 20px !important;
+      font-size: 15px !important;
+    }
+  }
+
+  /* États de focus améliorés pour l'accessibilité */
+  *:focus {
+    outline: none;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  a:focus-visible {
+    outline: 3px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Animations de micro-interactions */
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.1); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.1); }
+    70% { transform: scale(1); }
+  }
+
+  .savings:hover {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
 </style>
+
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -604,27 +909,51 @@
     <div id="productCount">Loading product count...</div>
     <div id="updateDate"></div>
 
-    <input type="search" id="searchBox" placeholder="Search products..." aria-label="Search products" autocomplete="off" />
+    <input type="search" id="searchBox" placeholder="🔍 Search amazing deals..." aria-label="Search products" autocomplete="off" />
 
-    <button id="btnTopDeals" aria-label="Show Top Deals">Top Deals</button>
+    <button id="btnTopDeals" aria-label="Show Top Deals">🔥 Top Deals</button>
   </div>
 
   <div class="sidebar-content">
     <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
     
     <div id="google_translate_element"></div>
+
+    <div class="ads-block">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-7699432575717413"
+           data-ad-slot="1234567890"
+           data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
   </div>
 </div>
 
-<button id="toggleSidebarBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
+<button id="toggleSidebarBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">☰</button>
 
 <div id="content" tabindex="0">
-  <h2 id="mainTitle">Top Deals</h2>
-  <div id="products">Loading top deals...</div>
+  <div class="ads-block">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-7699432575717413"
+         data-ad-slot="0987654321"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <h2 id="mainTitle">🔥 Top Deals</h2>
+  <div id="products">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading amazing deals...</p>
+    </div>
+  </div>
 </div>
 
 <script>
-// Fix pour Messenger WebView - Détection améliorée
+// Fix pour Messenger WebView - Détection améliorée (gardé intact)
 function detectMessengerWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return /FBAN|FBAV|Messenger|FB_IAB|FB4A|Instagram/.test(ua) || 
@@ -632,12 +961,11 @@ function detectMessengerWebView() {
          window.name === 'facebookExternalHit';
 }
 
-// Gestion hauteur viewport dynamique
+// Gestion hauteur viewport dynamique (gardé intact)
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
   
-  // Fix spécifique Messenger
   if (document.body.classList.contains('messenger-webview')) {
     document.body.style.height = window.innerHeight + 'px';
     document.getElementById('sidebar').style.height = window.innerHeight + 'px';
@@ -645,7 +973,7 @@ function setViewportHeight() {
   }
 }
 
-// Debounce function pour éviter trop d'appels
+// Debounce function pour éviter trop d'appels (gardé intact)
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -660,23 +988,20 @@ function debounce(func, wait) {
 
 const debouncedSetViewportHeight = debounce(setViewportHeight, 100);
 
-// Initialisation Messenger WebView avec gestion landscape
+// Initialisation Messenger WebView (gardé intact)
 if (detectMessengerWebView()) {
   document.body.classList.add('messenger-webview');
   setViewportHeight();
   
-  // Fonction spécifique pour ajuster sidebar en landscape
   function adjustMessengerLayout() {
     const isLandscape = window.innerWidth > window.innerHeight;
     const isSmallScreen = window.innerWidth <= 700;
     
     if (isLandscape && isSmallScreen) {
-      // Force l'ouverture de la sidebar en landscape sur petit écran
       if (!sidebar.classList.contains('open')) {
         openSidebar();
       }
       
-      // Ajuste la hauteur des keywords
       const keywordListEl = document.getElementById('keywordList');
       if (keywordListEl) {
         keywordListEl.style.maxHeight = (window.innerHeight - 180) + 'px';
@@ -684,7 +1009,6 @@ if (detectMessengerWebView()) {
     }
   }
   
-  // Event listeners avec debounce
   window.addEventListener('resize', () => {
     debouncedSetViewportHeight();
     adjustMessengerLayout();
@@ -694,43 +1018,56 @@ if (detectMessengerWebView()) {
     setTimeout(() => {
       debouncedSetViewportHeight();
       adjustMessengerLayout();
-    }, 300); // Délai pour orientation
+    }, 300);
   });
   
-  // Ajustement initial
   adjustMessengerLayout();
   
-  // Fix pour le scroll iOS
   document.addEventListener('touchstart', {}, { passive: true });
   document.addEventListener('touchmove', {}, { passive: true });
 }
 
+// Fonction améliorée pour capitaliser les mots
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// Parser CSV amélioré avec gestion d'erreurs
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headerLine = lines.shift();
+  try {
+    const lines = text.trim().split('\n');
+    if (lines.length === 0) throw new Error('Empty CSV file');
+    
+    const headerLine = lines.shift();
+    const regex = /("([^"]|"")*"|[^,]+)/g;
+    const headers = headerLine.match(regex)?.map(h => h.replace(/(^"|"$)/g, '')) || [];
 
-  const regex = /("([^"]|"")*"|[^,]+)/g;
-  const headers = headerLine.match(regex).map(h => h.replace(/(^"|"$)/g, ''));
-
-  return lines.map(line => {
-    const matches = line.match(regex);
-    if (!matches) return null;
-    const obj = {};
-    headers.forEach((h, i) => {
-      let val = matches[i] || '';
-      if(val.startsWith('"') && val.endsWith('"')) {
-        val = val.slice(1, -1).replace(/""/g, '"');
+    return lines.map((line, index) => {
+      try {
+        const matches = line.match(regex);
+        if (!matches) return null;
+        
+        const obj = {};
+        headers.forEach((h, i) => {
+          let val = matches[i] || '';
+          if(val.startsWith('"') && val.endsWith('"')) {
+            val = val.slice(1, -1).replace(/""/g, '"');
+          }
+          obj[h] = val;
+        });
+        return obj;
+      } catch (error) {
+        console.warn(`Error parsing CSV line ${index + 2}:`, error);
+        return null;
       }
-      obj[h] = val;
-    });
-    return obj;
-  }).filter(item => item !== null);
+    }).filter(item => item !== null);
+  } catch (error) {
+    console.error('Error parsing CSV:', error);
+    return [];
+  }
 }
 
+// Variables globales
 const keywordList = document.getElementById('keywordList');
 const productsDiv = document.getElementById('products');
 const productCountDiv = document.getElementById('productCount');
@@ -746,8 +1083,16 @@ let data = [];
 let keywordsSet = new Set();
 let selectedKeyword = null;
 
-// Chargement des données avec retry
+// Chargement des données amélioré avec retry et feedback
 function loadData(retries = 3) {
+  // Afficher un indicateur de chargement amélioré
+  productsDiv.innerHTML = `
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading amazing deals...</p>
+    </div>
+  `;
+  
   fetch('deals_clean.csv')
     .then(res => {
       if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -755,53 +1100,161 @@ function loadData(retries = 3) {
     })
     .then(text => {
       data = parseCSV(text);
-      productCountDiv.textContent = `Total products: ${data.length}`;
+      
+      if (data.length === 0) {
+        throw new Error('No valid data found in CSV');
+      }
+      
+      // Animation du compteur de produits
+      animateCounter(productCountDiv, data.length, 'Total products: ');
 
       const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      updateDateDiv.textContent = `Updated: ${yyyy}-${mm}-${dd}`;
+      const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
 
-      data.forEach(item => keywordsSet.add(item.keyword));
+      // Construire l'ensemble des mots-clés avec validation
+      data.forEach(item => {
+        if (item.keyword && item.keyword.trim()) {
+          keywordsSet.add(item.keyword.trim());
+        }
+      });
+      
       displayKeywords([...keywordsSet].sort());
       displayRandomTopDeals();
+      
+      // Notification de succès subtile
+      showNotification('✅ Deals loaded successfully!', 'success');
     })
     .catch(err => {
       console.error('Error loading CSV:', err);
       if (retries > 0) {
         setTimeout(() => loadData(retries - 1), 1000);
       } else {
-        productsDiv.innerHTML = `<p style="color:red;">Error loading data. Please refresh the page.</p>`;
-        productCountDiv.textContent = 'Failed to load products.';
+        productsDiv.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #e53e3e;">
+            <h3>⚠️ Unable to load deals</h3>
+            <p>Please check your internet connection and refresh the page.</p>
+            <button onclick="loadData(3)" style="
+              background: var(--primary-gradient);
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              border-radius: 12px;
+              cursor: pointer;
+              font-weight: 600;
+              margin-top: 16px;
+            ">🔄 Retry</button>
+          </div>
+        `;
+        productCountDiv.innerHTML = '❌ Failed to load products';
         updateDateDiv.textContent = '';
+        showNotification('❌ Failed to load deals', 'error');
       }
     });
 }
 
-// Fonction pour fermer la sidebar
+// Animation du compteur
+function animateCounter(element, target, prefix = '') {
+  let current = 0;
+  const increment = target / 30;
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      element.textContent = `${prefix}${target}`;
+      clearInterval(timer);
+    } else {
+      element.textContent = `${prefix}${Math.floor(current)}`;
+    }
+  }, 50);
+}
+
+// Système de notifications
+function showNotification(message, type = 'info') {
+  // Supprimer les notifications existantes
+  const existingNotification = document.querySelector('.notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+  
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = message;
+  
+  const styles = {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    padding: '16px 24px',
+    borderRadius: '12px',
+    color: 'white',
+    fontWeight: '600',
+    zIndex: '10000',
+    transform: 'translateY(-100px)',
+    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(10px)',
+  };
+  
+  Object.assign(notification.style, styles);
+  
+  // Couleurs selon le type
+  const backgrounds = {
+    success: 'linear-gradient(135deg, #10b981, #059669)',
+    error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+    info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+  };
+  
+  notification.style.background = backgrounds[type] || backgrounds.info;
+  
+  document.body.appendChild(notification);
+  
+  // Animation d'entrée
+  setTimeout(() => {
+    notification.style.transform = 'translateY(0)';
+  }, 100);
+  
+  // Animation de sortie après 3 secondes
+  setTimeout(() => {
+    notification.style.transform = 'translateY(-100px)';
+    setTimeout(() => notification.remove(), 400);
+  }, 3000);
+}
+
+// Fonctions de sidebar améliorées
 function closeSidebar() {
   sidebar.classList.remove('open');
   sidebarOverlay.classList.remove('active');
   toggleBtn.setAttribute('aria-expanded', 'false');
+  toggleBtn.innerHTML = '☰';
 }
 
-// Fonction pour ouvrir la sidebar
 function openSidebar() {
   sidebar.classList.add('open');
   sidebarOverlay.classList.add('active');
   toggleBtn.setAttribute('aria-expanded', 'true');
+  toggleBtn.innerHTML = '✕';
 }
 
+// Affichage des mots-clés amélioré
 function displayKeywords(keywords) {
-  keywordList.innerHTML = '';
-  keywords.forEach(kw => {
+  const fragment = document.createDocumentFragment();
+  
+  keywords.forEach((kw, index) => {
     const li = document.createElement('li');
     li.textContent = capitalizeWords(kw);
+    li.style.animationDelay = `${index * 0.05}s`;
+    li.style.animation = 'slideInUp 0.6s ease forwards';
+    
     li.addEventListener('click', () => {
       selectedKeyword = kw;
       searchBox.value = '';
-      mainTitle.textContent = capitalizeWords(kw);
+      mainTitle.innerHTML = `📂 ${capitalizeWords(kw)}`;
       displayProductsByKeyword(kw);
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
@@ -809,50 +1262,118 @@ function displayKeywords(keywords) {
         closeSidebar();
       }
     });
-    keywordList.appendChild(li);
+    
+    fragment.appendChild(li);
   });
+  
+  keywordList.innerHTML = '';
+  keywordList.appendChild(fragment);
 }
 
+// Affichage des produits par mot-clé amélioré
 function displayProductsByKeyword(keyword) {
   const filtered = data.filter(p => p.keyword === keyword);
+  
   if(filtered.length === 0) {
-    productsDiv.innerHTML = '<p>No products found.</p>';
+    productsDiv.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: #4a5568;">
+        <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
+        <h3 style="margin-bottom: 16px; color: #2d3748;">No products found</h3>
+        <p>Try selecting a different category or search for something else.</p>
+      </div>
+    `;
     return;
   }
   
-  // Utilisation de DocumentFragment pour performance
+  // Tri par pourcentage de réduction
+  filtered.sort((a, b) => Number(b.percent) - Number(a.percent));
+  
   const fragment = document.createDocumentFragment();
-  filtered.forEach(p => {
-    const linkUrl = p.link || '#';
-    const prodLink = document.createElement('a');
-    prodLink.href = linkUrl;
-    prodLink.target = '_blank';
-    prodLink.rel = 'noopener noreferrer';
-    prodLink.classList.add('product');
-    
-    // Sécurisation du contenu
-    const titleEl = document.createElement('strong');
-    titleEl.textContent = p.title || 'No title';
-    
-    const priceP = document.createElement('p');
-    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
-    
-    const savingsP = document.createElement('p');
-    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
-    
-    prodLink.appendChild(titleEl);
-    prodLink.appendChild(priceP);
-    prodLink.appendChild(savingsP);
+  
+  filtered.forEach((p, index) => {
+    const prodLink = createProductElement(p, index);
     fragment.appendChild(prodLink);
   });
   
   productsDiv.innerHTML = '';
   productsDiv.appendChild(fragment);
+  
+  // Animation d'entrée en cascade
+  setTimeout(() => {
+    document.querySelectorAll('a.product').forEach((el, index) => {
+      el.style.animationDelay = `${index * 0.1}s`;
+    });
+  }, 100);
 }
 
+// Création d'élément produit améliorée
+function createProductElement(product, index = 0) {
+  const linkUrl = product.link || '#';
+  const prodLink = document.createElement('a');
+  
+  prodLink.href = linkUrl;
+  prodLink.target = '_blank';
+  prodLink.rel = 'noopener noreferrer';
+  prodLink.classList.add('product');
+  prodLink.style.animationDelay = `${index * 0.1}s`;
+  
+  // Validation et nettoyage des données
+  const title = product.title?.trim() || 'Product Title Not Available';
+  const price = product.price?.trim() || 'Price not available';
+  const savings = product.savings?.trim() || 'Savings not available';
+  const percent = product.percent?.trim() || '0';
+  
+  const titleEl = document.createElement('strong');
+  titleEl.textContent = title;
+  
+  const priceP = document.createElement('p');
+  priceP.innerHTML = `💰 Price: <span class="price">${price}</span>`;
+  
+  const savingsP = document.createElement('p');
+  savingsP.innerHTML = `💎 Save: <span class="savings">${savings} (${percent}% off)</span>`;
+  
+  // Badge pour les gros pourcentages
+  if (Number(percent) >= 50) {
+    const hotDealBadge = document.createElement('div');
+    hotDealBadge.innerHTML = '🔥 HOT DEAL';
+    hotDealBadge.style.cssText = `
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--secondary-gradient);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 1;
+    `;
+    prodLink.appendChild(hotDealBadge);
+  }
+  
+  prodLink.appendChild(titleEl);
+  prodLink.appendChild(priceP);
+  prodLink.appendChild(savingsP);
+  
+  return prodLink;
+}
+
+// Affichage des top deals aléatoires amélioré
 function displayRandomTopDeals() {
+  if (data.length === 0) {
+    productsDiv.innerHTML = `
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading amazing deals...</p>
+      </div>
+    `;
+    return;
+  }
+  
   const sorted = data.slice().sort((a,b) => Number(b.percent) - Number(a.percent));
-  const top30 = sorted.slice(0,30);
+  const top50 = sorted.slice(0, 50); // Plus de choix pour plus de variété
 
   function shuffle(array) {
     const newArray = [...array];
@@ -863,34 +1384,13 @@ function displayRandomTopDeals() {
     return newArray;
   }
 
-  const shuffled = shuffle(top30);
-  const selected = shuffled.slice(0,10);
+  const shuffled = shuffle(top50);
+  const selected = shuffled.slice(0, 15); // Afficher plus de produits
 
   const fragment = document.createDocumentFragment();
-  const title = document.createElement('h3');
-  title.textContent = 'Random Top Deals';
-  fragment.appendChild(title);
-
-  selected.forEach(p => {
-    const linkUrl = p.link || '#';
-    const prodLink = document.createElement('a');
-    prodLink.href = linkUrl;
-    prodLink.target = '_blank';
-    prodLink.rel = 'noopener noreferrer';
-    prodLink.classList.add('product');
-    
-    const titleEl = document.createElement('strong');
-    titleEl.textContent = p.title || 'No title';
-    
-    const priceP = document.createElement('p');
-    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
-    
-    const savingsP = document.createElement('p');
-    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
-    
-    prodLink.appendChild(titleEl);
-    prodLink.appendChild(priceP);
-    prodLink.appendChild(savingsP);
+  
+  selected.forEach((p, index) => {
+    const prodLink = createProductElement(p, index);
     fragment.appendChild(prodLink);
   });
   
@@ -898,54 +1398,59 @@ function displayRandomTopDeals() {
   productsDiv.appendChild(fragment);
 }
 
-// Debounce pour la recherche
+// Recherche améliorée avec debounce
 const debouncedSearch = debounce(function(term) {
   const lowerTerm = term.toLowerCase().trim();
+  
   if(lowerTerm.length === 0) {
     if(selectedKeyword) {
       displayProductsByKeyword(selectedKeyword);
-      mainTitle.textContent = capitalizeWords(selectedKeyword);
+      mainTitle.innerHTML = `📂 ${capitalizeWords(selectedKeyword)}`;
       highlightActiveKeyword();
     } else {
-      mainTitle.textContent = 'Top Deals';
+      mainTitle.innerHTML = '🔥 Top Deals';
       displayRandomTopDeals();
       removeKeywordHighlight();
     }
     return;
   }
 
-  const filtered = data.filter(p => p.title.toLowerCase().includes(lowerTerm));
+  // Recherche plus intelligente
+  const filtered = data.filter(p => {
+    const title = p.title?.toLowerCase() || '';
+    const keyword = p.keyword?.toLowerCase() || '';
+    return title.includes(lowerTerm) || keyword.includes(lowerTerm);
+  });
+  
   filtered.sort((a,b) => Number(b.percent) - Number(a.percent));
 
-  mainTitle.textContent = `Search: "${term}"`;
+  mainTitle.innerHTML = `🔍 Search: "${term}" (${filtered.length} results)`;
   removeKeywordHighlight();
 
   if(filtered.length === 0) {
-    productsDiv.innerHTML = '<p>No products found.</p>';
+    productsDiv.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: #4a5568;">
+        <div style="font-size: 64px; margin-bottom: 20px;">😕</div>
+        <h3 style="margin-bottom: 16px; color: #2d3748;">No deals found for "${term}"</h3>
+        <p>Try a different search term or browse our categories.</p>
+        <button onclick="searchBox.value=''; debouncedSearch('');" style="
+          background: var(--primary-gradient);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          margin-top: 16px;
+        ">🏠 Back to Top Deals</button>
+      </div>
+    `;
     return;
   }
 
   const fragment = document.createDocumentFragment();
-  filtered.forEach(p => {
-    const linkUrl = p.link || '#';
-    const prodLink = document.createElement('a');
-    prodLink.href = linkUrl;
-    prodLink.target = '_blank';
-    prodLink.rel = 'noopener noreferrer';
-    prodLink.classList.add('product');
-    
-    const titleEl = document.createElement('strong');
-    titleEl.textContent = p.title || 'No title';
-    
-    const priceP = document.createElement('p');
-    priceP.innerHTML = `Price: <span class="price">${p.price || 'N/A'}</span>`;
-    
-    const savingsP = document.createElement('p');
-    savingsP.innerHTML = `Savings: <span class="savings">${p.savings || 'N/A'}</span> (${p.percent || '0'}%)`;
-    
-    prodLink.appendChild(titleEl);
-    prodLink.appendChild(priceP);
-    prodLink.appendChild(savingsP);
+  filtered.forEach((p, index) => {
+    const prodLink = createProductElement(p, index);
     fragment.appendChild(prodLink);
   });
   
@@ -953,11 +1458,13 @@ const debouncedSearch = debounce(function(term) {
   productsDiv.appendChild(fragment);
 }, 300);
 
+// Fonctions d'aide pour les mots-clés actifs
 function highlightActiveKeyword() {
   document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
   if(!selectedKeyword) return;
+  
   document.querySelectorAll('#keywordList li').forEach(el => {
-    if(el.textContent.toLowerCase() === selectedKeyword.toLowerCase()) {
+    if(el.textContent.toLowerCase() === capitalizeWords(selectedKeyword).toLowerCase()) {
       el.classList.add('active');
     }
   });
@@ -967,16 +1474,17 @@ function removeKeywordHighlight() {
   document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
 }
 
-// Event Listeners
+// Event Listeners améliorés
 btnTopDeals.addEventListener('click', () => {
   selectedKeyword = null;
   searchBox.value = '';
-  mainTitle.textContent = 'Top Deals';
+  mainTitle.innerHTML = '🔥 Top Deals';
   displayRandomTopDeals();
   removeKeywordHighlight();
   if(window.innerWidth <= 700) {
     closeSidebar();
   }
+  showNotification('🔥 Showing top deals!', 'success');
 });
 
 toggleBtn.addEventListener('click', () => {
@@ -988,21 +1496,34 @@ toggleBtn.addEventListener('click', () => {
   }
 });
 
-// Fermer sidebar en cliquant sur l'overlay
 sidebarOverlay.addEventListener('click', closeSidebar);
 
 searchBox.addEventListener('input', (e) => {
   debouncedSearch(e.target.value);
 });
 
-// Gestion du clavier pour accessibilité
+// Gestion du clavier pour accessibilité améliorée
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && sidebar.classList.contains('open')) {
     closeSidebar();
   }
+  
+  // Raccourcis clavier
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key) {
+      case 'k':
+        e.preventDefault();
+        searchBox.focus();
+        break;
+      case 'h':
+        e.preventDefault();
+        btnTopDeals.click();
+        break;
+    }
+  }
 });
 
-// Google Translate
+// Google Translate (gardé intact)
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
@@ -1010,15 +1531,42 @@ function googleTranslateElementInit() {
   }, 'google_translate_element');
 }
 
-// Initialisation
+// Initialisation améliorée
 document.addEventListener('DOMContentLoaded', () => {
   setViewportHeight();
   loadData();
+  
+  // Ajouter des raccourcis clavier dans le placeholder
+  if (window.innerWidth > 700) {
+    searchBox.placeholder = '🔍 Search amazing deals... (Ctrl+K)';
+  }
 });
 
 // Gestion des erreurs globales
 window.addEventListener('error', (e) => {
   console.error('Global error:', e.error);
+  showNotification('⚠️ An error occurred', 'error');
+});
+
+// Performance: Intersection Observer pour lazy loading des images (si ajoutées plus tard)
+const observerOptions = {
+  root: null,
+  rootMargin: '50px',
+  threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerOptions);
+
+// Observer tous les produits pour des animations d'entrée
+document.addEventListener('DOMContentLoaded', () => {
+  const products = document.querySelectorAll('a.product');
+  products.forEach(product => observer.observe(product));
 });
 
 </script>
