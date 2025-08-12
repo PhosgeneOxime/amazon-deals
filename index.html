@@ -265,31 +265,71 @@
   body.messenger-webview #sidebar {
     height: var(--vh) !important;
     max-height: var(--vh) !important;
+    padding: 5px 15px 15px 15px !important;
   }
 
   body.messenger-webview #content {
     height: var(--vh) !important;
     max-height: var(--vh) !important;
-    padding: 5px 15px 15px 15px !important;
+    padding: 0px 15px 15px 15px !important;
   }
 
   body.messenger-webview #content h2 {
-    margin-top: 0px !important;
+    margin-top: 5px !important;
     margin-bottom: 10px !important;
   }
 
   body.messenger-webview #toggleSidebarBtn {
-    top: 5px !important;
-    left: 5px !important;
+    top: 2px !important;
+    left: 2px !important;
     width: 36px !important;
     height: 36px !important;
     font-size: 24px !important;
     line-height: 32px !important;
   }
 
+  body.messenger-webview .ads-block {
+    margin: 8px 0 !important;
+  }
+
   @media (max-width: 700px) {
     body.messenger-webview #content {
+      padding: 40px 15px 15px 15px !important;
+    }
+    
+    body.messenger-webview #sidebar {
       padding: 45px 15px 15px 15px !important;
+    }
+  }
+
+  /* Fix pour landscape Messenger */
+  @media (max-width: 700px) and (orientation: landscape) {
+    body.messenger-webview #sidebar {
+      padding: 45px 10px 10px 10px !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    body.messenger-webview #sidebar ul.keyword-list {
+      max-height: calc(var(--vh) - 200px) !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    body.messenger-webview #sidebar #searchBox,
+    body.messenger-webview #sidebar #btnTopDeals {
+      margin-bottom: 5px !important;
+    }
+    
+    body.messenger-webview #sidebar #logo {
+      width: 100px !important;
+      margin-bottom: 5px !important;
+    }
+    
+    body.messenger-webview #sidebar #productCount,
+    body.messenger-webview #sidebar #updateDate {
+      font-size: 11px !important;
+      margin-bottom: 2px !important;
     }
   }
 
@@ -301,11 +341,15 @@
       }
       
       body.messenger-webview #toggleSidebarBtn {
-        top: max(5px, env(safe-area-inset-top, 5px)) !important;
+        top: max(2px, env(safe-area-inset-top, 2px)) !important;
       }
       
       body.messenger-webview #content {
         padding: max(40px, env(safe-area-inset-top, 40px)) 15px 15px 15px !important;
+      }
+      
+      body.messenger-webview #sidebar {
+        padding: max(45px, env(safe-area-inset-top, 45px)) 15px 15px 15px !important;
       }
     }
   }
@@ -408,16 +452,45 @@ function debounce(func, wait) {
 
 const debouncedSetViewportHeight = debounce(setViewportHeight, 100);
 
-// Initialisation Messenger WebView
+// Initialisation Messenger WebView avec gestion landscape
 if (detectMessengerWebView()) {
   document.body.classList.add('messenger-webview');
   setViewportHeight();
   
+  // Fonction spécifique pour ajuster sidebar en landscape
+  function adjustMessengerLayout() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const isSmallScreen = window.innerWidth <= 700;
+    
+    if (isLandscape && isSmallScreen) {
+      // Force l'ouverture de la sidebar en landscape sur petit écran
+      if (!sidebar.classList.contains('open')) {
+        openSidebar();
+      }
+      
+      // Ajuste la hauteur des keywords
+      const keywordListEl = document.getElementById('keywordList');
+      if (keywordListEl) {
+        keywordListEl.style.maxHeight = (window.innerHeight - 180) + 'px';
+      }
+    }
+  }
+  
   // Event listeners avec debounce
-  window.addEventListener('resize', debouncedSetViewportHeight);
-  window.addEventListener('orientationchange', () => {
-    setTimeout(debouncedSetViewportHeight, 300); // Délai pour orientation
+  window.addEventListener('resize', () => {
+    debouncedSetViewportHeight();
+    adjustMessengerLayout();
   });
+  
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      debouncedSetViewportHeight();
+      adjustMessengerLayout();
+    }, 300); // Délai pour orientation
+  });
+  
+  // Ajustement initial
+  adjustMessengerLayout();
   
   // Fix pour le scroll iOS
   document.addEventListener('touchstart', {}, { passive: true });
