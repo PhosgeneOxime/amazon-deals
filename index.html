@@ -24,7 +24,7 @@
     width: 250px;
     background: #f0f0f0;
     color: #222;
-    overflow-y: auto;
+    overflow: hidden; /* cacher scrollbar hors zone keywords */
     padding: 15px;
     box-sizing: border-box;
     display: flex;
@@ -34,68 +34,6 @@
     position: relative;
     flex-shrink: 0;
     transition: transform 0.3s ease;
-  }
-  @media (min-width: 701px) {
-    #sidebar {
-      transform: translateX(0) !important;
-      position: relative;
-    }
-    #toggleSidebarBtn {
-      display: none !important;
-    }
-    #content {
-      padding-top: 20px !important;
-    }
-  }
-  @media (max-width: 700px) {
-    #sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 250px;
-      background: #f0f0f0;
-      border-right: none;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.3);
-      transform: translateX(-100%);
-      z-index: 2000;
-      padding-top: 60px;
-    }
-    #sidebar.open {
-      transform: translateX(0);
-    }
-    #toggleSidebarBtn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 2101;
-      background: #007bff !important;
-      color: white !important;
-      border: none;
-      border-radius: 4px;
-      width: 40px;
-      height: 40px;
-      font-size: 28px;
-      line-height: 36px;
-      cursor: pointer;
-      user-select: none;
-      display: block !important;
-      text-align: center;
-      padding: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
-    }
-    #toggleSidebarBtn:hover,
-    #toggleSidebarBtn:focus {
-      background: #0056b3 !important;
-    }
-    #content {
-      padding-top: max(70px, env(safe-area-inset-top));
-    }
-  }
-  @supports(padding-top: env(safe-area-inset-top)) {
-    #content {
-      padding-top: max(20px, env(safe-area-inset-top));
-    }
   }
   #logo {
     width: 150px;
@@ -111,18 +49,39 @@
   #updateDate {
     font-size: 12px;
     color: #777;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     font-style: italic;
   }
+
+  /* Nouveau bouton Top Deals sous la date */
+  #btnTopDeals {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 0;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 12px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  #btnTopDeals:hover,
+  #btnTopDeals:focus {
+    background: #0056b3;
+    outline: none;
+  }
+
   ul.keyword-list {
     list-style: none;
     padding-left: 0;
-    max-height: calc(100vh - 230px);
+    margin: 0;
     overflow-y: auto;
     width: 100%;
+    flex: 1 1 auto; /* prend l’espace restant */
   }
-  ul.keyword-list li,
-  ul.keyword-list li.home-button {
+  ul.keyword-list li {
     cursor: pointer;
     padding: 12px 10px;
     margin-bottom: 8px;
@@ -131,16 +90,6 @@
     color: #222;
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
-  }
-  ul.keyword-list li.home-button {
-    font-weight: bold;
-    background: #007bff;
-    color: white;
-    text-align: center;
-  }
-  ul.keyword-list li.home-button:hover {
-    background: #0056b3;
-    color: white;
   }
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
@@ -192,35 +141,77 @@
     color: #cc0000;
   }
 
-  /* Ajustements spécifiques pour Messenger WebView */
-  @media screen and (max-width: 700px) and (orientation: landscape) {
-    body.messenger-webview {
-      padding-top: 8px !important;
+  @media (min-width: 701px) {
+    #sidebar {
+      transform: translateX(0) !important;
+      position: relative;
     }
-    body.messenger-webview #sidebar {
-      padding-top: 48px !important;
-      height: 100vh !important;
-      overflow-y: auto !important;
+    #toggleSidebarBtn {
+      display: none !important;
     }
-    body.messenger-webview #toggleSidebarBtn {
-      top: 6px !important;
-      left: 6px !important;
-      width: 36px !important;
-      height: 36px !important;
-      font-size: 24px !important;
-      line-height: 32px !important;
+    #content {
+      padding-top: 20px !important;
+    }
+  }
+  @media (max-width: 700px) {
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 250px;
+      background: #f0f0f0;
+      border-right: none;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+      transform: translateX(-100%);
+      z-index: 2000;
+      padding-top: 60px;
+      flex-direction: column;
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+    #toggleSidebarBtn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2101;
+      background: #007bff !important;
+      color: white !important;
+      border: none;
+      border-radius: 4px;
+      width: 40px;
+      height: 40px;
+      font-size: 28px;
+      line-height: 36px;
+      cursor: pointer;
+      user-select: none;
+      display: block !important;
+      text-align: center;
+      padding: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    }
+    #toggleSidebarBtn:hover,
+    #toggleSidebarBtn:focus {
+      background: #0056b3 !important;
+    }
+    #content {
+      padding-top: max(70px, env(safe-area-inset-top));
+    }
+  }
+  @supports(padding-top: env(safe-area-inset-top)) {
+    #content {
+      padding-top: max(20px, env(safe-area-inset-top));
     }
   }
 
-  /* Nouveau : correction espace blanc trop grand en Messenger WebView portrait */
+  /* Correction espace blanc Messenger WebView */
   body.messenger-webview {
-    padding-top: 6px !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
     overflow-x: hidden;
   }
-  @media screen and (max-width: 700px) and (orientation: portrait) {
-    body.messenger-webview {
-      padding-top: 6px !important;
-    }
+  @media screen and (max-width: 700px) {
     body.messenger-webview #sidebar {
       padding-top: 48px !important;
       height: 100vh !important;
@@ -243,6 +234,10 @@
   <img id="logo" src="logo.png" alt="Logo" title="Homepage" />
   <div id="productCount">Loading product count...</div>
   <div id="updateDate"></div>
+
+  <!-- Nouveau bouton Top Deals -->
+  <button id="btnTopDeals" aria-label="Show Top Deals">Top Deals</button>
+
   <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
   <div id="google_translate_element"></div>
 
@@ -307,6 +302,7 @@ const updateDateDiv = document.getElementById('updateDate');
 const sidebar = document.getElementById('sidebar');
 const toggleBtn = document.getElementById('toggleSidebarBtn');
 const mainTitle = document.getElementById('mainTitle');
+const btnTopDeals = document.getElementById('btnTopDeals');
 
 let data = [];
 let keywordsSet = new Set();
@@ -340,23 +336,6 @@ fetch('deals_clean.csv')
 
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
-
-  const homeLi = document.createElement('li');
-  homeLi.textContent = 'Top Deals';
-  homeLi.classList.add('home-button');
-  homeLi.addEventListener('click', () => {
-    selectedKeyword = null;
-    mainTitle.textContent = 'Top Deals';
-    displayRandomTopDeals();
-    document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-    homeLi.classList.add('active');
-    if(window.innerWidth <= 700) {
-      sidebar.classList.remove('open');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-    }
-  });
-  keywordList.appendChild(homeLi);
-
   keywords.forEach(kw => {
     const li = document.createElement('li');
     li.textContent = capitalizeWords(kw);
@@ -433,6 +412,18 @@ function displayRandomTopDeals() {
   });
 }
 
+btnTopDeals.addEventListener('click', () => {
+  selectedKeyword = null;
+  mainTitle.textContent = 'Top Deals';
+  displayRandomTopDeals();
+  document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+  // Pas d’élément à activer ici (pas dans la liste)
+  if(window.innerWidth <= 700) {
+    sidebar.classList.remove('open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+});
+
 toggleBtn.addEventListener('click', () => {
   const isOpen = sidebar.classList.contains('open');
   if(isOpen) {
@@ -446,8 +437,7 @@ toggleBtn.addEventListener('click', () => {
 
 const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
 if (isInMessenger) {
-  // document.body.style.paddingTop = '20px';  <-- ligne supprimée
-
+  // document.body.style.paddingTop = '20px'; // supprimée
   document.body.classList.add('messenger-webview');
 
   function adjustSidebarForMessenger() {
