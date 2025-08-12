@@ -2,23 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>DealNest.CA - Best Daily Amazon Deals</title>
 <meta name="description" content="Discover the best daily Amazon deals on Dealnest.ca, updated daily with exclusive promotions and discounts." />
+<meta name="theme-color" content="#007bff" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 0; display: flex; height: 100vh; background: #f5f5f5; overflow-x: hidden;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
+    overflow-x: hidden;
+    padding-top: env(safe-area-inset-top, 20px);
+    box-sizing: border-box;
+    min-height: 100vh;
   }
   #sidebar {
-    width: 250px; background: #f0f0f0; color: #222;
-    overflow-y: auto; padding: 15px; box-sizing: border-box;
-    display: flex; flex-direction: column; align-items: center;
-    border-right: 1px solid #ccc; position: relative;
+    width: 250px;
+    background: #f0f0f0;
+    color: #222;
+    overflow-y: auto;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #ccc;
+    position: relative;
     flex-shrink: 0;
     transition: transform 0.3s ease;
   }
-  /* Desktop: menu toujours visible */
   @media (min-width: 701px) {
     #sidebar {
       transform: translateX(0) !important;
@@ -28,28 +44,39 @@
       display: none !important;
     }
     #content {
-      padding-top: 20px !important; /* normal padding sur desktop */
+      padding-top: 20px !important;
     }
   }
-  /* Mobile: menu caché par défaut */
   @media (max-width: 700px) {
     #sidebar {
-      position: fixed; top: 0; left: 0; height: 100vh;
-      width: 250px; background: #f0f0f0; border-right: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 250px;
+      background: #f0f0f0;
+      border-right: none;
       box-shadow: 2px 0 8px rgba(0,0,0,0.3);
       transform: translateX(-100%);
-      z-index: 2000; padding-top: 60px;
+      z-index: 2000;
+      padding-top: 60px;
     }
     #sidebar.open {
       transform: translateX(0);
     }
     #toggleSidebarBtn {
-      position: fixed; top: 10px; left: 10px; z-index: 2101;
-      background: #007bff !important; /* forcer bleu */
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2101;
+      background: #007bff !important;
       color: white !important;
-      border: none; border-radius: 4px;
-      width: 40px; height: 40px;
-      font-size: 28px; line-height: 36px;
+      border: none;
+      border-radius: 4px;
+      width: 40px;
+      height: 40px;
+      font-size: 28px;
+      line-height: 36px;
       cursor: pointer;
       user-select: none;
       display: block !important;
@@ -61,30 +88,47 @@
     #toggleSidebarBtn:focus {
       background: #0056b3 !important;
     }
-    /* Décaler contenu pour ne pas être caché par bouton */
     #content {
-      padding-top: 70px !important;
+      padding-top: max(70px, env(safe-area-inset-top));
     }
   }
-
+  @supports(padding-top: env(safe-area-inset-top)) {
+    #content {
+      padding-top: max(20px, env(safe-area-inset-top));
+    }
+  }
   #logo {
-    width: 150px; margin-bottom: 8px; cursor: pointer;
+    width: 150px;
+    margin-bottom: 8px;
+    cursor: pointer;
   }
   #productCount, #updateDate {
-    font-size: 14px; color: #555; margin-bottom: 4px;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 4px;
     transition: opacity 0.3s ease;
   }
   #updateDate {
-    font-size: 12px; color: #777; margin-bottom: 15px; font-style: italic;
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 15px;
+    font-style: italic;
   }
   ul.keyword-list {
-    list-style: none; padding-left: 0; max-height: calc(100vh - 230px);
-    overflow-y: auto; width: 100%;
+    list-style: none;
+    padding-left: 0;
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+    width: 100%;
   }
   ul.keyword-list li,
   ul.keyword-list li.home-button {
-    cursor: pointer; padding: 12px 10px; margin-bottom: 8px;
-    background: #ddd; border-radius: 6px; color: #222;
+    cursor: pointer;
+    padding: 12px 10px;
+    margin-bottom: 8px;
+    background: #ddd;
+    border-radius: 6px;
+    color: #222;
     transition: background-color 0.3s, color 0.3s;
     user-select: none;
   }
@@ -100,34 +144,48 @@
   }
   ul.keyword-list li:hover,
   ul.keyword-list li.active {
-    background: #bbb; color: #000;
+    background: #bbb;
+    color: #000;
   }
   #google_translate_element {
-    margin-top: auto; width: 100%;
+    margin-top: auto;
+    width: 100%;
   }
   .ads-block {
-    margin: 15px 0; width: 100%; text-align: center;
+    margin: 15px 0;
+    width: 100%;
+    text-align: center;
   }
   #content {
-    flex: 1; padding: 20px; overflow-y: auto; background: white;
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: white;
   }
   #content h2 {
     margin-top: 40px;
     color: #222;
   }
   .product {
-    background: #fafafa; margin-bottom: 15px; padding: 12px;
-    border-radius: 8px; box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-    display: flex; flex-direction: column;
+    background: #fafafa;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    display: flex;
+    flex-direction: column;
   }
   .product a {
-    color: #0066c0; text-decoration: none; font-weight: 600;
+    color: #0066c0;
+    text-decoration: none;
+    font-weight: 600;
   }
   .product a:hover {
     text-decoration: underline;
   }
   .price {
-    font-weight: bold; color: #007a00;
+    font-weight: bold;
+    color: #007a00;
   }
   .savings {
     color: #cc0000;
@@ -236,18 +294,16 @@ fetch('deals_clean.csv')
 function displayKeywords(keywords) {
   keywordList.innerHTML = '';
 
-  // Bouton Top Deals en 1ère position
+  // Bouton Accueil en 1ère position
   const homeLi = document.createElement('li');
-  homeLi.textContent = 'Top Deals';
+  homeLi.textContent = 'Accueil';
   homeLi.classList.add('home-button');
   homeLi.addEventListener('click', () => {
     selectedKeyword = null;
     mainTitle.textContent = 'Top Deals';
     displayRandomTopDeals();
-    // Désactive la sélection active
     document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
     homeLi.classList.add('active');
-    // Ferme menu mobile
     if(window.innerWidth <= 700) {
       sidebar.classList.remove('open');
       toggleBtn.setAttribute('aria-expanded', 'false');
@@ -262,10 +318,8 @@ function displayKeywords(keywords) {
       selectedKeyword = kw;
       mainTitle.textContent = capitalizeWords(kw);
       displayProductsByKeyword(kw);
-      // Met à jour la sélection active
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
-      // Ferme menu mobile
       if(window.innerWidth <= 700) {
         sidebar.classList.remove('open');
         toggleBtn.setAttribute('aria-expanded', 'false');
@@ -336,6 +390,12 @@ toggleBtn.addEventListener('click', () => {
   }
 });
 
+// Détection WebView Messenger et ajustement padding
+const isInMessenger = /FBAN|FBAV/.test(navigator.userAgent);
+if(isInMessenger){
+  document.body.style.paddingTop = '20px'; // limite padding en haut pour Messenger
+}
+  
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
