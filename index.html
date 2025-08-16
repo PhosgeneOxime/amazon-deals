@@ -971,6 +971,16 @@ let itemsPerPage = 100;
 let currentDisplayData = [];
 let isAllDealsMode = true;
 
+// Fonction pour mélanger un tableau de manière aléatoire (algorithme Fisher-Yates)
+function shuffleArray(array) {
+  const shuffled = [...array]; // Créer une copie pour ne pas modifier l'original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // Fonction pour calculer le prix régulier
 function calculateRegularPrice(currentPrice, discountPercent) {
   const cleanPrice = parseFloat(currentPrice.replace(/[^\d.-]/g, ''));
@@ -1093,15 +1103,15 @@ function displayProducts(products, title = '📦 All Deals') {
   productsDiv.innerHTML = html;
 }
 
-// Fonction pour afficher tous les deals
+// Fonction pour afficher tous les deals (MODIFIÉE pour randomiser)
 function displayAllDeals() {
   if (data.length === 0) return;
   
-  // Trier par pourcentage de réduction décroissant
-  const sortedDeals = data.sort((a, b) => parseFloat(b.percent || '0') - parseFloat(a.percent || '0'));
+  // Mélanger aléatoirement les deals au lieu de les trier
+  const randomizedDeals = shuffleArray(data);
   
-  currentDisplayData = sortedDeals;
-  displayDataWithPagination(sortedDeals, `📦 All Deals (${sortedDeals.length} deals)`);
+  currentDisplayData = randomizedDeals;
+  displayDataWithPagination(randomizedDeals, `📦 All Deals (${randomizedDeals.length} deals)`);
 }
 
 // Fonction de pagination
@@ -1200,7 +1210,7 @@ function changeItemsPerPage(newItemsPerPage) {
   goToPage(1);
 }
 
-// Affichage des produits par mot-clé
+// Affichage des produits par mot-clé (MODIFIÉE pour randomiser aussi)
 function displayProductsByKeyword(keyword) {
   const filtered = data.filter(p => p.keyword === keyword);
   
@@ -1216,7 +1226,8 @@ function displayProductsByKeyword(keyword) {
   }
   
   isAllDealsMode = false;
-  currentDisplayData = filtered.sort((a, b) => parseFloat(b.percent || '0') - parseFloat(a.percent || '0'));
+  // Randomiser aussi les produits par catégorie
+  currentDisplayData = shuffleArray(filtered);
   
   displayDataWithPagination(
     currentDisplayData, 
@@ -1447,14 +1458,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fermer sidebar avec overlay
   sidebarOverlay.addEventListener('click', closeSidebar);
   
-  // All deals button
+  // All deals button (MODIFIÉE pour re-randomiser)
   btnAllDeals.addEventListener('click', () => {
     selectedKeyword = null;
     isAllDealsMode = true;
     currentPage = 1;
     searchBox.value = '';
     document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-    displayAllDeals();
+    displayAllDeals(); // Ceci va automatiquement re-randomiser
     if(window.innerWidth <= 700) {
       closeSidebar();
     }
