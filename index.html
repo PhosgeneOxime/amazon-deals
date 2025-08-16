@@ -190,7 +190,7 @@
     background: var(--dark-bg);
   }
 
-  #btnTopDeals {
+  #btnAllDeals {
     width: 100%;
     background: var(--primary-gradient);
     color: white;
@@ -210,7 +210,7 @@
     letter-spacing: 0.5px;
   }
 
-  #btnTopDeals::before {
+  #btnAllDeals::before {
     content: '';
     position: absolute;
     top: 0;
@@ -221,18 +221,18 @@
     transition: left 0.6s;
   }
 
-  #btnTopDeals:hover::before {
+  #btnAllDeals:hover::before {
     left: 100%;
   }
   
-  #btnTopDeals:hover,
-  #btnTopDeals:focus {
+  #btnAllDeals:hover,
+  #btnAllDeals:focus {
     outline: none;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
   }
 
-  #btnTopDeals:active {
+  #btnAllDeals:active {
     transform: translateY(0);
   }
   
@@ -907,7 +907,7 @@
 
     <input type="search" id="searchBox" placeholder="🔍 Search amazing deals..." aria-label="Search products" autocomplete="off" />
 
-    <button id="btnTopDeals" aria-label="Show All Deals">🔥 Top Deals</button>
+    <button id="btnAllDeals" aria-label="Show All Deals">📦 All Deals</button>
   </div>
   
 <div class="sidebar-content">
@@ -920,7 +920,7 @@
 <button id="toggleSidebarBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">☰</button>
 
 <div id="content" tabindex="0">
-  <h2 id="mainTitle">🔥 All Deals</h2>
+  <h2 id="mainTitle">📦 All Deals</h2>
   
   <div class="welcome-section" style="
     padding: 24px;
@@ -960,16 +960,16 @@ const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 const toggleBtn = document.getElementById('toggleSidebarBtn');
 const mainTitle = document.getElementById('mainTitle');
-const btnTopDeals = document.getElementById('btnTopDeals');
+const btnAllDeals = document.getElementById('btnAllDeals');
 const searchBox = document.getElementById('searchBox');
 
 let data = [];
 let keywordsSet = new Set();
 let selectedKeyword = null;
 let currentPage = 1;
-let itemsPerPage = 20;
+let itemsPerPage = 100;
 let currentDisplayData = [];
-let isTopDealsMode = true;
+let isAllDealsMode = true;
 
 // Fonction pour calculer le prix régulier
 function calculateRegularPrice(currentPrice, discountPercent) {
@@ -1031,7 +1031,7 @@ function parseCSV(text) {
 }
 
 // Fonction pour afficher les produits avec prix régulier et rabais
-function displayProducts(products, title = '🔥 All Deals') {
+function displayProducts(products, title = '📦 All Deals') {
   if (!products || products.length === 0) {
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
@@ -1093,20 +1093,15 @@ function displayProducts(products, title = '🔥 All Deals') {
   productsDiv.innerHTML = html;
 }
 
-// Fonction pour afficher les top deals
-function displayRandomTopDeals() {
+// Fonction pour afficher tous les deals
+function displayAllDeals() {
   if (data.length === 0) return;
   
-  // Filtrer et trier par pourcentage de réduction
-  const dealsWithDiscount = data.filter(p => parseFloat(p.percent || '0') > 0);
-  const sortedDeals = dealsWithDiscount.sort((a, b) => parseFloat(b.percent || '0') - parseFloat(a.percent || '0'));
+  // Trier par pourcentage de réduction décroissant
+  const sortedDeals = data.sort((a, b) => parseFloat(b.percent || '0') - parseFloat(a.percent || '0'));
   
-  // Prendre les 50 meilleurs deals et les mélanger
-  const topDeals = sortedDeals.slice(0, 50);
-  const shuffledDeals = topDeals.sort(() => Math.random() - 0.5);
-  
-  currentDisplayData = shuffledDeals;
-  displayDataWithPagination(shuffledDeals, `🔥 Top Deals (${shuffledDeals.length} amazing offers)`);
+  currentDisplayData = sortedDeals;
+  displayDataWithPagination(sortedDeals, `📦 All Deals (${sortedDeals.length} deals)`);
 }
 
 // Fonction de pagination
@@ -1191,8 +1186,8 @@ function createPageNumbers(currentPage, totalPages) {
 // Fonctions de navigation
 function goToPage(page) {
   currentPage = page;
-  if (isTopDealsMode) {
-    displayDataWithPagination(currentDisplayData, `🔥 Top Deals (${currentDisplayData.length} amazing offers)`);
+  if (isAllDealsMode) {
+    displayDataWithPagination(currentDisplayData, `📦 All Deals (${currentDisplayData.length} deals)`);
   } else if (selectedKeyword) {
     displayProductsByKeyword(selectedKeyword);
   }
@@ -1220,7 +1215,7 @@ function displayProductsByKeyword(keyword) {
     return;
   }
   
-  isTopDealsMode = false;
+  isAllDealsMode = false;
   currentDisplayData = filtered.sort((a, b) => parseFloat(b.percent || '0') - parseFloat(a.percent || '0'));
   
   displayDataWithPagination(
@@ -1403,7 +1398,7 @@ fetch('sitemap.xml')
       });
       
       displayKeywords([...keywordsSet].sort());
-      displayRandomTopDeals();
+      displayAllDeals();
       
       showNotification('✨ Deals loaded successfully!', 'success');
     })
@@ -1452,14 +1447,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fermer sidebar avec overlay
   sidebarOverlay.addEventListener('click', closeSidebar);
   
-  // Top deals button
-  btnTopDeals.addEventListener('click', () => {
+  // All deals button
+  btnAllDeals.addEventListener('click', () => {
     selectedKeyword = null;
-    isTopDealsMode = true;
+    isAllDealsMode = true;
     currentPage = 1;
     searchBox.value = '';
     document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-    displayRandomTopDeals();
+    displayAllDeals();
     if(window.innerWidth <= 700) {
       closeSidebar();
     }
