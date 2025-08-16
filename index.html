@@ -975,10 +975,10 @@ function displayProducts(products, title = '🔥 All Deals') {
     const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
     const savings = regularPrice ? (parseFloat(regularPrice) - parseFloat(currentPrice.replace(/[^\d.-]/g, ''))).toFixed(2) : null;
 
-    // Gérer l'image
+    // Gérer l'image - CORRIGÉ POUR UTILISER imageUrl
     let imageHtml;
-    if (product.image && product.image.trim() && product.image !== 'N/A') {
-      imageHtml = `<img class="product-image" src="${product.image}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=\\"image-placeholder\\"></div>';">`;
+    if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
+      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=\\"image-placeholder\\"></div>';">`;
     } else {
       imageHtml = '<div class="image-placeholder"></div>';
     }
