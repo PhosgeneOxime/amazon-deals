@@ -713,6 +713,52 @@
     border: 1px solid var(--dark-border);
   }
 
+  .pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .items-per-page-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .items-per-page-container select {
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--dark-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+
+  .page-info {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .pagination-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 8px;
+  }
+
   .pagination-btn, .page-number-btn {
     background: var(--dark-bg);
     border: 1px solid var(--dark-border);
@@ -721,12 +767,28 @@
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: auto;
+    white-space: nowrap;
   }
 
   .pagination-btn:hover:not(:disabled), .page-number-btn:hover {
     background: rgba(37, 99, 235, 0.1);
     border-color: var(--primary-blue);
     transform: translateY(-1px);
+  }
+
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .page-number-btn {
+    padding: 8px 12px;
+    min-width: 40px;
+    text-align: center;
   }
 
   .page-number-btn.active {
@@ -812,6 +874,21 @@
     .image-placeholder {
       width: 120px;
       height: 120px;
+    }
+
+    .pagination-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .page-numbers {
+      margin: 0;
+    }
+
+    .pagination-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
   }
 </style>
@@ -978,7 +1055,7 @@ function displayProducts(products, title = '🔥 All Deals') {
     // Gérer l'image - CORRIGÉ POUR UTILISER imageUrl
     let imageHtml;
     if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
-      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=\\"image-placeholder\\"></div>';">`;
+      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
     } else {
       imageHtml = '<div class="image-placeholder"></div>';
     }
