@@ -166,28 +166,60 @@
     width: 100%;
     padding: 16px 20px;
     margin-bottom: 18px;
-    border: 1px solid var(--glass-border);
+    border: 2px solid #e2e8f0;
     border-radius: var(--border-radius);
     font-size: 16px;
     box-sizing: border-box;
-    background: var(--dark-card);
+    background: white;
     transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(37, 99, 235, 0);
     font-weight: 500;
     position: relative;
-    color: var(--text-primary);
+    color: #1e293b;
   }
 
   #searchBox::placeholder {
-    color: var(--text-muted);
+    color: #64748b;
     font-weight: 400;
   }
 
   #searchBox:focus {
     outline: none;
     border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 4px 12px rgba(37, 99, 235, 0.2);
-    background: var(--dark-bg);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15), 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: #fefefe;
+    transform: translateY(-1px);
+  }
+
+  /* Clear search button */
+  .search-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 50%;
+    transition: var(--transition);
+    display: none;
+  }
+
+  .clear-search:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: #1e293b;
+  }
+
+  .clear-search.visible {
+    display: block;
   }
 
   #btnAllDeals {
@@ -870,6 +902,15 @@
     font-size: 24px;
   }
 
+  /* Highlight search terms */
+  .highlight {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--primary-blue);
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+
   @media (max-width: 700px) {
     .image-placeholder {
       width: 120px;
@@ -905,7 +946,10 @@
     <div id="productCount">Loading product count...</div>
     <div id="updateDate"></div>
 
-    <input type="search" id="searchBox" placeholder="🔍 Search amazing deals..." aria-label="Search products" autocomplete="off" />
+    <div class="search-container">
+      <input type="search" id="searchBox" placeholder="🔍 Search in all deals..." aria-label="Search products" autocomplete="off" />
+      <button class="clear-search" id="clearSearch" aria-label="Clear search">×</button>
+    </div>
 
     <button id="btnAllDeals" aria-label="Show All Deals">📦 All Deals</button>
   </div>
@@ -962,6 +1006,7 @@ const toggleBtn = document.getElementById('toggleSidebarBtn');
 const mainTitle = document.getElementById('mainTitle');
 const btnAllDeals = document.getElementById('btnAllDeals');
 const searchBox = document.getElementById('searchBox');
+const clearSearch = document.getElementById('clearSearch');
 
 let data = [];
 let keywordsSet = new Set();
@@ -970,6 +1015,8 @@ let currentPage = 1;
 let itemsPerPage = 100;
 let currentDisplayData = [];
 let isAllDealsMode = true;
+let isSearchMode = false;
+let currentSearchQuery = '';
 
 // Fonction pour mélanger un tableau de manière aléatoire (algorithme Fisher-Yates)
 function shuffleArray(array) {
@@ -1003,6 +1050,39 @@ function formatPrice(price) {
 // Fonction pour capitalizer les mots
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Fonction pour surligner les termes de recherche
+function highlightSearchTerms(text, searchTerms) {
+  if (!text || !searchTerms || searchTerms.length === 0) return text;
+  
+  let highlightedText = text;
+  searchTerms.forEach(term => {
+    if (term.length > 2) { // Seulement surligner les termes de plus de 2 caractères
+      const regex = new RegExp(`(${term})`, 'gi');
+      highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
+    }
+  });
+  return highlightedText;
+}
+
+// Fonction de recherche dans tous les deals
+function searchInAllDeals(query) {
+  if (!query || query.trim() === '') {
+    return [];
+  }
+  
+  const searchTerms = query.toLowerCase().trim().split(/\s+/);
+  
+  return data.filter(product => {
+    const title = (product.title || '').toLowerCase();
+    const keyword = (product.keyword || '').toLowerCase();
+    
+    // Vérifier si tous les termes de recherche sont présents dans le titre ou le mot-clé
+    return searchTerms.every(term => 
+      title.includes(term) || keyword.includes(term)
+    );
+  });
 }
 
 // Parser CSV
@@ -1047,7 +1127,7 @@ function displayProducts(products, title = '📦 All Deals') {
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
         <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
         <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No products found</h3>
-        <p style="font-size: 14px;">Try selecting a different category or search for something else.</p>
+        <p style="font-size: 14px;">Try a different search term or browse our categories.</p>
       </div>
     `;
     return;
@@ -1062,7 +1142,7 @@ function displayProducts(products, title = '📦 All Deals') {
     const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
     const savings = regularPrice ? (parseFloat(regularPrice) - parseFloat(currentPrice.replace(/[^\d.-]/g, ''))).toFixed(2) : null;
 
-    // Gérer l'image - CORRIGÉ POUR UTILISER imageUrl
+    // Gérer l'image
     let imageHtml;
     if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
       imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
@@ -1070,12 +1150,19 @@ function displayProducts(products, title = '📦 All Deals') {
       imageHtml = '<div class="image-placeholder"></div>';
     }
 
+    // Surligner les termes de recherche si on est en mode recherche
+    let productTitle = product.title || 'Product Title';
+    if (isSearchMode && currentSearchQuery) {
+      const searchTerms = currentSearchQuery.toLowerCase().trim().split(/\s+/);
+      productTitle = highlightSearchTerms(productTitle, searchTerms);
+    }
+
     html += `
       <a href="${product.link || '#'}" class="product" target="_blank" rel="noopener noreferrer" style="animation-delay: ${index * 0.05}s">
         ${imageHtml}
         
         <div class="product-content">
-          <strong>${product.title || 'Product Title'}</strong>
+          <strong>${productTitle}</strong>
           
           <div class="price-section">
             <div class="price-row">
@@ -1111,6 +1198,8 @@ function displayAllDeals() {
   const randomizedDeals = shuffleArray(data);
   
   currentDisplayData = randomizedDeals;
+  isAllDealsMode = true;
+  isSearchMode = false;
   displayDataWithPagination(randomizedDeals, `📦 All Deals (${randomizedDeals.length} deals)`);
 }
 
@@ -1196,7 +1285,9 @@ function createPageNumbers(currentPage, totalPages) {
 // Fonctions de navigation
 function goToPage(page) {
   currentPage = page;
-  if (isAllDealsMode) {
+  if (isSearchMode) {
+    displayDataWithPagination(currentDisplayData, `🔍 Search: "${currentSearchQuery}" (${currentDisplayData.length} results)`);
+  } else if (isAllDealsMode) {
     displayDataWithPagination(currentDisplayData, `📦 All Deals (${currentDisplayData.length} deals)`);
   } else if (selectedKeyword) {
     displayProductsByKeyword(selectedKeyword);
@@ -1226,6 +1317,7 @@ function displayProductsByKeyword(keyword) {
   }
   
   isAllDealsMode = false;
+  isSearchMode = false;
   // Randomiser aussi les produits par catégorie
   currentDisplayData = shuffleArray(filtered);
   
@@ -1233,6 +1325,61 @@ function displayProductsByKeyword(keyword) {
     currentDisplayData, 
     `📂 ${capitalizeWords(keyword)} (${currentDisplayData.length} deals)`
   );
+}
+
+// Fonction pour effectuer une recherche
+function performSearch(query) {
+  const trimmedQuery = query.trim();
+  
+  if (trimmedQuery === '') {
+    clearSearch.classList.remove('visible');
+    displayKeywords([...keywordsSet].sort());
+    return;
+  }
+  
+  clearSearch.classList.add('visible');
+  
+  const searchResults = searchInAllDeals(trimmedQuery);
+  isSearchMode = true;
+  isAllDealsMode = false;
+  currentSearchQuery = trimmedQuery;
+  currentPage = 1;
+  currentDisplayData = searchResults;
+  
+  if (searchResults.length === 0) {
+    productsDiv.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No results found for "${trimmedQuery}"</h3>
+        <p style="font-size: 14px;">Try different keywords or browse our categories below.</p>
+      </div>
+    `;
+    mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 results)`;
+  } else {
+    displayDataWithPagination(searchResults, `🔍 Search: "${trimmedQuery}" (${searchResults.length} results)`);
+  }
+  
+  // Aussi filtrer les mots-clés dans la sidebar
+  const filteredKeywords = [...keywordsSet].filter(kw => 
+    kw.toLowerCase().includes(trimmedQuery.toLowerCase())
+  );
+  displayKeywords(filteredKeywords);
+}
+
+// Fonction pour effacer la recherche
+function clearSearchBox() {
+  searchBox.value = '';
+  currentSearchQuery = '';
+  clearSearch.classList.remove('visible');
+  isSearchMode = false;
+  
+  // Remettre tous les mots-clés
+  displayKeywords([...keywordsSet].sort());
+  
+  // Remettre tous les deals si on était en mode recherche
+  if (!selectedKeyword) {
+    displayAllDeals();
+  }
 }
 
 // Affichage des mots-clés
@@ -1248,6 +1395,9 @@ function displayKeywords(keywords) {
     li.addEventListener('click', () => {
       selectedKeyword = kw;
       searchBox.value = '';
+      clearSearch.classList.remove('visible');
+      currentSearchQuery = '';
+      isSearchMode = false;
       currentPage = 1;
       displayProductsByKeyword(kw);
       document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
@@ -1462,9 +1612,13 @@ document.addEventListener('DOMContentLoaded', () => {
   btnAllDeals.addEventListener('click', () => {
     selectedKeyword = null;
     isAllDealsMode = true;
+    isSearchMode = false;
     currentPage = 1;
     searchBox.value = '';
+    clearSearch.classList.remove('visible');
+    currentSearchQuery = '';
     document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+    displayKeywords([...keywordsSet].sort());
     displayAllDeals(); // Ceci va automatiquement re-randomiser
     if(window.innerWidth <= 700) {
       closeSidebar();
@@ -1476,19 +1630,20 @@ document.addEventListener('DOMContentLoaded', () => {
   searchBox.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      const query = e.target.value.toLowerCase().trim();
-      
-      if (query === '') {
-        displayKeywords([...keywordsSet].sort());
-        return;
-      }
-      
-      const filteredKeywords = [...keywordsSet].filter(kw => 
-        kw.toLowerCase().includes(query)
-      );
-      
-      displayKeywords(filteredKeywords);
+      performSearch(e.target.value);
     }, 300);
+  });
+  
+  // Clear search button
+  clearSearch.addEventListener('click', clearSearchBox);
+  
+  // Enter key pour recherche
+  searchBox.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(searchTimeout);
+      performSearch(e.target.value);
+    }
   });
 });
 
