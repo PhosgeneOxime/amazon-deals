@@ -268,7 +268,7 @@
     transform: translateY(0);
   }
   
-  ul.keyword-list {
+  ul.category-list {
     list-style: none;
     padding-left: 0;
     margin: 0;
@@ -281,20 +281,20 @@
     scrollbar-color: var(--primary-blue) transparent;
   }
 
-  ul.keyword-list::-webkit-scrollbar {
+  ul.category-list::-webkit-scrollbar {
     width: 6px;
   }
 
-  ul.keyword-list::-webkit-scrollbar-track {
+  ul.category-list::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  ul.keyword-list::-webkit-scrollbar-thumb {
+  ul.category-list::-webkit-scrollbar-thumb {
     background: var(--primary-blue);
     border-radius: 3px;
   }
   
-  ul.keyword-list li {
+  ul.category-list li {
     cursor: pointer;
     padding: 14px 18px;
     margin-bottom: 8px;
@@ -306,9 +306,12 @@
     font-weight: 500;
     border: 1px solid var(--dark-border);
     position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  ul.keyword-list li::before {
+  ul.category-list li::before {
     content: '';
     position: absolute;
     top: 0;
@@ -320,18 +323,38 @@
     transition: transform 0.3s ease;
     border-radius: 12px 12px 0 0;
   }
+
+  .category-name {
+    flex: 1;
+  }
+
+  .category-count {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--text-accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+  }
   
-  ul.keyword-list li:hover,
-  ul.keyword-list li.active {
+  ul.category-list li:hover,
+  ul.category-list li.active {
     background: rgba(37, 99, 235, 0.15);
     color: var(--text-primary);
     transform: translateX(8px);
     border-color: var(--primary-blue);
   }
 
-  ul.keyword-list li:hover::before,
-  ul.keyword-list li.active::before {
+  ul.category-list li:hover::before,
+  ul.category-list li.active::before {
     transform: scaleX(1);
+  }
+
+  ul.category-list li:hover .category-count,
+  ul.category-list li.active .category-count {
+    background: rgba(37, 99, 235, 0.4);
+    color: white;
   }
   
   #content {
@@ -955,7 +978,7 @@
   </div>
   
 <div class="sidebar-content">
-    <ul class="keyword-list" id="keywordList" tabindex="0"></ul>
+    <ul class="category-list" id="categoryList" tabindex="0"></ul>
     
     <div id="google_translate_element"></div>
   </div>
@@ -996,7 +1019,7 @@
 
 <script>
 // Variables globales
-const keywordList = document.getElementById('keywordList');
+const categoryList = document.getElementById('categoryList');
 const productsDiv = document.getElementById('products');
 const productCountDiv = document.getElementById('productCount');
 const updateDateDiv = document.getElementById('updateDate');
@@ -1009,8 +1032,8 @@ const searchBox = document.getElementById('searchBox');
 const clearSearch = document.getElementById('clearSearch');
 
 let data = [];
-let keywordsSet = new Set();
-let selectedKeyword = null;
+let categoriesMap = new Map(); // Map pour stocker les catégories avec leurs produits
+let selectedCategory = null;
 let currentPage = 1;
 let itemsPerPage = 100;
 let currentDisplayData = [];
@@ -1077,10 +1100,11 @@ function searchInAllDeals(query) {
   return data.filter(product => {
     const title = (product.title || '').toLowerCase();
     const keyword = (product.keyword || '').toLowerCase();
+    const category = (product.category || '').toLowerCase();
     
-    // Vérifier si tous les termes de recherche sont présents dans le titre ou le mot-clé
+    // Vérifier si tous les termes de recherche sont présents dans le titre, mot-clé ou catégorie
     return searchTerms.every(term => 
-      title.includes(term) || keyword.includes(term)
+      title.includes(term) || keyword.includes(term) || category.includes(term)
     );
   });
 }
@@ -1092,22 +1116,48 @@ function parseCSV(text) {
     if (lines.length === 0) throw new Error('Empty CSV file');
     
     const headerLine = lines.shift();
-    const regex = /("([^"]|"")*"|[^,]+)/g;
-    const headers = headerLine.match(regex)?.map(h => h.replace(/(^"|"$)/g, '')) || [];
+    // Améliorer le regex pour mieux gérer les CSV avec des guillemets
+    const headers = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < headerLine.length; i++) {
+      const char = headerLine[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        headers.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    headers.push(current.trim());
 
     return lines.map((line, index) => {
       try {
-        const matches = line.match(regex);
-        if (!matches) return null;
+        const values = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        values.push(current.trim().replace(/^"|"$/g, ''));
         
         const obj = {};
         headers.forEach((h, i) => {
-          let val = matches[i] || '';
-          if(val.startsWith('"') && val.endsWith('"')) {
-            val = val.slice(1, -1).replace(/""/g, '"');
-          }
-          obj[h] = val;
+          obj[h] = values[i] || '';
         });
+        
         return obj;
       } catch (error) {
         console.warn(`Error parsing CSV line ${index + 2}:`, error);
@@ -1118,6 +1168,40 @@ function parseCSV(text) {
     console.error('Error parsing CSV:', error);
     return [];
   }
+}
+
+// Fonction pour organiser les données par catégories
+function organizeDataByCategories(data) {
+  const categories = new Map();
+  
+  data.forEach((product, index) => {
+    // Debug: voir les clés disponibles pour les premiers produits
+    if (index < 3) {
+      console.log(`Product ${index}:`, Object.keys(product), product);
+    }
+    
+    // Essayer différentes variantes du nom de colonne
+    let category = product.category || product.Category || product['category'] || product['"category"'] || product['category"'] || product['"category'];
+    
+    // Nettoyer la catégorie
+    if (category && typeof category === 'string') {
+      category = category.trim().replace(/^"|"$/g, '');
+    }
+    
+    if (!category || category === '') {
+      category = 'Uncategorized';
+    }
+    
+    console.log(`Product "${product.title?.substring(0, 30)}..." -> Category: "${category}"`);
+    
+    if (!categories.has(category)) {
+      categories.set(category, []);
+    }
+    categories.get(category).push(product);
+  });
+  
+  console.log('Categories found:', [...categories.keys()]);
+  return categories;
 }
 
 // Fonction pour afficher les produits avec prix régulier et rabais
@@ -1190,11 +1274,11 @@ function displayProducts(products, title = '📦 All Deals') {
   productsDiv.innerHTML = html;
 }
 
-// Fonction pour afficher tous les deals (MODIFIÉE pour randomiser)
+// Fonction pour afficher tous les deals (randomisés)
 function displayAllDeals() {
   if (data.length === 0) return;
   
-  // Mélanger aléatoirement les deals au lieu de les trier
+  // Mélanger aléatoirement les deals
   const randomizedDeals = shuffleArray(data);
   
   currentDisplayData = randomizedDeals;
@@ -1289,8 +1373,8 @@ function goToPage(page) {
     displayDataWithPagination(currentDisplayData, `🔍 Search: "${currentSearchQuery}" (${currentDisplayData.length} results)`);
   } else if (isAllDealsMode) {
     displayDataWithPagination(currentDisplayData, `📦 All Deals (${currentDisplayData.length} deals)`);
-  } else if (selectedKeyword) {
-    displayProductsByKeyword(selectedKeyword);
+  } else if (selectedCategory) {
+    displayProductsByCategory(selectedCategory);
   }
   document.getElementById('content').scrollTop = 0;
 }
@@ -1301,11 +1385,11 @@ function changeItemsPerPage(newItemsPerPage) {
   goToPage(1);
 }
 
-// Affichage des produits par mot-clé (MODIFIÉE pour randomiser aussi)
-function displayProductsByKeyword(keyword) {
-  const filtered = data.filter(p => p.keyword === keyword);
+// Affichage des produits par catégorie (randomisés)
+function displayProductsByCategory(category) {
+  const categoryProducts = categoriesMap.get(category) || [];
   
-  if(filtered.length === 0) {
+  if(categoryProducts.length === 0) {
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
         <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
@@ -1319,11 +1403,11 @@ function displayProductsByKeyword(keyword) {
   isAllDealsMode = false;
   isSearchMode = false;
   // Randomiser aussi les produits par catégorie
-  currentDisplayData = shuffleArray(filtered);
+  currentDisplayData = shuffleArray(categoryProducts);
   
   displayDataWithPagination(
     currentDisplayData, 
-    `📂 ${capitalizeWords(keyword)} (${currentDisplayData.length} deals)`
+    `🏷️ ${capitalizeWords(category)} (${currentDisplayData.length} deals)`
   );
 }
 
@@ -1333,7 +1417,7 @@ function performSearch(query) {
   
   if (trimmedQuery === '') {
     clearSearch.classList.remove('visible');
-    displayKeywords([...keywordsSet].sort());
+    displayCategories();
     return;
   }
   
@@ -1359,11 +1443,11 @@ function performSearch(query) {
     displayDataWithPagination(searchResults, `🔍 Search: "${trimmedQuery}" (${searchResults.length} results)`);
   }
   
-  // Aussi filtrer les mots-clés dans la sidebar
-  const filteredKeywords = [...keywordsSet].filter(kw => 
-    kw.toLowerCase().includes(trimmedQuery.toLowerCase())
+  // Aussi filtrer les catégories dans la sidebar
+  const filteredCategories = [...categoriesMap.keys()].filter(category => 
+    category.toLowerCase().includes(trimmedQuery.toLowerCase())
   );
-  displayKeywords(filteredKeywords);
+  displayCategories(filteredCategories);
 }
 
 // Fonction pour effacer la recherche
@@ -1373,34 +1457,40 @@ function clearSearchBox() {
   clearSearch.classList.remove('visible');
   isSearchMode = false;
   
-  // Remettre tous les mots-clés
-  displayKeywords([...keywordsSet].sort());
+  // Remettre toutes les catégories
+  displayCategories();
   
   // Remettre tous les deals si on était en mode recherche
-  if (!selectedKeyword) {
+  if (!selectedCategory) {
     displayAllDeals();
   }
 }
 
-// Affichage des mots-clés
-function displayKeywords(keywords) {
+// Affichage des catégories
+function displayCategories(categoriesToShow = null) {
   const fragment = document.createDocumentFragment();
+  const categoriesToDisplay = categoriesToShow || [...categoriesMap.keys()].sort();
   
-  keywords.forEach((kw, index) => {
+  categoriesToDisplay.forEach((category, index) => {
+    const productCount = categoriesMap.get(category).length;
     const li = document.createElement('li');
-    li.textContent = capitalizeWords(kw);
     li.style.animationDelay = `${index * 0.03}s`;
     li.style.animation = 'slideInUp 0.4s ease forwards';
     
+    li.innerHTML = `
+      <span class="category-name">${capitalizeWords(category)}</span>
+      <span class="category-count">${productCount}</span>
+    `;
+    
     li.addEventListener('click', () => {
-      selectedKeyword = kw;
+      selectedCategory = category;
       searchBox.value = '';
       clearSearch.classList.remove('visible');
       currentSearchQuery = '';
       isSearchMode = false;
       currentPage = 1;
-      displayProductsByKeyword(kw);
-      document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
+      displayProductsByCategory(category);
+      document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
       li.classList.add('active');
       if(window.innerWidth <= 700) {
         closeSidebar();
@@ -1410,8 +1500,8 @@ function displayKeywords(keywords) {
     fragment.appendChild(li);
   });
   
-  keywordList.innerHTML = '';
-  keywordList.appendChild(fragment);
+  categoryList.innerHTML = '';
+  categoryList.appendChild(fragment);
 }
 
 // Animation du compteur
@@ -1516,49 +1606,57 @@ function loadData(retries = 3) {
       
       animateCounter(productCountDiv, data.length, '📦 Today\'s Products: ');
 
-fetch('sitemap.xml')
-  .then(res => res.text())
-  .then(xmlText => {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    const lastmodElement = xmlDoc.querySelector('lastmod');
-    
-    if (lastmodElement) {
-      const lastModDate = new Date(lastmodElement.textContent);
-      const options = { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      };
-      updateDateDiv.innerHTML = `📅 Updated: ${lastModDate.toLocaleDateString('en-US', options)}`;
-    } else {
-      // Fallback si pas de sitemap
-      const today = new Date();
-      updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
-    }
-  })
-  .catch(() => {
-    // Fallback en cas d'erreur
-    const today = new Date();
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
-  });
+      fetch('sitemap.xml')
+        .then(res => res.text())
+        .then(xmlText => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+          const lastmodElement = xmlDoc.querySelector('lastmod');
+          
+          if (lastmodElement) {
+            const lastModDate = new Date(lastmodElement.textContent);
+            const options = { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            };
+            updateDateDiv.innerHTML = `📅 Updated: ${lastModDate.toLocaleDateString('en-US', options)}`;
+          } else {
+            // Fallback si pas de sitemap
+            const today = new Date();
+            const options = { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            };
+            updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
+          }
+        })
+        .catch(() => {
+          // Fallback en cas d'erreur
+          const today = new Date();
+          const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          };
+          updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
+        });
 
-      data.forEach(item => {
-        if (item.keyword && item.keyword.trim()) {
-          keywordsSet.add(item.keyword.trim());
-        }
-      });
+      // Debug: voir les données parsées
+      console.log('First 3 products:', data.slice(0, 3));
+      console.log('Headers found:', Object.keys(data[0] || {}));
       
-      displayKeywords([...keywordsSet].sort());
+      // Organiser les données par catégories
+      categoriesMap = organizeDataByCategories(data);
+      
+      displayCategories();
       displayAllDeals();
       
       showNotification('✨ Deals loaded successfully!', 'success');
@@ -1608,17 +1706,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fermer sidebar avec overlay
   sidebarOverlay.addEventListener('click', closeSidebar);
   
-  // All deals button (MODIFIÉE pour re-randomiser)
+  // All deals button (re-randomise)
   btnAllDeals.addEventListener('click', () => {
-    selectedKeyword = null;
+    selectedCategory = null;
     isAllDealsMode = true;
     isSearchMode = false;
     currentPage = 1;
     searchBox.value = '';
     clearSearch.classList.remove('visible');
     currentSearchQuery = '';
-    document.querySelectorAll('#keywordList li').forEach(el => el.classList.remove('active'));
-    displayKeywords([...keywordsSet].sort());
+    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+    displayCategories();
     displayAllDeals(); // Ceci va automatiquement re-randomiser
     if(window.innerWidth <= 700) {
       closeSidebar();
