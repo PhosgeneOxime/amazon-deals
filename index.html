@@ -1469,7 +1469,8 @@ function clearSearchBox() {
 // Affichage des catégories
 function displayCategories(categoriesToShow = null) {
   const fragment = document.createDocumentFragment();
-  const categoriesToDisplay = categoriesToShow || [...categoriesMap.keys()].sort();
+  // Trier alphabétiquement toutes les catégories (insensible à la casse)
+  const categoriesToDisplay = categoriesToShow || [...categoriesMap.keys()].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
   
   categoriesToDisplay.forEach((category, index) => {
     const productCount = categoriesMap.get(category).length;
@@ -1583,6 +1584,82 @@ function openSidebar() {
   toggleBtn.innerHTML = '✕';
 }
 
+// Fonction améliorée pour lire la date lastmod du sitemap
+async function loadSitemapDate() {
+  try {
+    const response = await fetch('sitemap.xml');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch sitemap: ${response.status}`);
+    }
+    
+    const xmlText = await response.text();
+    console.log('Sitemap XML content preview:', xmlText.substring(0, 500));
+    
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+    
+    // Vérifier s'il y a des erreurs de parsing
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      console.error('XML parsing error:', parserError.textContent);
+      throw new Error('XML parsing failed');
+    }
+    
+    // Chercher tous les éléments lastmod possibles
+    const lastmodElements = xmlDoc.querySelectorAll('lastmod');
+    console.log('Found lastmod elements:', lastmodElements.length);
+    
+    if (lastmodElements.length > 0) {
+      // Prendre le premier élément lastmod trouvé
+      const lastmodElement = lastmodElements[0];
+      const dateText = lastmodElement.textContent.trim();
+      console.log('Raw lastmod date:', dateText);
+      
+      if (dateText) {
+        const lastModDate = new Date(dateText);
+        
+        // Vérifier si la date est valide
+        if (!isNaN(lastModDate.getTime())) {
+          const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'America/Toronto' // Timezone pour le Québec
+          };
+          
+          const formattedDate = lastModDate.toLocaleDateString('en-US', options);
+          updateDateDiv.innerHTML = `📅 Updated: ${formattedDate}`;
+          console.log('Successfully parsed sitemap date:', formattedDate);
+          return;
+        } else {
+          console.warn('Invalid date format in sitemap:', dateText);
+        }
+      }
+    }
+    
+    // Si aucune date valide trouvée dans le sitemap
+    console.warn('No valid lastmod found in sitemap');
+    throw new Error('No valid lastmod found');
+    
+  } catch (error) {
+    console.error('Error loading sitemap date:', error);
+    
+    // Fallback: utiliser la date actuelle
+    const today = new Date();
+    const options = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Toronto'
+    };
+    updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
+  }
+}
+
 // Chargement des données
 function loadData(retries = 3) {
   productsDiv.innerHTML = `
@@ -1606,48 +1683,8 @@ function loadData(retries = 3) {
       
       animateCounter(productCountDiv, data.length, '📦 Today\'s Products: ');
 
-      fetch('sitemap.xml')
-        .then(res => res.text())
-        .then(xmlText => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-          const lastmodElement = xmlDoc.querySelector('lastmod');
-          
-          if (lastmodElement) {
-            const lastModDate = new Date(lastmodElement.textContent);
-            const options = { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            };
-            updateDateDiv.innerHTML = `📅 Updated: Aug 19, 2025, 05:48 AM`;
-          } else {
-            // Fallback si pas de sitemap
-            const today = new Date();
-            const options = { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            };
-            updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
-          }
-        })
-        .catch(() => {
-          // Fallback en cas d'erreur
-          const today = new Date();
-          const options = { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          };
-          updateDateDiv.innerHTML = `📅 Updated: ${today.toLocaleDateString('en-US', options)}`;
-        });
+      // Charger la date depuis le sitemap de manière améliorée
+      loadSitemapDate();
 
       // Debug: voir les données parsées
       console.log('First 3 products:', data.slice(0, 3));
