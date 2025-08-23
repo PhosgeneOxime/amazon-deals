@@ -1,4 +1,22 @@
 User-agent: *
 Allow: /
 
+# Sitemap
 Sitemap: https://dealnest.ca/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to admin areas (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+
+# Allow important files
+Allow: /logo.png
+Allow: /favicon.ico
+Allow: /*.css
+Allow: /*.js
+
+# Host directive
+Host: dealnest.ca
