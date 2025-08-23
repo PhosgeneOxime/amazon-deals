@@ -485,6 +485,7 @@
     overflow: visible;
     min-height: 480px;
     animation: slideInUp 0.4s ease forwards;
+    cursor: pointer;
   }
 
   .product::before {
@@ -1299,7 +1300,7 @@ function displayProducts(products, title = '📦 All Deals') {
     }
 
     html += `
-      <div class="product" style="animation-delay: ${index * 0.05}s">
+      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="window.open('${product.link || '#'}', '_blank');" style="cursor: pointer;">
         ${imageHtml}
         
         <div class="product-content">
@@ -1327,7 +1328,7 @@ function displayProducts(products, title = '📦 All Deals') {
           ` : ''}
           
           <div class="product-actions">
-            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer">
+            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">
               🛒 See Offer
             </a>
             <div class="share-buttons">
