@@ -462,26 +462,32 @@
     border-radius: 2px;
   }
   
-  a.product {
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+    align-items: start;
+  }
+
+  .product {
     background: #f8f9fa;
-    margin-bottom: 16px;
-    padding: 16px;
+    padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
-    flex-direction: row;
-    gap: 16px;
+    flex-direction: column;
     color: var(--text-dark);
     text-decoration: none;
     transition: var(--transition);
     border: 1px solid #d5d9d9;
     position: relative;
     overflow: visible;
-    align-items: flex-start;
+    min-height: 480px;
     animation: slideInUp 0.4s ease forwards;
   }
 
-  a.product::before {
+  .product::before {
     content: '';
     position: absolute;
     top: 0;
@@ -493,28 +499,26 @@
     transition: transform 0.3s ease;
   }
   
-  a.product:hover {
+  .product:hover {
     background: #e9ecef;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
     border-color: var(--amazon-orange);
   }
 
-  a.product:hover::before {
+  .product:hover::before {
     transform: scaleX(1);
   }
 
   .product-image {
-    width: 140px;
-    height: 140px;
+    width: 100%;
+    height: 180px;
     object-fit: contain;
-    border-radius: 12px;
-    background: rgba(248, 250, 252, 0.05);
-    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    border: 1px solid #d5d9d9;
     transition: var(--transition);
-    flex-shrink: 0;
-    padding: 8px;
-    box-sizing: border-box;
+    margin-bottom: 16px;
+    background: white;
   }
 
   .product-image:hover {
@@ -528,18 +532,19 @@
     flex-direction: column;
     min-width: 0;
     position: relative;
+    text-align: center;
   }
   
-  a.product strong {
-    font-weight: 400;
+  .product strong {
+    font-weight: 500;
     color: var(--text-dark);
-    font-size: 16px;
-    line-height: 1.3;
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e9ecef;
+    text-align: left;
+    min-height: 70px;
   }
 
   a.product p {
@@ -561,12 +566,14 @@
   .price-section {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    margin-bottom: 12px;
   }
 
   .price-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
   }
@@ -605,33 +612,43 @@
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
   }
   
+  .badges-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
   .savings {
     color: white;
     font-weight: 700;
     background: var(--success-gradient);
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 3px 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    margin-top: 8px;
-    font-size: 13px;
-    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-    text-transform: uppercase;
+    justify-content: center;
+    gap: 3px;
     letter-spacing: 0.3px;
   }
 
   .savings::before {
     content: '💰';
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .product-meta {
     display: flex;
     gap: 15px;
-    margin-top: 10px;
+    margin: 12px 0;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
   }
 
   .product-rating {
@@ -649,26 +666,64 @@
 
   /* Styles pour les boutons de partage */
   .product-actions {
-    margin-top: 12px;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+
+  .see-offer-btn {
+    background: var(--amazon-orange);
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(255, 153, 0, 0.3);
+    max-width: 140px;
+    justify-content: center;
+  }
+
+  .see-offer-btn:hover {
+    background: #e68900;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 153, 0, 0.4);
+  }
+
+  .see-offer-btn:active {
+    transform: translateY(0);
+  }
+
+  .share-buttons {
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .facebook-share-btn {
     background: #1877f2;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 11px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     box-shadow: 0 2px 4px rgba(24, 119, 242, 0.2);
   }
 
@@ -686,15 +741,15 @@
     background: #00b2ff;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 11px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     box-shadow: 0 2px 4px rgba(0, 178, 255, 0.2);
   }
 
@@ -712,15 +767,15 @@
     background: #000000;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 11px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
@@ -1244,7 +1299,7 @@ function displayProducts(products, title = '📦 All Deals') {
     }
 
     html += `
-      <a href="${product.link || '#'}" class="product" target="_blank" rel="noopener noreferrer" style="animation-delay: ${index * 0.05}s">
+      <div class="product" style="animation-delay: ${index * 0.05}s">
         ${imageHtml}
         
         <div class="product-content">
@@ -1254,9 +1309,11 @@ function displayProducts(products, title = '📦 All Deals') {
             <div class="price-row">
               <div class="current-price">${currentPrice}</div>
               ${regularPrice ? `<div class="regular-price">${regularPrice}</div>` : ''}
-              ${discountPercent > 0 ? `<div class="discount-badge">${discountPercent}% OFF</div>` : ''}
             </div>
-            ${savings && parseFloat(savings) > 0 ? `<div class="savings">Save ${savings}</div>` : ''}
+            <div class="badges-row">
+              ${discountPercent > 0 ? `<div class="discount-badge">${discountPercent}% OFF</div>` : ''}
+              ${savings && parseFloat(savings) > 0 ? `<div class="savings">Save ${savings}</div>` : ''}
+            </div>
           </div>
           
           ${product.rating ? `
@@ -1270,22 +1327,27 @@ function displayProducts(products, title = '📦 All Deals') {
           ` : ''}
           
           <div class="product-actions">
-            <button class="facebook-share-btn" onclick="shareOnFacebook('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on Facebook Timeline">
-              📢 Share
-            </button>
-            <button class="messenger-share-btn" onclick="shareOnFacebookMessenger('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share via Messenger">
-              💬 Message
-            </button>
-            <button class="twitter-share-btn" onclick="shareOnTwitter('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on X.com">
-              𝕏 Post
-            </button>
+            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer">
+              🛒 See Offer
+            </a>
+            <div class="share-buttons">
+              <button class="facebook-share-btn" onclick="shareOnFacebook('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on Facebook Timeline">
+                📢 Share
+              </button>
+              <button class="messenger-share-btn" onclick="shareOnFacebookMessenger('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share via Messenger">
+                💬 Message
+              </button>
+              <button class="twitter-share-btn" onclick="shareOnTwitter('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on X.com">
+                𝕏 Post
+              </button>
+            </div>
           </div>
         </div>
-      </a>
+      </div>
     `;
   });
 
-  productsDiv.innerHTML = html;
+  productsDiv.innerHTML = `<div class="products-grid">${html}</div>`;
 }
 
 
