@@ -882,6 +882,57 @@
   }
 
   @media (max-width: 700px) {
+    /* Cacher la sidebar par défaut sur mobile */
+    #sidebar {
+      position: fixed;
+      left: -100%;
+      top: 0;
+      z-index: 2000;
+      width: 280px;
+      height: 100vh;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #sidebar.open {
+      left: 0;
+    }
+
+    /* Overlay pour fermer la sidebar */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Afficher le bouton hamburger */
+    #toggleBtn {
+      display: flex !important;
+    }
+
+    /* Ajuster le contenu principal */
+    #content {
+      width: 100%;
+      margin-left: 0;
+      border-radius: 0;
+    }
+
+    .container {
+      flex-direction: column;
+    }
+
     .image-placeholder {
       width: 120px;
       height: 120px;
@@ -900,6 +951,19 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 10px;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .header {
+      padding: 15px 20px;
+    }
+
+    .header-title {
+      font-size: 20px;
     }
   }
 </style>
@@ -1541,11 +1605,8 @@ function performSearch(query) {
     displayDataWithPagination(searchResults, `🔍 Search: "${trimmedQuery}" (${searchResults.length} results)`);
   }
   
-  // Aussi filtrer les catégories dans la sidebar
-  const filteredCategories = [...categoriesMap.keys()].filter(category => 
-    category.toLowerCase().includes(trimmedQuery.toLowerCase())
-  );
-  displayCategories(filteredCategories);
+  // Garder toutes les catégories visibles pendant la recherche
+  displayCategories();
 }
 
 // Fonction pour effacer la recherche
