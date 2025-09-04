@@ -5,13 +5,13 @@
                             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://dealnest.ca/</loc>
-    <lastmod>2025-09-03T07:18:20-04:00</lastmod>
+    <lastmod>2025-09-04T07:18:30-04:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://dealnest.ca/index.html</loc>
-    <lastmod>2025-09-03T07:18:20-04:00</lastmod>
+    <lastmod>2025-09-04T07:18:30-04:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
