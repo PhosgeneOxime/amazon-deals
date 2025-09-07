@@ -847,6 +847,10 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     margin-right: 15px;
     font-weight: 600;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
   }
 
   /* Placeholder pour images */
@@ -1911,6 +1915,19 @@ function loadData(retries = 3) {
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
+  
+  // Add click event to logo to show all deals
+  const logo = document.getElementById('logo');
+  if (logo) {
+    logo.addEventListener('click', (e) => {
+      e.preventDefault();
+      displayAllDeals();
+      // Close sidebar on mobile when clicking the logo
+      if (window.innerWidth <= 700) {
+        closeSidebar();
+      }
+    });
+  }
   
   // Toggle sidebar
   toggleBtn.addEventListener('click', () => {
