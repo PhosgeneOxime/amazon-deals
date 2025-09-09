@@ -845,12 +845,14 @@
     cursor: pointer;
     transition: var(--transition);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    margin-right: 15px;
     font-weight: 600;
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1000;
+    z-index: 9999;
+    margin: 0;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   /* Placeholder pour images */
