@@ -1147,10 +1147,26 @@ function scrollToTop() {
   contentElement.scrollTop = 0;
 }
 
+// Fonction pour rafraîchir les publicités
+function refreshAds() {
+  if (window.googletag && googletag.pubads) {
+    googletag.cmd.push(function() {
+      googletag.pubads().refresh();
+    });
+  }
+}
+
 // Fonction principale de gestion des clics de catégories avec debouncing
 const handleCategoryClick = debounce((category, li) => {
   try {
     selectedCategory = category;
+    // Rafraîchir les publicités après un court délai pour laisser le temps au contenu de se charger
+    setTimeout(refreshAds, 500);
+    
+    // Fermer la sidebar sur mobile
+    if (window.innerWidth <= 700) {
+      closeSidebar();
+    }
     resetSearch();
     currentPage = 1;
     
@@ -1914,52 +1930,73 @@ function loadData(retries = 3) {
     });
 }
 
-// Event listeners
+// Écouteurs d'événements pour les clics sur le logo et le bouton All Deals
 document.addEventListener('DOMContentLoaded', () => {
+  // Rafraîchir les publicités au chargement initial
   loadData();
   
-  // Add click event to logo to show all deals
+  // Écouteur pour le clic sur le logo
   const logo = document.getElementById('logo');
   if (logo) {
     logo.addEventListener('click', (e) => {
       e.preventDefault();
+      // Rafraîchir les publicités
+      setTimeout(refreshAds, 500);
+      // Afficher tous les deals
       displayAllDeals();
-      // Close sidebar on mobile when clicking the logo
+      // Fermer la sidebar sur mobile
       if (window.innerWidth <= 700) {
         closeSidebar();
       }
     });
   }
   
-  // Toggle sidebar
-  toggleBtn.addEventListener('click', () => {
-    if (sidebar.classList.contains('open')) {
-      closeSidebar();
-    } else {
-      openSidebar();
-    }
-  });
+  // Écouteur pour le bouton All Deals
+  const allDealsBtn = document.getElementById('btnAllDeals');
+  // Gestion du bouton All Deals
+  if (allDealsBtn) {
+    allDealsBtn.addEventListener('click', () => {
+      // Rafraîchir les publicités
+      setTimeout(refreshAds, 500);
+      // Réinitialiser pour afficher tous les deals
+      selectedCategory = null;
+      isAllDealsMode = true;
+      isSearchMode = false;
+      currentPage = 1;
+      searchBox.value = '';
+      if (clearSearch) clearSearch.classList.remove('visible');
+      currentSearchQuery = '';
+      document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+      displayCategories();
+      displayAllDeals();
+      
+      // Fermer la sidebar sur mobile
+      if (window.innerWidth <= 700) {
+        closeSidebar();
+      }
+      
+      // Scroll to top
+      if (contentElement) {
+        contentElement.scrollTop = 0;
+      }
+    });
+  }
   
   // Fermer sidebar avec overlay
-  sidebarOverlay.addEventListener('click', closeSidebar);
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+  }
   
-  // All deals button (re-randomise)
-  btnAllDeals.addEventListener('click', () => {
-    selectedCategory = null;
-    isAllDealsMode = true;
-    isSearchMode = false;
-    currentPage = 1;
-    searchBox.value = '';
-    clearSearch.classList.remove('visible');
-    currentSearchQuery = '';
-    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
-    displayCategories();
-    displayAllDeals(); // Ceci va automatiquement re-randomiser
-    if(window.innerWidth <= 700) {
-      closeSidebar();
-    }
-    // Scroll to top
-    document.getElementById('content').scrollTop = 0;
+  // Initialisation du bouton de bascule du menu latéral
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
   });
   
   // Recherche avec debouncing optimisé
