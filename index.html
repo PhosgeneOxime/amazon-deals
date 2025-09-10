@@ -845,8 +845,14 @@
     cursor: pointer;
     transition: var(--transition);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    margin-right: 15px;
     font-weight: 600;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    margin: 0;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   /* Placeholder pour images */
@@ -1084,18 +1090,7 @@ const CONFIG = {
 };
 
 // Variables globales et cache DOM
-const categoryList = document.getElementById('categoryList');
-const productsDiv = document.getElementById('products');
-const productCountDiv = document.getElementById('productCount');
-const updateDateDiv = document.getElementById('updateDate');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-const toggleBtn = document.getElementById('toggleBtn');
-const mainTitle = document.getElementById('mainTitle');
-const btnAllDeals = document.getElementById('btnAllDeals');
-const searchBox = document.getElementById('searchBox');
-const clearSearch = document.getElementById('clearSearch');
-const contentElement = document.getElementById('content');
+let categoryList, productsDiv, productCountDiv, updateDateDiv, sidebar, sidebarOverlay, toggleBtn, mainTitle, btnAllDeals, searchBox, clearSearch, contentElement;
 
 let data = [];
 let categoriesMap = new Map(); // Map pour stocker les catégories avec leurs produits
@@ -1141,16 +1136,64 @@ function scrollToTop() {
   contentElement.scrollTop = 0;
 }
 
+// Fonction pour rafraîchir les publicités
+function refreshAds() {
+  if (window.googletag && googletag.pubads) {
+    console.log('Refreshing ads...');
+    googletag.cmd.push(function() {
+      try {
+        // D'abord nettoyer les publicités existantes
+        googletag.pubads().clear();
+        // Puis rafraîchir avec de nouvelles publicités
+        googletag.pubads().refresh(null, {changeCorrelator: true});
+        console.log('Ads refreshed successfully');
+      } catch (error) {
+        console.error('Error refreshing ads:', error);
+      }
+    });
+  } else {
+    console.warn('Google Tag not available for ad refresh');
+  }
+}
+
 // Fonction principale de gestion des clics de catégories avec debouncing
 const handleCategoryClick = debounce((category, li) => {
   try {
     selectedCategory = category;
+    
+    // Fermer la sidebar sur mobile
+    if (window.innerWidth <= 700) {
+      closeSidebar();
+    }
+    
     resetSearch();
     currentPage = 1;
     
-    displayProductsByCategory(category);
-    setActiveCategory(li);
-    scrollToTop();
+    // Afficher d'abord un indicateur de chargement
+    productsDiv.innerHTML = `
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading ${category} deals...</p>
+      </div>
+    `;
+    
+    // Forcer un rafraîchissement des publicités avant d'afficher les produits
+    if (window.googletag && googletag.pubads) {
+      googletag.cmd.push(function() {
+        googletag.pubads().clear();
+        googletag.pubads().refresh();
+      });
+    }
+    
+    // Attendre un court instant pour laisser les publicités se rafraîchir
+    setTimeout(() => {
+      displayProductsByCategory(category);
+      setActiveCategory(li);
+      scrollToTop();
+      
+      // Rafraîchir à nouveau après l'affichage des produits
+      setTimeout(refreshAds, 300);
+    }, 100);
     
     if (isMobile()) {
       closeSidebar();
@@ -1413,6 +1456,9 @@ function displayProducts(products, title = '📦 All Deals') {
   });
 
   productsDiv.innerHTML = `<div class="products-grid">${html}</div>`;
+  
+  // Rafraîchir les publicités après un court délai pour laisser le temps au contenu de se charger
+  setTimeout(refreshAds, 500);
 }
 
 
@@ -1460,7 +1506,12 @@ function displayDataWithPagination(products, title) {
 
   if (totalPages > 1) {
     const paginationHtml = createPaginationControls(currentPage, totalPages, products.length);
-    productsDiv.innerHTML += paginationHtml;
+    productsDiv.insertAdjacentHTML('beforeend', paginationHtml);
+  }
+  
+  // Faire défiler vers le haut de la liste des produits
+  if (contentElement) {
+    contentElement.scrollTop = 0;
   }
 }
 
@@ -1601,8 +1652,11 @@ function performSearch(query) {
       </div>
     `;
     mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 results)`;
+    // Rafraîchir les publicités même si aucun résultat n'est trouvé
+    setTimeout(refreshAds, 500);
   } else {
     displayDataWithPagination(searchResults, `🔍 Search: "${trimmedQuery}" (${searchResults.length} results)`);
+    // Le rafraîchissement des publicités sera géré par displayDataWithPagination via displayProducts
   }
   
   // Garder toutes les catégories visibles pendant la recherche
@@ -1843,6 +1897,15 @@ async function loadSitemapDate() {
 
 // Chargement des données
 function loadData(retries = 3) {
+  console.log('loadData called with retries:', retries);
+  
+  // Vérifier si productsDiv existe
+  productsDiv = document.getElementById('products');
+  if (!productsDiv) {
+    console.error('Could not find products div');
+    return;
+  }
+  
   productsDiv.innerHTML = `
     <div class="loading">
       <div class="loading-spinner"></div>
@@ -1850,19 +1913,30 @@ function loadData(retries = 3) {
     </div>
   `;
   
+  console.log('Fetching deals_clean.csv...');
+  
   fetch('deals_clean.csv')
     .then(res => {
+      console.log('Fetch response status:', res.status);
       if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.text();
     })
     .then(text => {
+      console.log('CSV data received, length:', text.length);
       data = parseCSV(text);
+      
+      console.log('Parsed data length:', data.length);
       
       if (data.length === 0) {
         throw new Error('No valid data found in CSV');
       }
       
-      animateCounter(productCountDiv, data.length, '📦 Today\'s Products: ');
+      // Vérifier si productCountDiv existe
+      if (productCountDiv) {
+        animateCounter(productCountDiv, data.length, '📦 Today\'s Products: ');
+      } else {
+        console.warn('productCountDiv not found');
+      }
 
       // Charger la date depuis le sitemap de manière améliorée
       loadSitemapDate();
@@ -1874,7 +1948,13 @@ function loadData(retries = 3) {
       // Organiser les données par catégories
       categoriesMap = organizeDataByCategories(data);
       
-      displayCategories();
+      // Vérifier si les éléments du DOM existent avant d'appeler les fonctions
+      if (categoryList) {
+        displayCategories();
+      } else {
+        console.error('categoryList not found');
+      }
+      
       displayAllDeals();
       
       showNotification('✨ Deals loaded successfully!', 'success');
@@ -1901,68 +1981,135 @@ function loadData(retries = 3) {
             ">🔄 Retry Loading</button>
           </div>
         `;
-        productCountDiv.innerHTML = '❌ Failed to load products';
-        updateDateDiv.textContent = '';
+        if (productCountDiv) productCountDiv.innerHTML = '❌ Failed to load products';
+        if (updateDateDiv) updateDateDiv.textContent = '';
         showNotification('❌ Failed to load deals', 'error');
       }
     });
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  loadData();
+// Fonction pour initialiser les écouteurs d'événements
+function initEventListeners() {
+  // Écouteur pour le clic sur le logo
+  const logo = document.getElementById('logo');
+  if (logo) {
+    logo.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Rafraîchir les publicités
+      setTimeout(refreshAds, 500);
+      // Afficher tous les deals
+      displayAllDeals();
+      // Fermer la sidebar sur mobile
+      if (window.innerWidth <= 700) {
+        closeSidebar();
+      }
+    });
+  }
   
-  // Toggle sidebar
-  toggleBtn.addEventListener('click', () => {
-    if (sidebar.classList.contains('open')) {
-      closeSidebar();
-    } else {
-      openSidebar();
-    }
-  });
+  // Gestion du bouton All Deals
+  if (btnAllDeals) {
+    btnAllDeals.addEventListener('click', () => {
+      // Rafraîchir les publicités
+      setTimeout(refreshAds, 500);
+      // Réinitialiser pour afficher tous les deals
+      selectedCategory = null;
+      isAllDealsMode = true;
+      isSearchMode = false;
+      currentPage = 1;
+      searchBox.value = '';
+      if (clearSearch) clearSearch.classList.remove('visible');
+      currentSearchQuery = '';
+      document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+      displayCategories();
+      displayAllDeals();
+      
+      // Fermer la sidebar sur mobile
+      if (window.innerWidth <= 700) {
+        closeSidebar();
+      }
+      
+      // Scroll to top
+      if (contentElement) {
+        contentElement.scrollTop = 0;
+      }
+    });
+  }
   
   // Fermer sidebar avec overlay
-  sidebarOverlay.addEventListener('click', closeSidebar);
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+  }
   
-  // All deals button (re-randomise)
-  btnAllDeals.addEventListener('click', () => {
-    selectedCategory = null;
-    isAllDealsMode = true;
-    isSearchMode = false;
-    currentPage = 1;
-    searchBox.value = '';
-    clearSearch.classList.remove('visible');
-    currentSearchQuery = '';
-    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
-    displayCategories();
-    displayAllDeals(); // Ceci va automatiquement re-randomiser
-    if(window.innerWidth <= 700) {
-      closeSidebar();
-    }
-    // Scroll to top
-    document.getElementById('content').scrollTop = 0;
-  });
+  // Initialisation du bouton de bascule du menu latéral
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
   
   // Recherche avec debouncing optimisé
-  let searchTimeout;
-  searchBox.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      performSearch(e.target.value);
-    }, CONFIG.SEARCH_DELAY);
-  });
+  if (searchBox) {
+    let searchTimeout;
+    searchBox.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(e.target.value);
+      }, CONFIG.SEARCH_DELAY);
+    });
+    
+    // Enter key pour recherche
+    searchBox.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(searchTimeout);
+        performSearch(e.target.value);
+      }
+    });
+  }
   
   // Clear search button
-  clearSearch.addEventListener('click', clearSearchBox);
+  if (clearSearch) {
+    clearSearch.addEventListener('click', clearSearchBox);
+  }
+}
+
+// Initialisation au chargement du DOM
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialisation des éléments DOM
+  productsDiv = document.getElementById('products');
+  productCountDiv = document.getElementById('productCount');
+  updateDateDiv = document.getElementById('updateDate');
+  categoryList = document.getElementById('categoryList');
+  mainTitle = document.getElementById('mainTitle');
+  btnAllDeals = document.getElementById('btnAllDeals');
+  searchBox = document.getElementById('searchBox');
+  clearSearch = document.getElementById('clearSearch');
+  contentElement = document.getElementById('content');
+  sidebar = document.getElementById('sidebar');
+  sidebarOverlay = document.getElementById('sidebarOverlay');
+  toggleBtn = document.getElementById('toggleBtn');
   
-  // Enter key pour recherche
-  searchBox.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      clearTimeout(searchTimeout);
-      performSearch(e.target.value);
-    }
-  });
+  // Vérification des éléments critiques
+  if (!productsDiv) {
+    console.error('Element with id "products" not found');
+    return;
+  }
+  
+  if (!categoryList) {
+    console.error('Element with id "categoryList" not found');
+  }
+  
+  console.log('DOM fully loaded, initializing data...');
+  
+  // Initialiser les écouteurs d'événements
+  initEventListeners();
+  
+  // Charger les données initiales
+  loadData();
 });
 
 // Gestion responsive
