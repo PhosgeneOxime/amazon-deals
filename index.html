@@ -47,932 +47,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-<style>
-  html, body {
-    height: 100% !important;
-    min-height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-    position: relative;
-  }
-  
-  body {
-    font-family: 'Amazon Ember', 'Helvetica Neue', Roboto, Arial, sans-serif;
-    display: flex;
-    background: linear-gradient(135deg, #f3f3f3 0%, #eaeded 25%, #d5dbdb 50%, #aab7b8 75%, #85929e 100%);
-    min-height: 100vh;
-    -webkit-overflow-scrolling: touch;
-    touch-action: manipulation;
-    transition: all 0.2s ease;
-  }
-
-  /* Variables CSS modernes - Thème Amazon-inspiré */
-  :root {
-    --vh: 100vh;
-    --sidebar-width: 320px;
-    --primary-gradient: linear-gradient(135deg, #ff9900 0%, #ffb84d 25%, #ff8c00 50%, #e67e00 75%, #cc7000 100%);
-    --secondary-gradient: linear-gradient(135deg, #146eb4 0%, #1a82d9 100%);
-    --accent-gradient: linear-gradient(135deg, #b12704 0%, #d73502 100%);
-    --success-gradient: linear-gradient(135deg, #067d3c 0%, #0a9b4a 100%);
-    --danger-gradient: linear-gradient(135deg, #b12704 0%, #8b1e02 100%);
-    --warning-gradient: linear-gradient(135deg, #ff9900 0%, #ffb84d 100%);
-    --amazon-orange: #ff9900;
-    --amazon-blue: #146eb4;
-    --amazon-dark-blue: #232f3e;
-    --success-green: #067d3c;
-    --danger-red: #b12704;
-    --warning-orange: #ff9900;
-    --dark-bg: #131a22;
-    --dark-card: #232f3e;
-    --dark-border: #3a4553;
-    --light-bg: #e9ecef;
-    --light-card: #e9ecef;
-    --text-primary: #232f3e;
-    --text-secondary: #cccccc;
-    --text-muted: #999999;
-    --text-accent: #ff9900;
-    --text-dark: #0f1111;
-    --border-radius: 8px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    --transition: all 0.2s ease;
-    --glass-bg: rgba(35, 47, 62, 0.95);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glow-shadow: 0 0 20px rgba(255, 153, 0, 0.3);
-  }
-
-  /* Animations élégantes */
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.02); opacity: 0.95; }
-  }
-
-  @keyframes slideInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  #sidebar {
-    width: var(--sidebar-width);
-    background: rgba(248, 249, 250, 0.95);
-    backdrop-filter: blur(10px);
-    color: var(--text-dark);
-    padding: 25px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-right: 1px solid #d5d9d9;
-    flex-shrink: 0;
-    overflow: hidden;
-    max-height: var(--vh);
-    height: var(--vh);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-
-  #sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--primary-gradient);
-  }
-
-  .sidebar-header {
-    flex-shrink: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-
-  .sidebar-content {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
-  }
-  
-  #logo {
-    width: 180px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.3));
-    transition: var(--transition);
-    animation: float 4s ease-in-out infinite;
-  }
-
-  #logo:hover {
-    transform: scale(1.05);
-    filter: drop-shadow(0 8px 20px rgba(37, 99, 235, 0.5));
-  }
-  
-  #productCount, #updateDate {
-    font-size: 15px;
-    color: #565959;
-    margin-bottom: 5px;
-    font-weight: 600;
-    text-align: center;
-  }
-  
-  #updateDate {
-    font-size: 13px;
-    color: var(--amazon-orange);
-    margin-bottom: 20px;
-    font-style: italic;
-  }
-
-  #searchBox {
-    width: 100%;
-    padding: 16px 20px;
-    margin-bottom: 18px;
-    border: 2px solid #e2e8f0;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    box-sizing: border-box;
-    background: white;
-    transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(37, 99, 235, 0);
-    font-weight: 500;
-    position: relative;
-    color: #1e293b;
-  }
-
-  #searchBox::placeholder {
-    color: #64748b;
-    font-weight: 400;
-  }
-
-  #searchBox:focus {
-    outline: none;
-    border-color: var(--amazon-orange);
-    box-shadow: 0 4px 20px rgba(255, 153, 0, 0.15), 0 0 0 3px rgba(255, 153, 0, 0.1);
-    background: #fefefe;
-    transform: translateY(-1px);
-  }
-
-  /* Clear search button */
-  .search-container {
-    position: relative;
-    width: 100%;
-  }
-
-  .clear-search {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 4px;
-    border-radius: 50%;
-    transition: var(--transition);
-    display: none;
-  }
-
-  .clear-search:hover {
-    background: rgba(100, 116, 139, 0.1);
-    color: #1e293b;
-  }
-
-  .clear-search.visible {
-    display: block;
-  }
-
-  #btnAllDeals {
-    width: 100%;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 16px 0;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: 25px;
-    user-select: none;
-    transition: var(--transition);
-    box-shadow: var(--glow-shadow);
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  #btnAllDeals::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.6s;
-  }
-
-  #btnAllDeals:hover::before {
-    left: 100%;
-  }
-  
-  #btnAllDeals:hover,
-  #btnAllDeals:focus {
-    outline: none;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-  }
-
-  #btnAllDeals:active {
-    transform: translateY(0);
-  }
-  
-  ul.category-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    overflow-y: auto;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-blue) transparent;
-  }
-
-  ul.category-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ul.category-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ul.category-list::-webkit-scrollbar-thumb {
-    background: var(--amazon-orange);
-    border-radius: 3px;
-  }
-  
-  ul.category-list li {
-    cursor: pointer;
-    padding: 14px 18px;
-    margin-bottom: 8px;
-    background: #f8f9fa;
-    border-radius: var(--border-radius);
-    color: var(--text-dark);
-    transition: var(--transition);
-    user-select: none;
-    font-weight: 500;
-    border: 1px solid #d5d9d9;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  ul.category-list li::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--primary-gradient);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-    border-radius: 12px 12px 0 0;
-  }
-
-  .category-name {
-    flex: 1;
-  }
-
-  .category-count {
-    background: rgba(255, 153, 0, 0.2);
-    color: var(--amazon-orange);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-left: 10px;
-  }
-  
-  ul.category-list li:hover,
-  ul.category-list li.active {
-    background: #e9ecef;
-    color: var(--text-dark);
-    transform: translateX(8px);
-    border-color: var(--amazon-orange);
-  }
-
-  ul.category-list li:hover::before,
-  ul.category-list li.active::before {
-    transform: scaleX(1);
-  }
-
-  ul.category-list li:hover .category-count,
-  ul.category-list li.active .category-count {
-    background: rgba(255, 153, 0, 0.4);
-    color: white;
-  }
-  
-  #content {
-    flex: 1;
-    padding: 25px 35px 35px 35px;
-    overflow-y: auto;
-    background: rgba(248, 249, 250, 0.95);
-    backdrop-filter: blur(10px);
-    max-height: var(--vh);
-    height: var(--vh);
-    -webkit-overflow-scrolling: touch;
-    border-radius: 12px 0 0 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    scrollbar-width: thin;
-    scrollbar-color: var(--amazon-orange) transparent;
-  }
-
-  #content::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  #content::-webkit-scrollbar-track {
-    background: rgba(213, 217, 217, 0.3);
-    border-radius: 4px;
-  }
-
-  #content::-webkit-scrollbar-thumb {
-    background: var(--amazon-orange);
-    border-radius: 4px;
-  }
-
-  #content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--primary-gradient);
-    border-radius: 20px 0 0 0;
-  }
-  
-  #content h2 {
-    margin-top: 0px;
-    margin-bottom: 30px;
-    color: var(--text-primary);
-    font-size: 32px;
-    font-weight: 800;
-    position: relative;
-    display: inline-block;
-  }
-
-  #content h2::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: var(--primary-gradient);
-    border-radius: 2px;
-  }
-  
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-    align-items: start;
-  }
-
-  .product {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    color: var(--text-dark);
-    text-decoration: none;
-    transition: var(--transition);
-    border: 1px solid #d5d9d9;
-    position: relative;
-    overflow: visible;
-    min-height: 480px;
-    animation: slideInUp 0.4s ease forwards;
-    cursor: pointer;
-  }
-
-  .product::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--primary-gradient);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-  }
-  
-  .product:hover {
-    background: #e9ecef;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-    border-color: var(--amazon-orange);
-  }
-
-  .product:hover::before {
-    transform: scaleX(1);
-  }
-
-  .product-image {
-    width: 100%;
-    height: 180px;
-    object-fit: contain;
-    border-radius: 8px;
-    border: 1px solid #d5d9d9;
-    transition: var(--transition);
-    margin-bottom: 16px;
-    background: white;
-  }
-
-  .product-image:hover {
-    transform: scale(1.02);
-    border-color: var(--amazon-orange);
-  }
-
-  .product-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    position: relative;
-    text-align: center;
-  }
-  
-  .product strong {
-    font-weight: 500;
-    color: var(--text-dark);
-    font-size: 14px;
-    line-height: 1.4;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #e9ecef;
-    text-align: left;
-    min-height: 70px;
-  }
-
-  a.product p {
-    margin: 4px 0;
-    font-size: 13px;
-    color: #565959;
-    font-weight: 400;
-  }
-  
-  /* Styles de prix professionnels */
-  .price-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 10px 0;
-  }
-
-  .price-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .price-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .current-price {
-    font-weight: 700;
-    color: #b12704;
-    font-size: 18px;
-  }
-
-  .regular-price {
-    font-weight: 400;
-    color: #565959;
-    font-size: 14px;
-    text-decoration: line-through;
-    opacity: 0.8;
-    position: relative;
-  }
-
-  .regular-price::before {
-    content: 'List Price: ';
-    font-size: 11px;
-    font-weight: 400;
-    color: #565959;
-  }
-
-  .discount-badge {
-    background: var(--danger-gradient);
-    color: white;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-  }
-  
-  .badges-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 6px;
-    flex-wrap: wrap;
-  }
-
-  .savings {
-    color: white;
-    font-weight: 700;
-    background: var(--success-gradient);
-    padding: 3px 6px;
-    border-radius: 12px;
-    font-size: 10px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    letter-spacing: 0.3px;
-  }
-
-  .savings::before {
-    content: '💰';
-    font-size: 12px;
-  }
-
-  .product-meta {
-    display: flex;
-    gap: 15px;
-    margin: 12px 0;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .product-rating {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    color: #f59e0b;
-  }
-
-  .review-count {
-    color: var(--text-muted);
-    font-size: 12px;
-  }
-
-  /* Styles pour les boutons de partage */
-  .product-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin-top: auto;
-    padding-top: 16px;
-  }
-
-  .see-offer-btn {
-    background: var(--amazon-orange);
-    color: white;
-    text-decoration: none;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    box-shadow: 0 2px 4px rgba(255, 153, 0, 0.3);
-    max-width: 140px;
-    justify-content: center;
-  }
-
-  .see-offer-btn:hover {
-    background: #e68900;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(255, 153, 0, 0.4);
-  }
-
-  .see-offer-btn:active {
-    transform: translateY(0);
-  }
-
-  .share-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .facebook-share-btn {
-    background: #1877f2;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    box-shadow: 0 2px 4px rgba(24, 119, 242, 0.2);
-  }
-
-  .facebook-share-btn:hover {
-    background: #166fe5;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(24, 119, 242, 0.3);
-  }
-
-  .facebook-share-btn:active {
-    transform: translateY(0);
-  }
-
-  .messenger-share-btn {
-    background: #00b2ff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    box-shadow: 0 2px 4px rgba(0, 178, 255, 0.2);
-  }
-
-  .messenger-share-btn:hover {
-    background: #0099e6;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 178, 255, 0.3);
-  }
-
-  .messenger-share-btn:active {
-    transform: translateY(0);
-  }
-
-  .twitter-share-btn {
-    background: #000000;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .twitter-share-btn:hover {
-    background: #333333;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .twitter-share-btn:active {
-    transform: translateY(0);
-  }
-
-  #toggleSidebarBtn {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 2101;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    font-size: 20px;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-    padding: 0;
-    box-shadow: var(--glow-shadow);
-    transition: var(--transition);
-    backdrop-filter: blur(10px);
-  }
-
-  #toggleSidebarBtn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 0 0 20px 0;
-    border-bottom: 1px solid #d5d9d9;
-    position: relative;
-  }
-
-  .header-title {
-    color: var(--text-primary) !important;
-    font-weight: 700;
-    font-size: 24px;
-    margin: 0;
-  }
-
-  #toggleBtn {
-    display: none;
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    font-weight: 600;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 9999;
-    margin: 0;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-  }
-
-  /* Placeholder pour images */
-  .image-placeholder {
-    width: 140px;
-    height: 140px;
-    background: rgba(248, 250, 252, 0.05);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 8px;
-    color: var(--text-muted);
-    font-size: 12px;
-    text-align: center;
-    border: 1px dashed var(--dark-border);
-    flex-shrink: 0;
-  }
-
-  .image-placeholder::before {
-    content: '🖼️';
-    font-size: 24px;
-  }
-
-  /* Highlight search terms */
-  .highlight {
-    background: rgba(37, 99, 235, 0.2);
-    color: var(--primary-blue);
-    font-weight: 600;
-    padding: 2px 4px;
-    border-radius: 4px;
-  }
-
-  @media (max-width: 700px) {
-    /* Cacher la sidebar par défaut sur mobile */
-    #sidebar {
-      position: fixed;
-      left: -100%;
-      top: 0;
-      z-index: 2000;
-      width: 280px;
-      height: 100vh;
-      transition: left 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    #sidebar.open {
-      left: 0;
-    }
-
-    /* Overlay pour fermer la sidebar */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1999;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Afficher le bouton hamburger */
-    #toggleBtn {
-      display: flex !important;
-    }
-
-    /* Ajuster le contenu principal */
-    #content {
-      width: 100%;
-      margin-left: 0;
-      border-radius: 0;
-    }
-
-    .container {
-      flex-direction: column;
-    }
-
-    .image-placeholder {
-      width: 120px;
-      height: 120px;
-    }
-
-    .pagination-buttons {
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .page-numbers {
-      margin: 0;
-    }
-
-    .pagination-info {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .products-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-    }
-
-    .header {
-      padding: 15px 20px;
-    }
-
-    .header-title {
-      font-size: 20px;
-    }
-  }
-</style>
+<link rel="stylesheet" href="css/style.css" />
 
 <!-- Structured Data -->
 <script type="application/ld+json">
@@ -1045,25 +120,24 @@
       <h1 class="header-title">🔥 Best Daily Amazon Deals Canada</h1>
       <div id="google_translate_element"></div>
     </div>
+    <div>
+      <a href="about.html" class="see-offer-btn" aria-label="About DealNest">ℹ️ About</a>
+    </div>
   </div>
 
   <h2 id="mainTitle">📦 Best Amazon Deals in Canada – Daily Discounts & Hot Offers</h2>
   
-  <div class="welcome-section" style="
-    padding: 24px;
-    border-radius: 16px;
-    margin-bottom: 24px;
-  ">
-    <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6;">
+  <div class="welcome-section">
+    <p class="welcome-text">
       Welcome to <strong>Dealnest.ca</strong> – your trusted source for the <strong>best Amazon deals in Canada</strong>. Updated daily, we feature <em>exclusive Amazon discounts, limited-time offers, and hot deals</em> across every category, including <strong>electronics, home essentials, kitchen, fashion, beauty, and more</strong>.
     </p>
-    <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6;">
+    <p class="welcome-text">
       Our team handpicks only the <strong>top-rated Amazon products (4★+)</strong> so you can shop with confidence, save money online, and discover today’s biggest <strong>Amazon Canada savings</strong>.
     </p>
-    <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; font-style: italic;">
+    <p class="welcome-note">
       Note: All links are <strong>Amazon affiliate links</strong>. We may earn a small commission when you buy through them – at no extra cost to you.
     </p>
-    <p style="margin: 0; font-size: 16px; font-weight: 600;">
+    <p class="welcome-cta">
       Start browsing now and never miss the <strong>top daily Amazon deals in Canada</strong>! 🛒✨
     </p>
   </div>
@@ -1076,8 +150,8 @@
   </div>
 </div>
 
-<div style="text-align:center;">
-  <div id="google_translate_element" style="display:inline-block;"></div>
+<div class="text-center">
+  <div id="google_translate_element" class="inline-block"></div>
 </div>
 
 <script>
@@ -1371,10 +445,10 @@ function organizeDataByCategories(data) {
 function displayProducts(products, title = '📦 All Deals') {
   if (!products || products.length === 0) {
     productsDiv.innerHTML = `
-      <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No products found</h3>
-        <p style="font-size: 14px;">Try a different search term or browse our categories.</p>
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3 class="title">No products found</h3>
+        <p class="desc">Try a different search term or browse our categories.</p>
       </div>
     `;
     return;
@@ -1407,7 +481,7 @@ function displayProducts(products, title = '📦 All Deals') {
     }
 
     html += `
-      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="window.open('${product.link || '#'}', '_blank');" style="cursor: pointer;">
+      <div class="product" onclick="window.open('${product.link || '#'}', '_blank');">
         ${imageHtml}
         
         <div class="product-content">
@@ -1561,7 +635,7 @@ function createPageNumbers(currentPage, totalPages) {
   if (startPage > 1) {
     pageNumbers += `<button class="page-number-btn" onclick="goToPage(1)">1</button>`;
     if (startPage > 2) {
-      pageNumbers += '<span style="padding: 0 8px; color: var(--text-muted);">...</span>';
+      pageNumbers += '<span class="ellipsis">...</span>';
     }
   }
 
@@ -1571,7 +645,7 @@ function createPageNumbers(currentPage, totalPages) {
 
   if (endPage < totalPages) {
     if (endPage < totalPages - 1) {
-      pageNumbers += '<span style="padding: 0 8px; color: var(--text-muted);">...</span>';
+      pageNumbers += '<span class="ellipsis">...</span>';
     }
     pageNumbers += `<button class="page-number-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
   }
@@ -1604,10 +678,10 @@ function displayProductsByCategory(category) {
   
   if(categoryProducts.length === 0) {
     productsDiv.innerHTML = `
-      <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No products found</h3>
-        <p style="font-size: 14px;">Try selecting a different category or search for something else.</p>
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3 class="title">No products found</h3>
+        <p class="desc">Try selecting a different category or search for something else.</p>
       </div>
     `;
     return;
@@ -1645,10 +719,10 @@ function performSearch(query) {
   
   if (searchResults.length === 0) {
     productsDiv.innerHTML = `
-      <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No results found for "${trimmedQuery}"</h3>
-        <p style="font-size: 14px;">Try different keywords or browse our categories below.</p>
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3 class="title">No results found for "${trimmedQuery}"</h3>
+        <p class="desc">Try different keywords or browse our categories below.</p>
       </div>
     `;
     mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 results)`;
@@ -1965,25 +1039,13 @@ function loadData(retries = 3) {
         setTimeout(() => loadData(retries - 1), 1000);
       } else {
         productsDiv.innerHTML = `
-          <div style="text-align: center; padding: 50px; color: var(--text-secondary);">
-            <h3 style="color: #dc2626; font-size: 24px; margin-bottom: 16px;">⚠️ Unable to load deals</h3>
-            <p style="font-size: 14px; margin-bottom: 20px;">Please check your internet connection and refresh the page.</p>
-            <button onclick="loadData(3)" style="
-              background: var(--primary-gradient);
-              color: white;
-              border: none;
-              padding: 12px 24px;
-              border-radius: 12px;
-              cursor: pointer;
-              font-weight: 600;
-              font-size: 14px;
-              transition: var(--transition);
-            ">🔄 Retry Loading</button>
+          <div class="retry-error">
+            <h3 class="title"> Unable to load deals</h3>
+            <p class="desc">Please check your internet connection and refresh the page.</p>
+            <button onclick="loadData(3)" class="btn-gradient">Retry</button>
           </div>
         `;
-        if (productCountDiv) productCountDiv.innerHTML = '❌ Failed to load products';
-        if (updateDateDiv) updateDateDiv.textContent = '';
-        showNotification('❌ Failed to load deals', 'error');
+        return;
       }
     });
 }
