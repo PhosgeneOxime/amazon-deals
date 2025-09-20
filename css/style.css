@@ -113,8 +113,34 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     position: relative;
+    padding: 15px;
+    gap: 12px;
+  }
+  
+  .translate-widget {
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px 0;
+    text-align: center;
+  }
+  
+  .translate-widget .goog-te-gadget {
+    font-size: 14px !important;
+    color: #333;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .translate-widget .goog-te-gadget-simple {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6 !important;
+    padding: 8px 12px !important;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .sidebar-content {
@@ -188,8 +214,8 @@
   .search-container {
     position: relative;
     width: 100%;
+    margin: 0;
   }
-
   .clear-search {
     position: absolute;
     right: 12px;
@@ -217,22 +243,32 @@
 
   #btnAllDeals {
     width: 100%;
+    padding: 12px 18px;
+    margin: 0 0 8px 0;
     background: var(--primary-gradient);
     color: white;
     border: none;
-    border-radius: var(--border-radius);
-    padding: 16px 0;
-    font-weight: 700;
-    font-size: 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.05em;
     cursor: pointer;
-    margin-bottom: 25px;
-    user-select: none;
-    transition: var(--transition);
-    box-shadow: var(--glow-shadow);
+    transition: all 0.2s ease;
+    text-align: center;
     position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  #btnAllDeals:hover {
+    background: var(--amazon-orange);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  #btnAllDeals .category-name {
+    color: white;
   }
 
   #btnAllDeals::before {
@@ -540,6 +576,9 @@
     animation: slideInUp 0.4s ease forwards;
     animation-delay: var(--product-delay, 0s);
     cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 480px 320px;
+    contain: content;
   }
 
   .product::before {
@@ -875,17 +914,82 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 0 0 20px 0;
-    border-bottom: 1px solid #d5d9d9;
-    position: relative;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0 20px;
+  }
+
+  .header-logo {
+    height: 40px;
+    width: auto;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  .header-logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+
+  .header-logo-link:hover {
+    transform: scale(1.05);
+  }
+
+  .header-logo-link:hover .header-logo {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Align Google Translate widget inline in header actions */
+  .header-actions #google_translate_element { 
+    display: inline-block; 
+    transform: scale(0.9);
+    transform-origin: left center;
+  }
+  .header-actions .goog-te-gadget { margin-right: 6px; }
+  .header-actions .goog-te-gadget .goog-te-combo { 
+    padding: 4px 8px; 
+    border-radius: 6px; 
+    border: 1px solid #d5d9d9; 
+    font-size: 12px; 
+  }
+
+  @media (max-width: 700px) {
+    .header-actions #google_translate_element { transform: scale(0.85); }
+    .header-actions .goog-te-gadget .goog-te-combo { font-size: 11px; }
+  }
+
+  /* Active nav link (current page) */
+  .header-actions .see-offer-btn.active {
+    background: #e68900; /* darker amazon orange */
+    box-shadow: 0 4px 8px rgba(255, 153, 0, 0.5);
+    cursor: default;
   }
 
   .header-title {
     color: var(--text-primary) !important;
     font-weight: 700;
-    font-size: 24px;
-    margin: 0;
+    font-size: 20px;
+    margin: 0 0 0 12px;
+    line-height: 1.2;
   }
 
   #toggleBtn {
