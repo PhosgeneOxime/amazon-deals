@@ -41,6 +41,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
 <link rel="preconnect" href="https://translate.google.com" />
+<link rel="preconnect" href="https://m.media-amazon.com" />
+<link rel="dns-prefetch" href="//m.media-amazon.com" />
 
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -69,7 +71,9 @@
     "url": "https://dealnest.ca",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://dealnest.ca/nest.png"
+      "url": "https://dealnest.ca/images/logo.png",
+      "width": 512,
+      "height": 512
     }
   }
 }
@@ -84,7 +88,9 @@
   "url": "https://dealnest.ca",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://dealnest.ca/nest.png"
+    "url": "https://dealnest.ca/images/nest.png",
+    "width": 512,
+    "height": 512
   },
   "sameAs": [
     "https://x.com/dealnestca"
@@ -100,34 +106,39 @@
 
 <div id="sidebar" aria-label="Navigation menu">
   <div class="sidebar-header">
-    <img id="logo" src="logo.png" alt="DealNest.CA - Best Amazon Deals Canada Logo" title="DealNest.CA - Homepage" />
     <div id="productCount">Loading product count...</div>
     <div id="updateDate"></div>
+    <div id="google_translate_element" class="translate-widget"></div>
 
     <div class="search-container">
       <input type="search" id="searchBox" placeholder="🔍 Search in all deals..." aria-label="Search products" autocomplete="off" />
       <button class="clear-search" id="clearSearch" aria-label="Clear search">×</button>
     </div>
 
-    <button id="btnAllDeals" aria-label="Show All Deals">📦 All Deals</button>
+    <button id="btnAllDeals" class="category-btn" aria-label="Show All Deals">
+      <span class="category-name">📦 All Deals</span>
+    </button>
   </div>
   
-<div class="sidebar-content">
+  <div class="sidebar-content">
     <ul class="category-list" id="categoryList" tabindex="0"></ul>
-    
-    <div id="google_translate_element"></div>
   </div>
 </div>
 
 <div id="content" tabindex="0">
   <div class="header">
-    <button id="toggleBtn" aria-label="Toggle sidebar">☰</button>
+    <button id="toggleBtn" aria-label="Toggle sidebar" class="hidden">☰</button>
     <div class="header-content">
-      <h1 class="header-title">🔥 Best Daily Amazon Deals Canada</h1>
-      <div id="google_translate_element"></div>
+      <a href="index.html" class="header-logo-link">
+        <img src="images/logo.png" alt="DealNest.CA Logo" class="header-logo" width="40" height="40" loading="lazy">
+      </a>
     </div>
-    <div>
+    <div class="header-actions">
+      <a href="index.html" class="see-offer-btn active" aria-label="Go to Home">🏠 Home</a>
       <a href="about.html" class="see-offer-btn" aria-label="About DealNest">ℹ️ About</a>
+      <a href="privacy.html" class="see-offer-btn" aria-label="Privacy Policy">🔒 Privacy</a>
+      <a href="terms.html" class="see-offer-btn" aria-label="Terms of Use">📜 Terms</a>
+      <a href="disclosure.html" class="see-offer-btn" aria-label="Affiliate Disclosure">🤝 Disclosure</a>
     </div>
   </div>
 
@@ -154,6 +165,13 @@
       <p>Loading the latest Amazon Canada deals...</p>
     </div>
   </div>
+
+  <!-- Footer links: Legal pages -->
+  <div class="text-center mt-20">
+    <a href="privacy.html" class="see-offer-btn" aria-label="Read Privacy Policy">🔒 Privacy</a>
+    <a href="terms.html" class="see-offer-btn" aria-label="Read Terms of Use">📜 Terms</a>
+    <a href="disclosure.html" class="see-offer-btn" aria-label="Read Affiliate Disclosure">🤝 Affiliate Disclosure</a>
+  </div>
 </div>
 
 <div class="text-center">
@@ -168,6 +186,42 @@ const CONFIG = {
   DEBOUNCE_DELAY: 150,
   SEARCH_DELAY: 300
 };
+
+// Lazy-load Google Translate when user clicks the button
+window.googleTranslateElementInit = function() {
+  try {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,fr',
+      autoDisplay: false
+    }, 'google_translate_element');
+    const el = document.getElementById('google_translate_element');
+    if (el) el.classList.remove('hidden');
+  } catch (e) {
+    console.error('Translate init error:', e);
+  }
+}
+
+function loadGoogleTranslate() {
+  // Already loaded
+  if (window.google && window.google.translate) {
+    googleTranslateElementInit();
+    return;
+  }
+  // Prevent multiple loads
+  if (window.__gt_loading) return;
+  window.__gt_loading = true;
+
+  const s = document.createElement('script');
+  s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  s.async = true;
+  s.onload = () => { window.__gt_loading = false; };
+  s.onerror = () => {
+    window.__gt_loading = false;
+    showNotification('Failed to load Google Translate', 'error');
+  };
+  document.head.appendChild(s);
+}
 
 // Variables globales et cache DOM
 let categoryList, productsDiv, productCountDiv, updateDateDiv, sidebar, sidebarOverlay, toggleBtn, mainTitle, btnAllDeals, searchBox, clearSearch, contentElement;
@@ -472,7 +526,7 @@ function displayProducts(products, title = '📦 All Deals') {
     // Gérer l'image
     let imageHtml;
     if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
-      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
+      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" width="300" height="180" decoding="async" loading="lazy" fetchpriority="low" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
     } else {
       imageHtml = '<div class="image-placeholder"></div>';
     }
@@ -849,13 +903,13 @@ function showNotification(message, type = 'info') {
   const styles = {
     position: 'fixed',
     top: '20px',
-    right: '20px',
+    left: '50%',
     padding: '16px 24px',
     borderRadius: '12px',
     color: 'white',
     fontWeight: '600',
     zIndex: '10000',
-    transform: 'translateY(-80px)',
+    transform: 'translate(-50%, -80px)',
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
     backdropFilter: 'blur(10px)',
@@ -875,11 +929,11 @@ function showNotification(message, type = 'info') {
   document.body.appendChild(notification);
   
   setTimeout(() => {
-    notification.style.transform = 'translateY(0)';
+    notification.style.transform = 'translate(-50%, 0)';
   }, 100);
   
   setTimeout(() => {
-    notification.style.transform = 'translateY(-80px)';
+    notification.style.transform = 'translate(-50%, -80px)';
     setTimeout(() => notification.remove(), 400);
   }, 3000);
 }
@@ -1143,6 +1197,7 @@ function initEventListeners() {
   if (clearSearch) {
     clearSearch.addEventListener('click', clearSearchBox);
   }
+
 }
 
 // Initialisation au chargement du DOM
@@ -1178,6 +1233,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Charger les données initiales
   loadData();
+
+  // Charger Google Translate après l'initialisation des deals
+  setTimeout(() => {
+    try { loadGoogleTranslate(); } catch (e) { console.warn('Translate lazy-load failed:', e); }
+  }, 1200);
 });
 
 // Gestion responsive
