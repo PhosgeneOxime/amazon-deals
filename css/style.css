@@ -1074,6 +1074,36 @@
   /* Utilities */
   .text-center { text-align: center; }
   .inline-block { display: inline-block; }
+  
+  /* Empêcher le chevauchement des publicités */
+  .welcome-section {
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Styles spécifiques pour les pages de contenu statique */
+  body.privacy-page,
+  body.terms-page,
+  body.about-page,
+  body.disclosure-page {
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .welcome-section h2 {
+    margin-top: 0;
+    padding-top: 20px;
+  }
+  
+  .welcome-section p,
+  .welcome-section h2,
+  .welcome-section h3 {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   /* Empty/No results states */
   .empty-state {
