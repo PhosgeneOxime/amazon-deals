@@ -88,20 +88,5 @@
       href="https://dealnest.ca/disclosure.html#fr"/>
   </url>
   
-  <!-- Pages de catégories (à décommenter et compléter au besoin) -->
-  <!--
-  <url>
-    <loc>https://dealnest.ca/electronics.html</loc>
-    <lastmod>2025-09-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://dealnest.ca/home-garden.html</loc>
-    <lastmod>2025-09-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  -->
-  
+ 
 </urlset>
