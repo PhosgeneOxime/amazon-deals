@@ -1,92 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset 
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xhtml="http://www.w3.org/1999/xhtml"
-  xsi:schemaLocation="
-    http://www.sitemaps.org/schemas/sitemap/0.9
-    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  
-  <!-- Pages principales -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://dealnest.ca/</loc>
-    <lastmod>2025-09-21T07:30:00-04:00</lastmod>
-    <changefreq>hourly</changefreq>
+    <lastmod>2025-09-22T07:00:04-04:00</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="en"
-      href="https://dealnest.ca/"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="fr"
-      href="https://dealnest.ca/fr/"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="x-default"
-      href="https://dealnest.ca/"/>
   </url>
-  
   <url>
-    <loc>https://dealnest.ca/about.html</loc>
-    <lastmod>2025-09-21T07:30:00-04:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="en"
-      href="https://dealnest.ca/about.html"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="fr"
-      href="https://dealnest.ca/about.html#fr"/>
+    <loc>https://dealnest.ca/index.html</loc>
+    <lastmod>2025-09-22T07:00:04-04:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
-  
-  <!-- Pages légales -->
-  <url>
-    <loc>https://dealnest.ca/privacy.html</loc>
-    <lastmod>2025-09-21T07:30:00-04:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="en"
-      href="https://dealnest.ca/privacy.html"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="fr"
-      href="https://dealnest.ca/privacy.html#fr"/>
-  </url>
-  
-  <url>
-    <loc>https://dealnest.ca/terms.html</loc>
-    <lastmod>2025-09-21T07:30:00-04:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="en"
-      href="https://dealnest.ca/terms.html"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="fr"
-      href="https://dealnest.ca/terms.html#fr"/>
-  </url>
-  
-  <url>
-    <loc>https://dealnest.ca/disclosure.html</loc>
-    <lastmod>2025-09-21T07:30:00-04:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="en"
-      href="https://dealnest.ca/disclosure.html"/>
-    <xhtml:link 
-      rel="alternate"
-      hreflang="fr"
-      href="https://dealnest.ca/disclosure.html#fr"/>
-  </url>
-  
- 
 </urlset>
