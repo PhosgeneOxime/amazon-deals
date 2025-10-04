@@ -127,14 +127,16 @@
 
 <div id="content" tabindex="0">
   <div class="header">
-    <button id="toggleBtn" aria-label="Toggle sidebar" class="hidden">☰</button>
+    <button id="toggleBtn" aria-label="Toggle menu" class="hidden">
+      <span></span>
+    </button>
     <div class="header-content">
       <a href="index.html" class="header-logo-link">
         <img src="images/logo.png" alt="DealNest.CA Logo" class="header-logo" width="40" height="40" loading="lazy">
       </a>
     </div>
     <div class="header-actions">
-      <a href="index.html" class="see-offer-btn active" aria-label="Go to Home">🏠 Home</a>
+      <a href="index.html" class="see-offer-btn active" aria-label="View Deals">🏠 View Deals</a>
       <a href="about.html" class="see-offer-btn" aria-label="About DealNest">ℹ️ About</a>
       <a href="privacy.html" class="see-offer-btn" aria-label="Privacy Policy">🔒 Privacy</a>
       <a href="terms.html" class="see-offer-btn" aria-label="Terms of Use">📜 Terms</a>
@@ -940,17 +942,25 @@ function showNotification(message, type = 'info') {
 
 // Fonctions de sidebar
 function closeSidebar() {
-  sidebar.classList.remove('open');
-  sidebarOverlay.classList.remove('active');
-  toggleBtn.setAttribute('aria-expanded', 'false');
-  toggleBtn.innerHTML = '☰';
+  if (sidebar) sidebar.classList.remove('open');
+  if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+  if (toggleBtn) {
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    toggleBtn.classList.remove('active');
+    toggleBtn.blur(); // Enlever le focus du bouton pour améliorer l'expérience utilisateur
+  }
+  document.body.style.overflow = ''; // Réactiver le défilement
 }
 
 function openSidebar() {
-  sidebar.classList.add('open');
-  sidebarOverlay.classList.add('active');
-  toggleBtn.setAttribute('aria-expanded', 'true');
-  toggleBtn.innerHTML = '✕';
+  if (sidebar) sidebar.classList.add('open');
+  if (sidebarOverlay) sidebarOverlay.classList.add('active');
+  if (toggleBtn) {
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    toggleBtn.classList.add('active');
+    toggleBtn.blur(); // Enlever le focus du bouton pour améliorer l'expérience utilisateur
+  }
+  document.body.style.overflow = 'hidden'; // Désactiver le défilement
 }
 
 // Fonction améliorée pour lire la date lastmod du sitemap
