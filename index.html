@@ -19,10 +19,8 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dealnest.ca/" />
 
-<!-- Préchargement des ressources critiques pour les annonces -->
-<link rel="preload" href="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" as="script" crossorigin="anonymous">
-
-<!-- Script de gestion des annonces (chargé en différé) -->
+<!-- Configuration AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 <script>
   // Configuration globale pour AdSense
   window.adsbygoogle = window.adsbygoogle || [];
@@ -30,14 +28,24 @@
   // Détection du type d'appareil
   window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
-  // Chargement différé du gestionnaire d'annonces
-  window.addEventListener('load', function() {
+  // Désactiver le chargement automatique initial
+  window.adsbygoogle.pauseAdRequests = 1;
+  
+  // Chargement du gestionnaire d'annonces
+  const loadAdsManager = function() {
     const script = document.createElement('script');
     script.src = 'js/ads-manager.js';
     script.async = true;
     script.crossOrigin = 'anonymous';
     document.head.appendChild(script);
-  });
+  };
+  
+  // Démarrer le chargement après le chargement complet de la page
+  if (document.readyState === 'complete') {
+    loadAdsManager();
+  } else {
+    window.addEventListener('load', loadAdsManager);
+  }
 </script>
 <meta property="og:title" content="DealNest.CA - Best Daily Amazon Deals Canada | Up to 80% Off" />
 <meta property="og:description" content="🔥 Discover the best daily Amazon deals in Canada! Updated hourly with exclusive discounts up to 80% off on electronics, home, fashion & more." />
@@ -1035,7 +1043,7 @@
 }
 </script>
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
+<!-- Script AdSense déplacé dans le head pour un chargement optimisé -->
 </head>
 <body>
 
