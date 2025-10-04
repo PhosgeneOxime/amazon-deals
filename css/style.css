@@ -73,6 +73,17 @@
       transform: translateY(0);
     }
   }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
   @keyframes shimmer {
     0% { background-position: -200% 0; }
@@ -921,8 +932,9 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: 60px;
+    min-height: 60px;
     box-sizing: border-box;
+    flex-wrap: wrap;
   }
 
   .header-content {
@@ -959,6 +971,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   /* Align Google Translate widget inline in header actions */
   .header-actions #google_translate_element { 
@@ -975,8 +989,62 @@
   }
 
   @media (max-width: 700px) {
-    .header-actions #google_translate_element { transform: scale(0.85); }
-    .header-actions .goog-te-gadget .goog-te-combo { font-size: 11px; }
+    .header {
+      padding: 10px;
+    }
+    
+    .header-actions {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 0;
+      background: white;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
+    
+    .header-actions.mobile-visible {
+      display: flex;
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    .header-actions .see-offer-btn {
+      width: 100%;
+      text-align: center;
+      border-radius: 0;
+      padding: 12px;
+      margin: 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .header-actions #google_translate_element { 
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    .header-actions .goog-te-gadget .goog-te-combo { 
+      font-size: 14px;
+      width: 100%;
+      max-width: 200px;
+    }
+    
+    .header-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      margin-left: 44px; /* Largeur du bouton hamburger */
+    }
+    
+    .header-logo {
+      max-height: 36px;
+      width: auto;
+    }
   }
 
   /* Active nav link (current page) */
@@ -998,7 +1066,7 @@
     max-width: 70%;
   }
 
-  #toggleBtn {
+  .mobile-menu-toggle {
     display: none;
     background: var(--primary-gradient);
     color: white;
@@ -1021,8 +1089,8 @@
     align-items: center;
     justify-content: center;
   }
-  
-  #toggleBtn span {
+
+  .mobile-menu-toggle span {
     display: block;
     width: 24px;
     height: 2px;
@@ -1030,9 +1098,9 @@
     position: relative;
     transition: all 0.3s ease;
   }
-  
-  #toggleBtn span:before,
-  #toggleBtn span:after {
+
+  .mobile-menu-toggle span:before,
+  .mobile-menu-toggle span:after {
     content: '';
     position: absolute;
     width: 100%;
@@ -1040,24 +1108,24 @@
     background: white;
     transition: all 0.3s ease;
   }
-  
-  #toggleBtn span:before {
+
+  .mobile-menu-toggle span:before {
     top: -6px;
   }
-  
-  #toggleBtn span:after {
+
+  .mobile-menu-toggle span:after {
     bottom: -6px;
   }
-  
-  #toggleBtn.active span {
+
+  .mobile-menu-toggle.active span {
     background: transparent;
   }
-  
-  #toggleBtn.active span:before {
+
+  .mobile-menu-toggle.active span:before {
     transform: rotate(45deg) translate(4px, 4px);
   }
-  
-  #toggleBtn.active span:after {
+
+  .mobile-menu-toggle.active span:after {
     transform: rotate(-45deg) translate(4px, -4px);
   }
 
@@ -1154,7 +1222,14 @@
 
   /* Spacing utilities */
   .mt-20 { margin-top: 20px; }
+  /* Classes utilitaires pour la visibilité responsive */
   .hidden { display: none !important; }
+  .mobile-only { display: none; }
+  
+  @media (max-width: 700px) {
+    .mobile-only { display: block; }
+    .desktop-only { display: none; }
+  }
 
   @media (max-width: 700px) {
     /* Cacher la sidebar par défaut sur mobile */
@@ -1195,17 +1270,14 @@
       visibility: visible;
     }
 
-    /* Afficher le bouton hamburger */
-    #toggleBtn {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
+    @media (max-width: 700px) {
+      .mobile-menu-toggle {
+        display: flex !important;
+      }
 
-    /* Ajuster le contenu principal */
-    #content {
-      width: 100%;
-      margin-left: 0;
+      /* Ajuster le contenu principal */
+      #content {
+        width: 100%;
       border-radius: 0;
     }
 
