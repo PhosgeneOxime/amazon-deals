@@ -126,23 +126,25 @@
 </div>
 
 <div id="content" tabindex="0">
-  <div class="header">
-    <button id="toggleBtn" aria-label="Toggle menu" class="hidden">
+  <header class="header">
+    <button id="menuToggleBtn" aria-label="Toggle menu" class="mobile-menu-toggle" aria-expanded="false" aria-controls="mainNav">
       <span></span>
     </button>
     <div class="header-content">
       <a href="index.html" class="header-logo-link">
         <img src="images/logo.png" alt="DealNest.CA Logo" class="header-logo" width="40" height="40" loading="lazy">
       </a>
+      <h1 class="header-title">DealNest.CA</h1>
     </div>
     <div class="header-actions">
       <a href="index.html" class="see-offer-btn active" aria-label="View Deals">🏠 View Deals</a>
       <a href="about.html" class="see-offer-btn" aria-label="About DealNest">ℹ️ About</a>
       <a href="privacy.html" class="see-offer-btn" aria-label="Privacy Policy">🔒 Privacy</a>
+      <div id="google_translate_element" class="translate-widget"></div>
       <a href="terms.html" class="see-offer-btn" aria-label="Terms of Use">📜 Terms</a>
       <a href="disclosure.html" class="see-offer-btn" aria-label="Affiliate Disclosure">🤝 Disclosure</a>
     </div>
-  </div>
+  </header>
 
   <h2 id="mainTitle">📦 Best Amazon Deals in Canada – Daily Discounts & Hot Offers</h2>
   
@@ -1214,6 +1216,44 @@ function initEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
   // Initialisation des éléments DOM
   productsDiv = document.getElementById('products');
+  
+  // Gestion du menu mobile
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  const headerActions = document.querySelector('.header-actions');
+  
+  if (menuToggleBtn && headerActions) {
+    menuToggleBtn.addEventListener('click', () => {
+      const isExpanded = menuToggleBtn.getAttribute('aria-expanded') === 'true';
+      menuToggleBtn.setAttribute('aria-expanded', !isExpanded);
+      headerActions.classList.toggle('mobile-visible', !isExpanded);
+      
+      // Animation du bouton hamburger
+      menuToggleBtn.classList.toggle('active');
+      
+      // Empêcher le défilement du corps lorsque le menu est ouvert
+      document.body.style.overflow = isExpanded ? '' : 'hidden';
+    });
+    
+    // Fermer le menu lorsqu'on clique en dehors
+    document.addEventListener('click', (e) => {
+      if (!menuToggleBtn.contains(e.target) && !headerActions.contains(e.target)) {
+        menuToggleBtn.setAttribute('aria-expanded', 'false');
+        headerActions.classList.remove('mobile-visible');
+        menuToggleBtn.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+    
+    // Fermer le menu lorsqu'un lien est cliqué
+    headerActions.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggleBtn.setAttribute('aria-expanded', 'false');
+        headerActions.classList.remove('mobile-visible');
+        menuToggleBtn.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+  }
   productCountDiv = document.getElementById('productCount');
   updateDateDiv = document.getElementById('updateDate');
   categoryList = document.getElementById('categoryList');
@@ -1224,7 +1264,6 @@ document.addEventListener('DOMContentLoaded', () => {
   contentElement = document.getElementById('content');
   sidebar = document.getElementById('sidebar');
   sidebarOverlay = document.getElementById('sidebarOverlay');
-  toggleBtn = document.getElementById('toggleBtn');
   
   // Vérification des éléments critiques
   if (!productsDiv) {
