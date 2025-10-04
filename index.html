@@ -18,35 +18,6 @@
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://dealnest.ca/" />
-
-<!-- Configuration AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
-<script>
-  // Configuration globale pour AdSense
-  window.adsbygoogle = window.adsbygoogle || [];
-  
-  // Détection du type d'appareil
-  window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  // Désactiver le chargement automatique initial
-  window.adsbygoogle.pauseAdRequests = 1;
-  
-  // Chargement du gestionnaire d'annonces
-  const loadAdsManager = function() {
-    const script = document.createElement('script');
-    script.src = 'js/ads-manager.js';
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    document.head.appendChild(script);
-  };
-  
-  // Démarrer le chargement après le chargement complet de la page
-  if (document.readyState === 'complete') {
-    loadAdsManager();
-  } else {
-    window.addEventListener('load', loadAdsManager);
-  }
-</script>
 <meta property="og:title" content="DealNest.CA - Best Daily Amazon Deals Canada | Up to 80% Off" />
 <meta property="og:description" content="🔥 Discover the best daily Amazon deals in Canada! Updated hourly with exclusive discounts up to 80% off on electronics, home, fashion & more." />
 <meta property="og:image" content="https://dealnest.ca/og-image.jpg" />
@@ -1043,18 +1014,11 @@
 }
 </script>
 
-<!-- Script AdSense déplacé dans le head pour un chargement optimisé -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7699432575717413" crossorigin="anonymous"></script>
 </head>
 <body>
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<!-- Bannière en-tête -->
-<header class="ad-header">
-  <div id="ad-leaderboard" class="ad-container">
-    <!-- L'annonce sera chargée dynamiquement -->
-  </div>
-</header>
 
 <div id="sidebar" aria-label="Navigation menu">
   <div class="sidebar-header">
@@ -1457,23 +1421,11 @@ function displayProducts(products, title = '📦 All Deals') {
     `;
   });
 
-  // Ajout des conteneurs d'annonces autour de la grille de produits
-  productsDiv.innerHTML = `
-    <!-- Première annonce de contenu -->
-    <div id="ad-content-1" class="ad-container">
-      <!-- L'annonce sera chargée dynamiquement -->
-    </div>
-
-    <div id="products" class="products-grid">${html}</div>
-
-    <!-- Deuxième annonce de contenu -->
-    <div id="ad-content-2" class="ad-container">
-      <!-- L'annonce sera chargée dynamiquement -->
-    </div>
-  `;
+  productsDiv.innerHTML = `<div class="products-grid">${html}</div>`;
 }
 
-// Fonction pour partager sur Facebook
+
+// Fonction pour partager sur Facebook Timeline
 function shareOnFacebook(productUrl, productTitle) {
   const message = 'Check out this amazing deal: ' + productUrl;
   const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}&quote=${encodeURIComponent(message)}`;
