@@ -884,7 +884,30 @@
   }
 
   #toggleSidebarBtn {
-    display: none !important;
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 2101;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    padding: 0;
+    box-shadow: var(--glow-shadow);
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+  }
+
+  #toggleSidebarBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
   }
 
   .header {
@@ -982,23 +1005,21 @@
     border: none;
     border-radius: 50%;
     padding: 0;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     font-weight: 600;
     position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 2001;
+    top: 12px;
+    left: 12px;
+    z-index: 1001;
     margin: 0;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
   }
   
   #toggleBtn span {
@@ -1142,14 +1163,12 @@
       left: -100%;
       top: 0;
       z-index: 2000;
-      width: 90%;
+      width: 85%;
       max-width: 320px;
       height: 100vh;
       transition: left 0.3s ease;
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
-      padding: 15px 12px;
-      background: rgba(248, 249, 250, 0.98);
-      backdrop-filter: blur(10px);
+      padding: 20px 15px;
     }
 
     #sidebar.open {
@@ -1201,97 +1220,22 @@
 
     .pagination-buttons {
       flex-direction: column;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .pagination-buttons button {
-      padding: 8px 12px;
-      font-size: 12px;
+      gap: 10px;
     }
 
     .page-numbers {
       margin: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      justify-content: center;
-    }
-
-    .page-number-btn {
-      padding: 6px 10px;
-      font-size: 11px;
-      min-width: 32px;
     }
 
     .pagination-info {
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
-      font-size: 12px;
-    }
-
-    .items-per-page-container {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      align-items: flex-start;
-    }
-
-    .items-per-page-container label {
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .items-per-page-container select {
-      padding: 4px 6px;
-      font-size: 11px;
-      border-radius: 4px;
+      gap: 10px;
     }
 
     .products-grid {
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    .product {
-      min-height: 420px;
-      padding: 16px;
-    }
-
-    .product-image {
-      height: 160px;
-      margin-bottom: 12px;
-    }
-
-    .product strong {
-      font-size: 13px;
-      min-height: 60px;
-      margin-bottom: 12px;
-    }
-
-    .price-section {
-      margin-bottom: 10px;
-    }
-
-    .current-price {
-      font-size: 16px;
-    }
-
-    .regular-price {
-      font-size: 12px;
-    }
-
-    .share-buttons {
-      gap: 6px;
-    }
-
-    .facebook-share-btn,
-    .messenger-share-btn,
-    .twitter-share-btn {
-      padding: 3px 6px;
-      font-size: 9px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
     }
 
     .header {
@@ -1299,155 +1243,17 @@
       height: 60px;
     }
 
-    .see-offer-btn {
-      padding: 6px 10px;
-      font-size: 11px;
+    .header-title {
+      font-size: 16px;
+      max-width: 60%;
     }
-
+    
     .header-actions {
       gap: 8px;
     }
-
+    
     /* Cacher le widget de traduction sur très petits écrans */
     .header-actions #google_translate_element {
       display: none;
-    }
-    .products-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
-    .product {
-      min-height: 380px;
-      padding: 12px;
-    }
-
-    .product-image {
-      height: 140px;
-    }
-
-    .header-actions {
-      gap: 6px;
-    }
-
-    /* Améliorations pour l'accessibilité et l'expérience mobile */
-    #toggleBtn:focus {
-      outline: none;
-      box-shadow: 0 4px 16px rgba(255, 153, 0, 0.5);
-      transform: scale(1.05);
-    }
-
-    #toggleBtn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(255, 153, 0, 0.4);
-    }
-
-    /* Améliorer la visibilité des éléments interactifs */
-    .see-offer-btn:focus,
-    .pagination-btn:focus,
-    .page-number-btn:focus {
-      outline: 2px solid var(--amazon-orange);
-      outline-offset: 2px;
-    }
-
-    /* Améliorer les interactions tactiles */
-    .see-offer-btn,
-    .pagination-btn,
-    .page-number-btn,
-    .facebook-share-btn,
-    .messenger-share-btn,
-    .twitter-share-btn {
-      min-height: 44px;
-      min-width: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Améliorer la lisibilité du texte sur mobile */
-    #mainTitle {
-      font-size: 20px;
-      line-height: 1.3;
-      margin-bottom: 20px;
-    }
-
-    .welcome-section {
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .welcome-text,
-    .welcome-note,
-    .welcome-cta {
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-  /* Optimisations pour très petits écrans (moins de 400px) */
-  @media (max-width: 400px) {
-    #sidebar {
-      width: 95%;
-      max-width: 280px;
-      padding: 12px 10px;
-    }
-
-    #toggleBtn {
-      width: 44px;
-      height: 44px;
-      top: 8px;
-      left: 8px;
-    }
-
-    #toggleBtn span {
-      width: 20px;
-    }
-
-    #toggleBtn span:before,
-    #toggleBtn span:after {
-      width: 20px;
-    }
-
-    .products-grid {
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .product {
-      min-height: 360px;
-      padding: 10px;
-    }
-
-    .product-image {
-      height: 120px;
-      margin-bottom: 10px;
-    }
-
-    .product strong {
-      font-size: 12px;
-      min-height: 50px;
-      margin-bottom: 10px;
-    }
-
-    .current-price {
-      font-size: 14px;
-    }
-
-    .see-offer-btn {
-      padding: 5px 8px;
-      font-size: 10px;
-    }
-
-    .header {
-      padding: 8px 12px;
-      height: 56px;
-    }
-
-    .header-title {
-      font-size: 14px;
-      max-width: 55%;
-    }
-
-    .header-logo {
-      height: 32px;
     }
   }
