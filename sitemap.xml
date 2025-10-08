@@ -10,7 +10,7 @@
   <!-- Pages principales -->
   <url>
     <loc>https://dealnest.ca/</loc>
-    <lastmod>2025-10-07T07:02:09-04:00</lastmod>
+    <lastmod>2025-10-08T07:02:13-04:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link 
@@ -29,7 +29,7 @@
   
   <url>
     <loc>https://dealnest.ca/about.html</loc>
-    <lastmod>2025-10-07T07:02:09-04:00</lastmod>
+    <lastmod>2025-10-08T07:02:13-04:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link 
@@ -45,7 +45,7 @@
   <!-- Pages légales -->
   <url>
     <loc>https://dealnest.ca/privacy.html</loc>
-    <lastmod>2025-10-07T07:02:09-04:00</lastmod>
+    <lastmod>2025-10-08T07:02:13-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link 
@@ -60,7 +60,7 @@
   
   <url>
     <loc>https://dealnest.ca/terms.html</loc>
-    <lastmod>2025-10-07T07:02:09-04:00</lastmod>
+    <lastmod>2025-10-08T07:02:13-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link 
@@ -75,7 +75,7 @@
   
   <url>
     <loc>https://dealnest.ca/disclosure.html</loc>
-    <lastmod>2025-10-07T07:02:09-04:00</lastmod>
+    <lastmod>2025-10-08T07:02:13-04:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link 
