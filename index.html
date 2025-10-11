@@ -1838,6 +1838,100 @@ function capitalizeWords(str) {
   return str.replace(/\b\w/g, c => c.toUpperCase());
 }
 
+// Dictionnaire de traduction des termes de recherche courants
+const SEARCH_TRANSLATIONS = {
+  // Français
+  'fr': {
+    'montre': 'watch',
+    'montres': 'watch',
+    'téléphone': 'phone',
+    'portable': 'phone',
+    'smartphone': 'phone',
+    'ordinateur': 'computer',
+    'pc': 'computer',
+    'portable': 'laptop',
+    'écouteurs': 'earphones',
+    'casque': 'headphones',
+    'écran': 'monitor',
+    'clavier': 'keyboard',
+    'souris': 'mouse',
+    'enceinte': 'speaker',
+    'haut-parleur': 'speaker',
+    'télévision': 'tv',
+    'télé': 'tv',
+    'tablette': 'tablet',
+    'montre connectée': 'smartwatch',
+    'bracelet connecté': 'fitness tracker',
+    'appareil photo': 'camera',
+    'imprimante': 'printer',
+    'scanner': 'scanner',
+    'disque dur': 'hard drive',
+    'clé usb': 'usb drive',
+    'carte mémoire': 'memory card',
+    'chargeur': 'charger',
+    'câble': 'cable',
+    'adaptateur': 'adapter',
+    'batterie': 'battery',
+    'étui': 'case',
+    'protection': 'protector',
+    'coque': 'case',
+    'support': 'stand',
+    'nettoyant': 'cleaner',
+    'kit': 'kit',
+    'accessoire': 'accessory'
+  },
+  // Ajoutez d'autres langues si nécessaire
+};
+
+// Fonction pour traduire les termes de recherche
+function translateSearchQuery(query, sourceLang) {
+  if (!query || !sourceLang || sourceLang === 'en') {
+    return query; // Pas de traduction nécessaire pour l'anglais
+  }
+
+  const translations = SEARCH_TRANSLATIONS[sourceLang];
+  if (!translations) {
+    return query; // Aucune traduction disponible pour cette langue
+  }
+
+  // Convertir en minuscules pour la correspondance
+  const lowerQuery = query.toLowerCase();
+  
+  // Vérifier d'abord les expressions de plusieurs mots (plus spécifiques)
+  for (const [frTerm, enTerm] of Object.entries(translations)) {
+    if (frTerm.includes(' ') && lowerQuery.includes(frTerm)) {
+      return enTerm;
+    }
+  }
+
+  // Ensuite, vérifier les mots individuels
+  const words = lowerQuery.split(/\s+/);
+  const translatedWords = words.map(word => {
+    // Vérifier si le mot a une traduction
+    return translations[word] || word;
+  });
+
+  return translatedWords.join(' ');
+}
+
+// Fonction pour obtenir la langue actuelle de l'interface
+function getCurrentInterfaceLanguage() {
+  try {
+    const iframe = document.querySelector('.goog-te-menu-frame');
+    if (iframe && iframe.contentDocument) {
+      const select = iframe.contentDocument.querySelector('.goog-te-menu2-select');
+      if (select && select.value) {
+        return select.value.split('-')[0];
+      }
+    }
+  } catch (e) {
+    console.error('Erreur lors de la détection de la langue:', e);
+  }
+  
+  // Par défaut, retourner la langue du navigateur ou 'en'
+  return (navigator.language || 'en').split('-')[0];
+}
+
 // Fonction pour surligner les termes de recherche
 function highlightSearchTerms(text, searchTerms) {
   if (!text || !searchTerms || searchTerms.length === 0) return text;
@@ -2620,24 +2714,54 @@ function performSearch(query) {
   
   clearSearch.classList.add('visible');
   
-  const searchResults = searchInAllDeals(trimmedQuery);
+  // Traduire la requête si nécessaire
+  let searchQuery = trimmedQuery;
+  let translatedQuery = trimmedQuery;
+  
+  // Obtenir la langue actuelle de l'interface
+  const currentLang = getCurrentInterfaceLanguage();
+  
+  // Si la langue n'est pas l'anglais, traduire la requête
+  if (currentLang !== 'en') {
+    translatedQuery = translateSearchQuery(trimmedQuery, currentLang);
+    
+    // Afficher une notification si la requête a été traduite
+    if (translatedQuery !== trimmedQuery) {
+      showTranslationNotification(`Search: "${trimmedQuery}" → "${translatedQuery}"`);
+    }
+    
+    searchQuery = translatedQuery;
+  }
+  
+  // Effectuer la recherche avec les termes traduits
+  const searchResults = searchInAllDeals(searchQuery);
   isSearchMode = true;
   isAllDealsMode = false;
-  currentSearchQuery = trimmedQuery;
+  currentSearchQuery = trimmedQuery; // Conserver la requête originale pour l'affichage
   currentPage = 1;
   currentDisplayData = searchResults;
   
-  if (searchResults.length === 0) {
+  // Préparer le message de résultats
+  const resultsCount = searchResults.length;
+  const resultsText = resultsCount === 1 ? 'result' : 'results';
+  
+  if (resultsCount === 0) {
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
         <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No results found for "${trimmedQuery}"</h3>
+        <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">
+          No results found for "${trimmedQuery}"
+          ${translatedQuery !== trimmedQuery ? `<br><small>(translated from: "${translatedQuery}")</small>` : ''}
+        </h3>
         <p style="font-size: 14px;">Try different keywords or browse our categories below.</p>
       </div>
     `;
-    mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 results)`;
+    mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 ${resultsText})`;
   } else {
-    displayDataWithPagination(searchResults, `🔍 Search: "${trimmedQuery}" (${searchResults.length} results)`);
+    displayDataWithPagination(
+      searchResults, 
+      `🔍 Search: "${trimmedQuery}"${translatedQuery !== trimmedQuery ? ` ("${translatedQuery}")` : ''} (${resultsCount} ${resultsText})`
+    );
   }
   
   // Garder toutes les catégories visibles pendant la recherche
@@ -2790,6 +2914,11 @@ function showNotification(message, type = 'info') {
     notification.style.transform = 'translate(-50%, -100%)';
     setTimeout(() => notification.remove(), 400);
   }, 3000);
+}
+
+// Fonction pour afficher les messages de traduction
+function showTranslationNotification(message) {
+  showNotification(message, 'info');
 }
 
 // Fonctions de sidebar
@@ -3273,6 +3402,28 @@ window.addEventListener('orientationchange', () => {
   }, 500);
 });
 
+// Dictionnaire des traductions pour le placeholder de recherche
+const SEARCH_PLACEHOLDERS = {
+  'en': '🔍 Search in all deals...',
+  'fr': '🔍 Rechercher dans toutes les offres...',
+  'es': '🔍 Buscar en todas las ofertas...',
+  'de': '🔍 In allen Angeboten suchen...',
+  'it': '🔍 Cerca in tutte le offerte...',
+  'pt': '🔍 Pesquisar em todas as ofertas...',
+  'zh-CN': '🔍 在所有优惠中搜索...',
+  'ja': '🔍 すべての取引を検索...',
+  'ko': '🔍 모든 딜 검색...',
+  'ar': '🔍 البحث في جميع العروض...'
+};
+
+// Fonction pour mettre à jour le placeholder de la barre de recherche
+function updateSearchPlaceholder(lang) {
+  const searchBox = document.getElementById('searchBox');
+  if (searchBox) {
+    searchBox.placeholder = SEARCH_PLACEHOLDERS[lang] || SEARCH_PLACEHOLDERS['en'];
+  }
+}
+
 // Initialisation de la traduction Google
 function googleTranslateElementInit() {
   if (typeof google !== 'undefined' && google.translate) {
@@ -3292,16 +3443,44 @@ function googleTranslateElementInit() {
       this._originalCallback = this.callback;
       this.callback = () => {
         this._originalCallback();
+        // Mettre à jour le placeholder de recherche
+        const currentLang = this.elements[0].value.split('-')[0];
+        updateSearchPlaceholder(currentLang);
         // Recharger les publicités après la traduction
         setTimeout(loadOptimizedAds, 1000);
       };
     };
+    
+    // Écouter les changements de langue
+    const checkTranslationInterval = setInterval(() => {
+      if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+        clearInterval(checkTranslationInterval);
+        
+        // Vérifier si une langue est déjà sélectionnée
+        const iframe = document.querySelector('.goog-te-menu-frame');
+        if (iframe) {
+          iframe.onload = function() {
+            const select = iframe.contentDocument.querySelector('.goog-te-menu2-select');
+            if (select) {
+              select.addEventListener('change', function() {
+                const lang = this.value.split('-')[0];
+                updateSearchPlaceholder(lang);
+              });
+            }
+          };
+        }
+      }
+    }, 500);
     
     // Masquer l'ancien sélecteur de langue dans le header
     const oldTranslateElement = document.getElementById('google_translate_element_header');
     if (oldTranslateElement) {
       oldTranslateElement.style.display = 'none';
     }
+    
+    // Définir le placeholder initial
+    const initialLang = (navigator.language || 'en').split('-')[0];
+    updateSearchPlaceholder(initialLang);
   }
 }
 
