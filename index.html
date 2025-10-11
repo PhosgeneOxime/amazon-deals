@@ -974,6 +974,22 @@
     .header-title {
       font-size: 20px;
     }
+    
+    .categories-container {
+      padding: 10px !important;
+    }
+    
+    .category-section {
+      padding: 15px !important;
+      margin-bottom: 30px !important;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .products-grid {
+      grid-template-columns: 1fr !important;
+      gap: 15px;
+    }
   }
 </style>
 
@@ -1445,17 +1461,326 @@ function shareOnTwitter(productUrl, productTitle) {
   window.open(twitterUrl, 'twitter-share-dialog', 'width=626,height=436,scrollbars=yes,resizable=yes');
 }
 
-// Fonction pour afficher tous les deals (randomisés)
+// Fonction utilitaire pour créer un élément produit
+function createProductElement(product) {
+  const productElement = document.createElement('div');
+  productElement.className = 'product';
+  productElement.style.background = 'white';
+  productElement.style.borderRadius = '8px';
+  productElement.style.overflow = 'hidden';
+  productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+  productElement.style.transition = 'transform 0.2s, box-shadow 0.2s';
+  productElement.style.height = '100%';
+  productElement.style.display = 'flex';
+  productElement.style.flexDirection = 'column';
+  productElement.style.cursor = 'pointer';
+  
+  // Au survol, effet de soulèvement
+  productElement.addEventListener('mouseenter', () => {
+    productElement.style.transform = 'translateY(-5px)';
+    productElement.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
+  });
+  
+  productElement.addEventListener('mouseleave', () => {
+    productElement.style.transform = 'translateY(0)';
+    productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+  });
+  
+  // Image du produit
+  const imageContainer = document.createElement('div');
+  imageContainer.style.height = '200px';
+  imageContainer.style.overflow = 'hidden';
+  imageContainer.style.display = 'flex';
+  imageContainer.style.alignItems = 'center';
+  imageContainer.style.justifyContent = 'center';
+  imageContainer.style.backgroundColor = '#f8f9fa';
+  imageContainer.style.position = 'relative';
+  
+  // Essayer différentes variations du nom de colonne pour l'image
+  const imageUrl = product.imageUrl || product.image || product.Image || product.IMAGE || product.img || product.Img || product.IMG || '';
+  
+  if (imageUrl && imageUrl.trim() && imageUrl !== 'N/A') {
+    const image = document.createElement('img');
+    // Nettoyer l'URL de l'image si nécessaire
+    let cleanImageUrl = imageUrl.trim();
+    if (cleanImageUrl && !cleanImageUrl.startsWith('http')) {
+      // Si l'URL est relative, ajouter le protocole
+      cleanImageUrl = 'https://' + cleanImageUrl.replace(/^\/+/, '');
+    }
+    
+    image.src = cleanImageUrl;
+    image.alt = product.title || product.Title || product.TITLE || 'Product Image';
+    image.style.maxWidth = '100%';
+    image.style.maxHeight = '100%';
+    image.style.objectFit = 'contain';
+    image.loading = 'lazy';
+    
+    // Gérer les erreurs de chargement d'image
+    image.onerror = function() {
+      console.warn('Failed to load image:', cleanImageUrl);
+      this.style.display = 'none';
+      const placeholder = document.createElement('div');
+      placeholder.style.width = '100%';
+      placeholder.style.height = '100%';
+      placeholder.style.display = 'flex';
+      placeholder.style.alignItems = 'center';
+      placeholder.style.justifyContent = 'center';
+      placeholder.style.fontSize = '48px';
+      placeholder.textContent = '📦';
+      imageContainer.appendChild(placeholder);
+    };
+    
+    imageContainer.appendChild(image);
+  } else {
+    // Placeholder si pas d'image
+    const placeholder = document.createElement('div');
+    placeholder.style.width = '100%';
+    placeholder.style.height = '100%';
+    placeholder.style.display = 'flex';
+    placeholder.style.alignItems = 'center';
+    placeholder.style.justifyContent = 'center';
+    placeholder.style.fontSize = '48px';
+    placeholder.textContent = '📦';
+    imageContainer.appendChild(placeholder);
+  }
+  
+  // Badge de réduction en haut à droite de l'image
+  const discountPercent = parseFloat(product.percent || product.discount?.replace('%', '') || '0');
+  if (discountPercent > 0) {
+    const discountBadge = document.createElement('div');
+    discountBadge.textContent = `-${discountPercent}%`;
+    discountBadge.style.position = 'absolute';
+    discountBadge.style.top = '10px';
+    discountBadge.style.right = '10px';
+    discountBadge.style.backgroundColor = '#CC0C39';
+    discountBadge.style.color = 'white';
+    discountBadge.style.padding = '5px 10px';
+    discountBadge.style.borderRadius = '4px';
+    discountBadge.style.fontSize = '14px';
+    discountBadge.style.fontWeight = 'bold';
+    discountBadge.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+    imageContainer.appendChild(discountBadge);
+  }
+  
+  // Détails du produit
+  const details = document.createElement('div');
+  details.style.padding = '15px';
+  details.style.flexGrow = '1';
+  details.style.display = 'flex';
+  details.style.flexDirection = 'column';
+  
+  // Titre du produit
+  const title = document.createElement('h3');
+  title.textContent = product.title || product.Title || 'No title available';
+  title.style.margin = '0 0 10px 0';
+  title.style.fontSize = '14px';
+  title.style.fontWeight = '500';
+  title.style.color = '#0f1111';
+  title.style.display = '-webkit-box';
+  title.style.WebkitLineClamp = '3';
+  title.style.WebkitBoxOrient = 'vertical';
+  title.style.overflow = 'hidden';
+  title.style.textOverflow = 'ellipsis';
+  title.style.minHeight = '60px';
+  title.style.lineHeight = '1.4';
+  
+  // Prix et rabais
+  const priceContainer = document.createElement('div');
+  priceContainer.style.marginTop = 'auto';
+  priceContainer.style.marginBottom = '10px';
+  
+  // Prix régulier barré (si disponible)
+  const currentPrice = product.price || '0';
+  const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
+  
+  if (regularPrice && discountPercent > 0) {
+    const regularPriceElement = document.createElement('div');
+    regularPriceElement.style.fontSize = '14px';
+    regularPriceElement.style.color = '#565959';
+    regularPriceElement.style.textDecoration = 'line-through';
+    regularPriceElement.style.marginBottom = '3px';
+    regularPriceElement.textContent = regularPrice;
+    priceContainer.appendChild(regularPriceElement);
+  }
+  
+  // Prix actuel
+  const currentPriceElement = document.createElement('div');
+  currentPriceElement.style.fontSize = '24px';
+  currentPriceElement.style.fontWeight = 'bold';
+  currentPriceElement.style.color = '#B12704';
+  currentPriceElement.textContent = currentPrice || 'N/A';
+  priceContainer.appendChild(currentPriceElement);
+  
+  // Économies
+  if (regularPrice && discountPercent > 0) {
+    const savings = (parseFloat(regularPrice.replace(/[^\d.-]/g, '')) - parseFloat(currentPrice.replace(/[^\d.-]/g, ''))).toFixed(2);
+    if (parseFloat(savings) > 0) {
+      const savingsElement = document.createElement('div');
+      savingsElement.style.fontSize = '12px';
+      savingsElement.style.color = '#067d3c';
+      savingsElement.style.marginTop = '3px';
+      savingsElement.style.fontWeight = '500';
+      savingsElement.textContent = `Save $${savings}`;
+      priceContainer.appendChild(savingsElement);
+    }
+  }
+  
+  // Bouton Voir l'offre
+  const button = document.createElement('a');
+  button.href = product.link || product.url || '#';
+  button.target = '_blank';
+  button.rel = 'noopener noreferrer';
+  button.textContent = '🛒 View Offer';
+  button.style.display = 'block';
+  button.style.width = '100%';
+  button.style.padding = '10px';
+  button.style.marginTop = '10px';
+  button.style.backgroundColor = '#FFD814';
+  button.style.border = '1px solid #FCD200';
+  button.style.borderRadius = '8px';
+  button.style.color = '#0F1111';
+  button.style.textAlign = 'center';
+  button.style.fontWeight = '600';
+  button.style.fontSize = '14px';
+  button.style.cursor = 'pointer';
+  button.style.transition = 'all 0.2s';
+  button.style.textDecoration = 'none';
+  
+  button.addEventListener('mouseenter', (e) => {
+    e.target.style.backgroundColor = '#F7CA00';
+    e.target.style.borderColor = '#F2C200';
+  });
+  
+  button.addEventListener('mouseleave', (e) => {
+    e.target.style.backgroundColor = '#FFD814';
+    e.target.style.borderColor = '#FCD200';
+  });
+  
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+  
+  // Assembler les éléments
+  details.appendChild(title);
+  details.appendChild(priceContainer);
+  details.appendChild(button);
+  
+  productElement.appendChild(imageContainer);
+  productElement.appendChild(details);
+  
+  return productElement;
+}
+
+// Fonction pour trier les produits par rabais (du plus élevé au plus bas)
+function sortProductsByDiscount(products) {
+  return [...products].sort((a, b) => {
+    // Extraire le pourcentage de réduction (essayer différentes variations)
+    const discountA = parseFloat(
+      a.percent || 
+      a.Percent || 
+      a.PERCENT || 
+      a.discount?.replace('%', '') || 
+      a.Discount?.replace('%', '') || 
+      '0'
+    );
+    const discountB = parseFloat(
+      b.percent || 
+      b.Percent || 
+      b.PERCENT || 
+      b.discount?.replace('%', '') || 
+      b.Discount?.replace('%', '') || 
+      '0'
+    );
+    return discountB - discountA; // Tri décroissant
+  });
+}
+
+// Fonction pour afficher les 10 meilleurs deals par catégorie
 function displayAllDeals() {
   if (data.length === 0) return;
   
-  // Mélanger aléatoirement les deals
-  const randomizedDeals = shuffleArray(data);
-  
-  currentDisplayData = randomizedDeals;
+  // Réinitialiser l'affichage
+  productsDiv.innerHTML = '';
   isAllDealsMode = true;
   isSearchMode = false;
-  displayDataWithPagination(randomizedDeals, `📦 All Deals (${randomizedDeals.length} deals)`);
+  
+  // Créer un conteneur pour toutes les catégories
+  const container = document.createElement('div');
+  container.className = 'categories-container';
+  container.style.padding = '20px';
+  
+  // Ajouter un titre principal
+  const title = document.createElement('h2');
+  title.textContent = '🔥 Top 10 Deals by Category';
+  title.style.marginBottom = '30px';
+  title.style.color = '#232f3e';
+  title.style.fontSize = '28px';
+  title.style.fontWeight = 'bold';
+  title.style.textAlign = 'center';
+  container.appendChild(title);
+  
+  // Pour chaque catégorie, afficher les 10 meilleurs deals
+  categoriesMap.forEach((products, category) => {
+    // Trier les produits par rabais et prendre les 10 premiers
+    const topProducts = sortProductsByDiscount(products).slice(0, 10);
+    
+    if (topProducts.length > 0) {
+      // Créer une section pour la catégorie
+      const categorySection = document.createElement('div');
+      categorySection.className = 'category-section';
+      categorySection.style.marginBottom = '50px';
+      categorySection.style.backgroundColor = '#ffffff';
+      categorySection.style.borderRadius = '12px';
+      categorySection.style.padding = '20px';
+      categorySection.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+      
+      // Ajouter le titre de la catégorie
+      const categoryTitle = document.createElement('h3');
+      categoryTitle.textContent = `🏷️ ${capitalizeWords(category)}`;
+      categoryTitle.style.marginBottom = '20px';
+      categoryTitle.style.color = '#146eb4';
+      categoryTitle.style.fontSize = '22px';
+      categoryTitle.style.fontWeight = '600';
+      categoryTitle.style.borderBottom = '3px solid #ff9900';
+      categoryTitle.style.paddingBottom = '10px';
+      categoryTitle.style.display = 'inline-block';
+      
+      // Badge avec le nombre de deals
+      const badge = document.createElement('span');
+      badge.textContent = ` ${topProducts.length} deals`;
+      badge.style.fontSize = '14px';
+      badge.style.color = '#565959';
+      badge.style.fontWeight = '400';
+      badge.style.marginLeft = '10px';
+      categoryTitle.appendChild(badge);
+      
+      categorySection.appendChild(categoryTitle);
+      
+      // Créer un conteneur pour les produits de cette catégorie
+      const productsContainer = document.createElement('div');
+      productsContainer.className = 'products-grid';
+      productsContainer.style.display = 'grid';
+      productsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+      productsContainer.style.gap = '20px';
+      productsContainer.style.marginTop = '20px';
+      
+      // Ajouter chaque produit
+      topProducts.forEach(product => {
+        const productElement = createProductElement(product);
+        productsContainer.appendChild(productElement);
+      });
+      
+      categorySection.appendChild(productsContainer);
+      container.appendChild(categorySection);
+    }
+  });
+  
+  // Vider et ajouter le conteneur principal
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(container);
+  
+  // Mettre à jour les données d'affichage actuelles
+  currentDisplayData = data;
 }
 
 // Fonction de pagination
@@ -1886,6 +2211,13 @@ function loadData(retries = 3) {
       // Debug: voir les données parsées
       console.log('First 3 products:', data.slice(0, 3));
       console.log('Headers found:', Object.keys(data[0] || {}));
+      
+      // Afficher les clés disponibles pour le premier produit
+      if (data.length > 0) {
+        const firstProduct = data[0];
+        console.log('First product keys:', Object.keys(firstProduct));
+        console.log('First product image URL:', firstProduct.image || firstProduct.Image || firstProduct.IMAGE || 'No image found');
+      }
       
       // Organiser les données par catégories
       categoriesMap = organizeDataByCategories(data);
