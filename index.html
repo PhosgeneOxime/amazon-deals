@@ -267,6 +267,67 @@
     }
   }
   
+  /* Styles pour la boîte de traduction dans le menu latéral */
+  .translation-container {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  #google_translate_element {
+    width: 100%;
+  }
+  
+  #google_translate_element .goog-te-gadget {
+    font-family: inherit !important;
+    font-size: 14px !important;
+    width: 100%;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple {
+    background-color: white !important;
+    border: 1px solid #d5d9d9 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple:hover {
+    border-color: var(--amazon-orange) !important;
+    box-shadow: 0 2px 4px rgba(255, 153, 0, 0.1) !important;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
+    color: #232f3e !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple .goog-te-menu-value span {
+    color: #232f3e !important;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple .goog-te-menu-value span:first-child {
+    display: inline-block !important;
+  }
+  
+  #google_translate_element .goog-te-gadget-simple img {
+    display: none !important;
+  }
+  
+  #google_translate_element .goog-te-menu2 {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  #google_translate_element .goog-te-menu2-item {
+    padding: 8px 12px !important;
+  }
+  
   .clear-search {
     position: absolute;
     right: 12px;
@@ -1205,6 +1266,11 @@
     <div id="productCount">Loading product count...</div>
     <div id="updateDate"></div>
 
+    <!-- Boîte de traduction Google -->
+    <div class="translation-container" style="margin: 15px 0; width: 100%;">
+      <div id="google_translate_element"></div>
+    </div>
+
     <div class="search-container">
       <input type="search" id="searchBox" placeholder="🔍 Search in all deals..." aria-label="Search products" autocomplete="off" />
       <button class="clear-search" id="clearSearch" aria-label="Clear search">×</button>
@@ -1213,7 +1279,7 @@
     <button id="btnAllDeals" aria-label="Show All Deals">📦 All Deals</button>
   </div>
   
-<div class="sidebar-content">
+  <div class="sidebar-content">
     <ul class="category-list" id="categoryList" tabindex="0"></ul>
   </div>
 </nav>
@@ -3210,13 +3276,14 @@ window.addEventListener('orientationchange', () => {
 // Initialisation de la traduction Google
 function googleTranslateElementInit() {
   if (typeof google !== 'undefined' && google.translate) {
+    // Initialiser le widget dans le menu latéral
     new google.translate.TranslateElement({
       pageLanguage: 'en',
       includedLanguages: 'en,fr,es,de,it,pt,zh-CN,ja,ko,ar',
       layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
       autoDisplay: false,
       multilanguagePage: true
-    }, 'google_translate_element_header');
+    }, 'google_translate_element');
     
     // S'assurer que les publicités sont rechargées après la traduction
     google.translate.TranslateElement.prototype._setUp = google.translate.TranslateElement.prototype.setup;
@@ -3229,6 +3296,12 @@ function googleTranslateElementInit() {
         setTimeout(loadOptimizedAds, 1000);
       };
     };
+    
+    // Masquer l'ancien sélecteur de langue dans le header
+    const oldTranslateElement = document.getElementById('google_translate_element_header');
+    if (oldTranslateElement) {
+      oldTranslateElement.style.display = 'none';
+    }
   }
 }
 
