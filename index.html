@@ -1348,14 +1348,23 @@ let data = [];
 let categoriesMap = new Map(); // Map pour stocker les catégories avec leurs produits
 let selectedCategory = null;
 let currentPage = 1;
-let itemsPerPage = 100;
+let itemsPerPage = 20; // Optimisé : 20 au lieu de 100 pour un chargement plus rapide
 let currentDisplayData = [];
 let isAllDealsMode = true;
 let isSearchMode = false;
 let currentSearchQuery = '';
+let isLoadingMore = false; // Pour éviter les chargements multiples
+let hasMoreProducts = true; // Indique s'il reste des produits à charger
 
 // Système de tracking des clics de catégories
 let categoryClicks = JSON.parse(localStorage.getItem('categoryClicks') || '{}');
+
+// Configuration du cache
+const CACHE_CONFIG = {
+  KEY: 'deals_cache_v1',
+  TIME_KEY: 'deals_cache_time_v1',
+  DURATION: 3600000 // 1 heure en millisecondes
+};
 
 // Fonctions utilitaires
 const debounce = (func, delay) => {
@@ -1367,6 +1376,157 @@ const debounce = (func, delay) => {
 };
 
 const isMobile = () => window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
+
+// Fonction pour charger plus de produits au scroll (Infinite Scroll)
+function loadMoreOnScroll() {
+  if (isLoadingMore || !hasMoreProducts) return;
+  
+  const scrollPosition = contentElement.scrollTop + contentElement.clientHeight;
+  const scrollHeight = contentElement.scrollHeight;
+  const threshold = 300; // Charger 300px avant la fin
+  
+  // Si on approche de la fin du scroll
+  if (scrollPosition >= scrollHeight - threshold) {
+    loadMoreProducts();
+  }
+}
+
+// Fonction pour charger la page suivante de produits
+function loadMoreProducts() {
+  if (isLoadingMore || !hasMoreProducts) return;
+  
+  isLoadingMore = true;
+  
+  // Calculer la prochaine page
+  const totalProducts = currentDisplayData.length;
+  const productsShown = currentPage * itemsPerPage;
+  
+  if (productsShown >= totalProducts) {
+    hasMoreProducts = false;
+    isLoadingMore = false;
+    return;
+  }
+  
+  // Afficher un indicateur de chargement
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.id = 'loading-more';
+  loadingIndicator.style.cssText = 'text-align: center; padding: 20px; color: #666;';
+  loadingIndicator.innerHTML = '<div class="loading-spinner" style="width: 30px; height: 30px; margin: 0 auto;"></div><p style="margin-top: 10px;">Loading more deals...</p>';
+  productsDiv.appendChild(loadingIndicator);
+  
+  // Simuler un petit délai pour une meilleure UX
+  setTimeout(() => {
+    currentPage++;
+    appendProducts(currentDisplayData, currentPage);
+    
+    // Retirer l'indicateur de chargement
+    const indicator = document.getElementById('loading-more');
+    if (indicator) {
+      indicator.remove();
+    }
+    
+    isLoadingMore = false;
+    
+    // Vérifier s'il reste encore des produits
+    if (currentPage * itemsPerPage >= totalProducts) {
+      hasMoreProducts = false;
+      
+      // Afficher un message "Fin des résultats"
+      const endMessage = document.createElement('div');
+      endMessage.style.cssText = 'text-align: center; padding: 30px; color: #999; font-size: 14px;';
+      endMessage.innerHTML = '✅ You\'ve reached the end of the deals!';
+      productsDiv.appendChild(endMessage);
+    }
+  }, 300);
+}
+
+// Fonction pour ajouter des produits (append au lieu de remplacer)
+function appendProducts(products, page) {
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, products.length);
+  const productsToShow = products.slice(startIndex, endIndex);
+  
+  if (productsToShow.length === 0) return;
+  
+  let html = '';
+  productsToShow.forEach((product, index) => {
+    const currentPrice = product.price || '0';
+    const discountPercent = parseFloat(product.percent || '0');
+    const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
+    const savings = regularPrice ? (parseFloat(regularPrice) - parseFloat(currentPrice.replace(/[^\d.-]/g, ''))).toFixed(2) : null;
+
+    // Gérer l'image
+    let imageHtml;
+    if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
+      const optimizedImageUrl = optimizeAmazonImageUrl(product.imageUrl);
+      imageHtml = `<img class="product-image" src="${optimizedImageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
+    } else {
+      imageHtml = '<div class="image-placeholder"></div>';
+    }
+
+    let productTitle = product.title || 'Product Title';
+    let cleanProductTitle = productTitle;
+    if (isSearchMode && currentSearchQuery) {
+      const searchTerms = currentSearchQuery.toLowerCase().trim().split(/\s+/);
+      productTitle = highlightSearchTerms(productTitle, searchTerms);
+      cleanProductTitle = product.title || 'Product Title';
+    }
+
+    html += `
+      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="window.open('${product.link || '#'}', '_blank');" style="cursor: pointer;">
+        ${imageHtml}
+        
+        <div class="product-content">
+          <strong>${productTitle}</strong>
+          
+          <div class="price-section">
+            <div class="price-row">
+              <div class="current-price">${currentPrice}</div>
+              ${regularPrice ? `<div class="regular-price">${regularPrice}</div>` : ''}
+            </div>
+            <div class="badges-row">
+              ${discountPercent > 0 ? `<div class="discount-badge">${discountPercent}% OFF</div>` : ''}
+              ${savings && parseFloat(savings) > 0 ? `<div class="savings">Save ${savings}</div>` : ''}
+            </div>
+          </div>
+          
+          ${product.rating ? `
+            <div class="product-meta">
+              <div class="product-rating">
+                ${'★'.repeat(Math.floor(parseFloat(product.rating)))}${'☆'.repeat(5 - Math.floor(parseFloat(product.rating)))}
+                <span>${product.rating}</span>
+              </div>
+              ${product.reviews ? `<div class="review-count">(${product.reviews} reviews)</div>` : ''}
+            </div>
+          ` : ''}
+          
+          <div class="product-actions">
+            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">
+              🛒 View Offer
+            </a>
+            <div class="share-buttons">
+              <button class="facebook-share-btn" onclick="shareOnFacebook('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on Facebook Timeline">
+                📢 Share
+              </button>
+              <button class="messenger-share-btn" onclick="shareOnFacebookMessenger('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share via Messenger">
+                💬 Message
+              </button>
+              <button class="twitter-share-btn" onclick="shareOnTwitter('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on X.com">
+                𝕏 Post
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Trouver la grille de produits et ajouter les nouveaux produits
+  const productsGrid = productsDiv.querySelector('.products-grid');
+  if (productsGrid) {
+    productsGrid.innerHTML += html;
+  }
+}
 
 // Fonctions d'aide pour les catégories
 function resetSearch() {
@@ -1717,6 +1877,12 @@ function organizeDataByCategories(data) {
 
 // Fonction pour afficher les produits avec prix régulier et rabais
 function displayProducts(products, title = '📦 All Deals') {
+  // Réinitialiser les variables d'infinite scroll
+  currentPage = 1;
+  isLoadingMore = false;
+  hasMoreProducts = true;
+  currentDisplayData = products;
+  
   if (!products || products.length === 0) {
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
@@ -1729,9 +1895,12 @@ function displayProducts(products, title = '📦 All Deals') {
   }
 
   mainTitle.innerHTML = title;
+  
+  // Afficher seulement la première page (20 produits)
+  const productsToShow = products.slice(0, itemsPerPage);
   let html = '';
 
-  products.forEach((product, index) => {
+  productsToShow.forEach((product, index) => {
     const currentPrice = product.price || '0';
     const discountPercent = parseFloat(product.percent || '0');
     const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
@@ -1740,7 +1909,9 @@ function displayProducts(products, title = '📦 All Deals') {
     // Gérer l'image
     let imageHtml;
     if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
-      imageHtml = `<img class="product-image" src="${product.imageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
+      // Optimiser l'URL de l'image Amazon
+      const optimizedImageUrl = optimizeAmazonImageUrl(product.imageUrl);
+      imageHtml = `<img class="product-image" src="${optimizedImageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
     } else {
       imageHtml = '<div class="image-placeholder"></div>';
     }
@@ -1864,6 +2035,27 @@ function generateProductSchema(product) {
   return schema;
 }
 
+// Fonction pour optimiser les URLs d'images Amazon
+function optimizeAmazonImageUrl(imageUrl) {
+  if (!imageUrl) return imageUrl;
+  
+  // Optimiser les images Amazon pour réduire la taille
+  if (imageUrl.includes('amazon') || imageUrl.includes('ssl-images')) {
+    // Remplacer les grandes tailles par des versions optimisées (300px)
+    // Formats Amazon : ._AC_SL1500_. ou ._AC_SX679_. etc.
+    imageUrl = imageUrl.replace(/\._[A-Z]{2}_S[LXY]\d+_\./g, '._AC_SL300_.');
+    imageUrl = imageUrl.replace(/\._[A-Z]{2}\d+_\./g, '._AC_SL300_.');
+    
+    // Si pas de taille spécifiée, ajouter la taille optimisée
+    if (!imageUrl.includes('._AC_')) {
+      imageUrl = imageUrl.replace(/\.jpg/i, '._AC_SL300_.jpg');
+      imageUrl = imageUrl.replace(/\.png/i, '._AC_SL300_.png');
+    }
+  }
+  
+  return imageUrl;
+}
+
 // Fonction utilitaire pour créer un élément produit
 function createProductElement(product) {
   const productElement = document.createElement('div');
@@ -1910,6 +2102,9 @@ function createProductElement(product) {
       // Si l'URL est relative, ajouter le protocole
       cleanImageUrl = 'https://' + cleanImageUrl.replace(/^\/+/, '');
     }
+    
+    // Optimiser l'URL de l'image Amazon
+    cleanImageUrl = optimizeAmazonImageUrl(cleanImageUrl);
     
     image.src = cleanImageUrl;
     image.alt = product.title || product.Title || product.TITLE || 'Product Image';
@@ -2314,74 +2509,11 @@ function displayProductsByCategory(category) {
   isAllDealsMode = false;
   isSearchMode = false;
   
-  // Réinitialiser l'affichage
-  productsDiv.innerHTML = '';
-  
   // Trier les produits par rabais
   const sortedProducts = sortProductsByDiscount(categoryProducts);
   
-  // Créer un conteneur pour la catégorie
-  const container = document.createElement('div');
-  container.className = 'categories-container';
-  container.style.padding = '20px';
-  
-  // Créer une section pour la catégorie
-  const categorySection = document.createElement('article');
-  categorySection.className = 'category-section';
-  categorySection.setAttribute('itemscope', '');
-  categorySection.setAttribute('itemtype', 'https://schema.org/ItemList');
-  categorySection.style.marginBottom = '50px';
-  categorySection.style.backgroundColor = '#ffffff';
-  categorySection.style.borderRadius = '12px';
-  categorySection.style.padding = '20px';
-  categorySection.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-  
-  // Ajouter le titre de la catégorie
-  const categoryTitle = document.createElement('h2');
-  categoryTitle.setAttribute('itemprop', 'name');
-  categoryTitle.textContent = `🏷️ ${capitalizeWords(category)}`;
-  categoryTitle.style.marginBottom = '20px';
-  categoryTitle.style.color = '#146eb4';
-  categoryTitle.style.fontSize = '22px';
-  categoryTitle.style.fontWeight = '600';
-  categoryTitle.style.borderBottom = '3px solid #ff9900';
-  categoryTitle.style.paddingBottom = '10px';
-  categoryTitle.style.display = 'inline-block';
-  
-  // Badge avec le nombre de deals
-  const badge = document.createElement('span');
-  badge.textContent = ` ${sortedProducts.length} deals`;
-  badge.style.fontSize = '14px';
-  badge.style.color = '#565959';
-  badge.style.fontWeight = '400';
-  badge.style.marginLeft = '10px';
-  categoryTitle.appendChild(badge);
-  
-  categorySection.appendChild(categoryTitle);
-  
-  // Créer un conteneur pour les produits
-  const productsContainer = document.createElement('div');
-  productsContainer.className = 'products-grid';
-  productsContainer.style.display = 'grid';
-  productsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
-  productsContainer.style.gap = '20px';
-  productsContainer.style.marginTop = '20px';
-  
-  // Ajouter chaque produit
-  sortedProducts.forEach(product => {
-    const productElement = createProductElement(product);
-    productsContainer.appendChild(productElement);
-  });
-  
-  categorySection.appendChild(productsContainer);
-  container.appendChild(categorySection);
-  
-  // Vider et ajouter le conteneur principal
-  productsDiv.innerHTML = '';
-  productsDiv.appendChild(container);
-  
-  // Mettre à jour les données d'affichage actuelles
-  currentDisplayData = sortedProducts;
+  // Utiliser displayProducts pour bénéficier de l'infinite scroll
+  displayProducts(sortedProducts, `🏷️ ${capitalizeWords(category)} Deals`);
 }
 
 // Fonction pour effectuer une recherche
@@ -2661,8 +2793,41 @@ async function loadSitemapDate() {
 
 // Chargement des données
 function loadData(retries = 3) {
+  // Vérifier le cache d'abord
+  const cachedData = localStorage.getItem(CACHE_CONFIG.KEY);
+  const cacheTime = localStorage.getItem(CACHE_CONFIG.TIME_KEY);
+  const now = Date.now();
+  
+  // Si le cache existe et est valide (moins d'1 heure)
+  if (cachedData && cacheTime && (now - parseInt(cacheTime) < CACHE_CONFIG.DURATION)) {
+    console.log('✅ Loading from cache (instant load)');
+    try {
+      data = JSON.parse(cachedData);
+      
+      if (data.length > 0) {
+        animateCounter(productCountDiv, data.length, '📦 Today\'s Products: ');
+        loadSitemapDate();
+        
+        categoriesMap = organizeDataByCategories(data);
+        console.log(`📊 Total categories found: ${categoriesMap.size}`);
+        console.log('📋 Categories:', Array.from(categoriesMap.keys()));
+        
+        displayCategories();
+        updateFooterCategories();
+        loadCategoryFromURL();
+        
+        showNotification('<div style="text-align:center">⚡ Deals loaded from cache!</div>', 'success');
+        return; // Sortir de la fonction, pas besoin de fetch
+      }
+    } catch (e) {
+      console.warn('Cache corrupted, loading from server');
+    }
+  }
+  
+  // Si pas de cache ou cache expiré, charger depuis le serveur
+  console.log('📡 Loading from server...');
   productsDiv.innerHTML = `
-    <div class="loading">
+    <div style="text-align: center; padding: 60px 20px;">
       <div class="loading-spinner"></div>
       <p>Loading amazing deals...</p>
     </div>
@@ -2675,6 +2840,15 @@ function loadData(retries = 3) {
     })
     .then(text => {
       data = parseCSV(text);
+      
+      // Sauvegarder dans le cache
+      try {
+        localStorage.setItem(CACHE_CONFIG.KEY, JSON.stringify(data));
+        localStorage.setItem(CACHE_CONFIG.TIME_KEY, now.toString());
+        console.log('💾 Data cached successfully');
+      } catch (e) {
+        console.warn('Failed to cache data:', e);
+      }
       
       if (data.length === 0) {
         throw new Error('No valid data found in CSV');
@@ -2811,6 +2985,9 @@ function loadCategoryFromURL() {
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
+  
+  // Activer l'infinite scroll
+  contentElement.addEventListener('scroll', debounce(loadMoreOnScroll, 200));
   
   // Toggle sidebar au clic sur le bouton
   toggleBtn.addEventListener('click', (e) => {
