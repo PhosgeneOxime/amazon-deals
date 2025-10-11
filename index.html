@@ -1038,13 +1038,17 @@
       font-size: 20px;
     }
     
-    .categories-container {
-      padding: 10px !important;
-    }
-    
     .category-section {
       padding: 15px !important;
-      margin-bottom: 30px !important;
+    }
+    
+    /* Footer responsive sur mobile */
+    footer > div > div:first-child {
+      grid-template-columns: 1fr !important;
+    }
+    
+    #footerCategoriesList {
+      grid-template-columns: 1fr !important;
     }
   }
   
@@ -1284,53 +1288,34 @@
   </section>
 
   <!-- Footer -->
-  <footer style="background: #232f3e; color: white; padding: 40px 24px; margin-top: 60px; border-radius: 12px 12px 0 0;">
+  <footer style="background: linear-gradient(135deg, #232f3e 0%, #1a252f 100%); color: white; padding: 50px 24px 30px 24px; margin-top: 60px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2);">
     <div style="max-width: 1200px; margin: 0 auto;">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px;">
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px; margin-bottom: 40px;">
         
         <!-- About Section -->
         <div>
-          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">About DealNest.ca</h3>
-          <p style="font-size: 14px; line-height: 1.6; color: #ddd;">Your trusted source for the best Amazon Canada deals. We handpick top-rated products with exclusive discounts across all categories.</p>
-        </div>
-        
-        <!-- Quick Links -->
-        <div>
-          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Quick Links</h3>
-          <ul style="list-style: none; padding: 0; margin: 0;">
-            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/" style="color: #ddd; text-decoration: none; font-size: 14px;">Home</a></li>
-            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/about" style="color: #ddd; text-decoration: none; font-size: 14px;">About Us</a></li>
-            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/contact" style="color: #ddd; text-decoration: none; font-size: 14px;">Contact</a></li>
-            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/privacy" style="color: #ddd; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
-          </ul>
+          <h3 style="color: #ff9900; font-size: 20px; margin-bottom: 20px; font-weight: 700; position: relative; padding-bottom: 12px;">
+            About DealNest.ca
+            <span style="position: absolute; bottom: 0; left: 0; width: 50px; height: 3px; background: #ff9900; border-radius: 2px; display: block;"></span>
+          </h3>
+          <p style="font-size: 14px; line-height: 1.8; color: #ddd;">Your trusted source for the best Amazon Canada deals. We handpick top-rated products with exclusive discounts across all categories.</p>
         </div>
         
         <!-- Categories -->
         <div>
-          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Popular Categories</h3>
-          <ul style="list-style: none; padding: 0; margin: 0;">
-            <li style="margin-bottom: 8px;"><a href="#electronics" style="color: #ddd; text-decoration: none; font-size: 14px;">Electronics Deals</a></li>
-            <li style="margin-bottom: 8px;"><a href="#home" style="color: #ddd; text-decoration: none; font-size: 14px;">Home & Kitchen</a></li>
-            <li style="margin-bottom: 8px;"><a href="#fashion" style="color: #ddd; text-decoration: none; font-size: 14px;">Fashion Deals</a></li>
-            <li style="margin-bottom: 8px;"><a href="#beauty" style="color: #ddd; text-decoration: none; font-size: 14px;">Beauty & Personal Care</a></li>
+          <h3 style="color: #ff9900; font-size: 20px; margin-bottom: 20px; font-weight: 700; position: relative; padding-bottom: 12px;">
+            Top 10 Popular Categories
+            <span style="position: absolute; bottom: 0; left: 0; width: 50px; height: 3px; background: #ff9900; border-radius: 2px; display: block;"></span>
+          </h3>
+          <ul id="footerCategoriesList" style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 30px;">
+            <!-- Les catégories seront générées dynamiquement par JavaScript -->
           </ul>
-        </div>
-        
-        <!-- Connect -->
-        <div>
-          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Connect With Us</h3>
-          <p style="font-size: 14px; line-height: 1.6; color: #ddd; margin-bottom: 12px;">Stay updated with the latest deals!</p>
-          <div style="display: flex; gap: 12px;">
-            <a href="https://facebook.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style="color: #ff9900; font-size: 24px; text-decoration: none;">📘</a>
-            <a href="https://twitter.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Twitter" style="color: #ff9900; font-size: 24px; text-decoration: none;">𝕏</a>
-            <a href="https://instagram.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="color: #ff9900; font-size: 24px; text-decoration: none;">📷</a>
-          </div>
         </div>
       </div>
       
-      <div style="border-top: 1px solid #3a4553; padding-top: 20px; text-align: center;">
-        <p style="font-size: 14px; color: #ddd; margin: 0 0 8px 0;">© 2025 DealNest.ca - All Rights Reserved</p>
-        <p style="font-size: 12px; color: #999; margin: 0;">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. We are a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for us to earn fees by linking to Amazon.ca and affiliated sites.</p>
+      <div style="border-top: 1px solid rgba(255, 153, 0, 0.3); padding-top: 30px; text-align: center;">
+        <p style="font-size: 14px; color: #ddd; margin: 0 0 12px 0; font-weight: 500;">© 2025 DealNest.ca - All Rights Reserved</p>
+        <p style="font-size: 12px; color: #999; margin: 0; line-height: 1.6; max-width: 900px; margin-left: auto; margin-right: auto;">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. We are a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for us to earn fees by linking to Amazon.ca and affiliated sites.</p>
       </div>
     </div>
   </footer>
@@ -1369,6 +1354,9 @@ let isAllDealsMode = true;
 let isSearchMode = false;
 let currentSearchQuery = '';
 
+// Système de tracking des clics de catégories
+let categoryClicks = JSON.parse(localStorage.getItem('categoryClicks') || '{}');
+
 // Fonctions utilitaires
 const debounce = (func, delay) => {
   let timeoutId;
@@ -1403,12 +1391,148 @@ function scrollToTop() {
   contentElement.scrollTop = 0;
 }
 
+// Fonction pour mettre à jour les meta tags dynamiquement
+function updateMetaTags(category = null) {
+  const baseTitle = "DealNest.CA - Best Daily Amazon Deals Canada | Up to 80% Off Today";
+  const baseDescription = "🔥 Discover the best daily Amazon deals in Canada on DealNest.ca! Updated hourly with exclusive discounts up to 80% off on electronics, home, fashion & more. Free shipping available!";
+  
+  if (category) {
+    const categoryName = capitalizeWords(category);
+    const title = `${categoryName} Deals Canada | Up to 80% Off | DealNest.ca`;
+    const description = `Best ${categoryName.toLowerCase()} deals in Canada. Save up to 80% on top-rated products from Amazon.ca. Updated daily with exclusive discounts and offers.`;
+    
+    // Mettre à jour le titre
+    document.title = title;
+    
+    // Mettre à jour la meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', description);
+    }
+    
+    // Mettre à jour Open Graph
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', title);
+    }
+    
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) {
+      ogDesc.setAttribute('content', description);
+    }
+    
+    // Mettre à jour Twitter Card
+    let twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', title);
+    }
+    
+    let twitterDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDesc) {
+      twitterDesc.setAttribute('content', description);
+    }
+  } else {
+    // Réinitialiser aux valeurs par défaut
+    document.title = baseTitle;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', baseDescription);
+    }
+  }
+}
+
+// Fonction pour tracker les clics de catégories
+function trackCategoryClick(category) {
+  if (!categoryClicks[category]) {
+    categoryClicks[category] = 0;
+  }
+  categoryClicks[category]++;
+  localStorage.setItem('categoryClicks', JSON.stringify(categoryClicks));
+  updateFooterCategories();
+  
+  // Mettre à jour les meta tags pour cette catégorie
+  updateMetaTags(category);
+}
+
+// Fonction pour obtenir les top 10 catégories
+function getTop10Categories() {
+  // Convertir l'objet en tableau et trier par nombre de clics
+  const sortedCategories = Object.entries(categoryClicks)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+  
+  // Si moins de 10 catégories trackées, compléter avec toutes les catégories disponibles
+  if (sortedCategories.length < 10) {
+    const trackedCategoryNames = sortedCategories.map(([name]) => name);
+    const allCategories = Array.from(categoriesMap.keys());
+    
+    for (const cat of allCategories) {
+      if (!trackedCategoryNames.includes(cat) && sortedCategories.length < 10) {
+        sortedCategories.push([cat, 0]);
+      }
+    }
+  }
+  
+  return sortedCategories.map(([name]) => name);
+}
+
+// Fonction pour mettre à jour le footer avec les catégories populaires
+function updateFooterCategories() {
+  const footerList = document.getElementById('footerCategoriesList');
+  if (!footerList) return;
+  
+  const top10 = getTop10Categories();
+  footerList.innerHTML = '';
+  
+  top10.forEach(category => {
+    const li = document.createElement('li');
+    li.style.marginBottom = '12px';
+    li.style.position = 'relative';
+    li.style.paddingLeft = '20px';
+    
+    const arrow = document.createElement('span');
+    arrow.textContent = '▸';
+    arrow.style.position = 'absolute';
+    arrow.style.left = '0';
+    arrow.style.color = '#ff9900';
+    arrow.style.fontWeight = 'bold';
+    
+    const link = document.createElement('a');
+    const categorySlug = category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    link.href = `index.html?category=${encodeURIComponent(categorySlug)}`;
+    link.textContent = capitalizeWords(category);
+    link.style.color = '#ddd';
+    link.style.textDecoration = 'none';
+    link.style.fontSize = '14px';
+    link.style.transition = 'all 0.2s ease';
+    link.style.display = 'inline-block';
+    
+    link.addEventListener('mouseenter', () => {
+      link.style.color = '#ff9900';
+      link.style.transform = 'translateX(5px)';
+    });
+    
+    link.addEventListener('mouseleave', () => {
+      link.style.color = '#ddd';
+      link.style.transform = 'translateX(0)';
+    });
+    
+    li.appendChild(arrow);
+    li.appendChild(link);
+    footerList.appendChild(li);
+  });
+}
+
 // Fonction principale de gestion des clics de catégories avec debouncing
 const handleCategoryClick = debounce((category, li) => {
   try {
     selectedCategory = category;
     resetSearch();
     currentPage = 1;
+    
+    // Tracker le clic de catégorie
+    trackCategoryClick(category);
     
     // Mettre à jour l'URL sans recharger la page
     const categorySlug = category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -1703,10 +1827,67 @@ function shareOnTwitter(productUrl, productTitle) {
   window.open(twitterUrl, 'twitter-share-dialog', 'width=626,height=436,scrollbars=yes,resizable=yes');
 }
 
+// Fonction pour générer le Schema.org Product
+function generateProductSchema(product) {
+  const discountPercent = parseFloat(product.percent || product.discount?.replace('%', '') || '0');
+  const currentPrice = product.price || '0';
+  const priceValue = parseFloat(currentPrice.replace(/[^0-9.]/g, '')) || 0;
+  
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title || product.Title || 'Product',
+    "image": product.imageUrl || product.image || product.Image || '',
+    "description": `${product.title || 'Product'} - Save ${discountPercent}% on Amazon Canada`,
+    "offers": {
+      "@type": "Offer",
+      "url": product.link || product.url || '',
+      "priceCurrency": "CAD",
+      "price": priceValue.toFixed(2),
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Amazon.ca"
+      }
+    }
+  };
+  
+  // Ajouter rating si disponible
+  if (product.rating && product.reviews) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": product.rating,
+      "reviewCount": product.reviews
+    };
+  }
+  
+  return schema;
+}
+
 // Fonction utilitaire pour créer un élément produit
 function createProductElement(product) {
   const productElement = document.createElement('div');
   productElement.className = 'product';
+  
+  // Rendre toute la carte cliquable
+  productElement.style.cursor = 'pointer';
+  productElement.addEventListener('click', (e) => {
+    // Ne pas rediriger si on clique sur un bouton ou un lien
+    if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a') || e.target.closest('button')) {
+      return;
+    }
+    // Ouvrir le lien Amazon dans un nouvel onglet
+    const productLink = product.link || product.url || '#';
+    if (productLink !== '#') {
+      window.open(productLink, '_blank', 'noopener,noreferrer');
+    }
+  });
+  
+  // Ajouter le Schema.org Product en JSON-LD
+  const schemaScript = document.createElement('script');
+  schemaScript.type = 'application/ld+json';
+  schemaScript.textContent = JSON.stringify(generateProductSchema(product));
+  productElement.appendChild(schemaScript);
   
   // Image du produit
   const imageContainer = document.createElement('div');
@@ -2518,7 +2699,14 @@ function loadData(retries = 3) {
       // Organiser les données par catégories
       categoriesMap = organizeDataByCategories(data);
       
+      // Afficher le nombre de catégories dans la console
+      console.log(`📊 Total categories found: ${categoriesMap.size}`);
+      console.log('📋 Categories:', Array.from(categoriesMap.keys()));
+      
       displayCategories();
+      
+      // Mettre à jour le footer avec les catégories populaires
+      updateFooterCategories();
       
       // Charger la catégorie depuis l'URL ou afficher tous les deals
       loadCategoryFromURL();
