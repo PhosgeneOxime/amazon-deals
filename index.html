@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DealNest.CA - Best Daily Amazon Deals Canada | Up to 80% Off Today</title>
 <meta name="description" content="🔥 Discover the best daily Amazon deals in Canada on DealNest.ca! Updated hourly with exclusive discounts up to 80% off on electronics, home, fashion & more. Free shipping available!" />
 <meta name="keywords" content="amazon deals canada, daily deals, amazon discounts, canadian deals, electronics deals, home deals, fashion deals, amazon promo codes, best deals canada" />
@@ -472,21 +472,22 @@
   }
 
   .product {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
+    background: white !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    display: flex !important;
+    flex-direction: column !important;
     color: var(--text-dark);
     text-decoration: none;
-    transition: var(--transition);
-    border: 1px solid #d5d9d9;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    border: none !important;
     position: relative;
-    overflow: visible;
-    min-height: 480px;
+    overflow: hidden !important;
+    height: auto !important;
+    min-height: auto !important;
     animation: slideInUp 0.4s ease forwards;
-    cursor: pointer;
+    cursor: pointer !important;
   }
 
   .product::before {
@@ -502,10 +503,8 @@
   }
   
   .product:hover {
-    background: #e9ecef;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-    border-color: var(--amazon-orange);
+    transform: translateY(-5px) !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
   }
 
   .product:hover::before {
@@ -836,11 +835,75 @@
     position: relative;
   }
 
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+  }
+
   .header-title {
     color: var(--text-primary) !important;
     font-weight: 700;
     font-size: 24px;
     margin: 0;
+    flex: 1;
+  }
+
+  .header-content #google_translate_element_header {
+    flex-shrink: 0;
+  }
+  
+  /* Style pour Google Translate dans le header */
+  #google_translate_element_header {
+    display: inline-block;
+  }
+  
+  #google_translate_element_header .goog-te-gadget {
+    font-family: inherit !important;
+    font-size: 14px !important;
+  }
+  
+  #google_translate_element_header .goog-te-gadget-simple {
+    background-color: white !important;
+    border: 1px solid #d5d9d9 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    display: inline-block !important;
+  }
+  
+  #google_translate_element_header .goog-te-gadget-simple:hover {
+    border-color: var(--amazon-orange) !important;
+    background-color: #f8f9fa !important;
+    box-shadow: 0 2px 4px rgba(255, 153, 0, 0.2) !important;
+  }
+  
+  #google_translate_element_header .goog-te-gadget-simple .goog-te-menu-value {
+    color: #232f3e !important;
+  }
+  
+  #google_translate_element_header .goog-te-gadget-simple .goog-te-menu-value span {
+    color: #232f3e !important;
+  }
+  
+  #google_translate_element_header .goog-te-gadget-simple .goog-te-menu-value span:first-child {
+    display: inline-block !important;
+  }
+  
+  /* Cacher le logo Google Translate */
+  #google_translate_element_header .goog-te-gadget-simple img {
+    display: none !important;
+  }
+  
+  /* Style pour le menu déroulant */
+  .goog-te-menu-frame {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   }
 
   #toggleBtn {
@@ -1025,8 +1088,78 @@
   "name": "Best Amazon Deals Canada",
   "description": "Daily updated list of the best Amazon deals available in Canada",
   "url": "https://dealnest.ca",
-  "numberOfItems": "1000+",
-  "itemListElement": []
+  "numberOfItems": "1000+"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "DealNest.CA",
+  "url": "https://dealnest.ca",
+  "logo": "https://dealnest.ca/logo.png",
+  "description": "Canada's premier destination for Amazon deals and discounts",
+  "sameAs": [
+    "https://facebook.com/dealnestca",
+    "https://twitter.com/dealnestca",
+    "https://instagram.com/dealnestca"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Service",
+    "areaServed": "CA",
+    "availableLanguage": ["English", "French"]
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How often are deals updated on DealNest.ca?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our Amazon Canada deals are updated daily, with new offers added throughout the day. We monitor Amazon's best discounts to ensure you never miss a great deal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are all products on DealNest.ca from Amazon Canada?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, all deals featured on DealNest.ca are exclusively from Amazon.ca, ensuring fast shipping and reliable customer service for Canadian shoppers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I find the best deals in a specific category?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use our category navigation on the left sidebar to browse deals by category such as Electronics, Home & Kitchen, Fashion, Beauty, and more. Each category shows the top 10 deals sorted by discount percentage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I pay extra when buying through DealNest.ca?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, you pay the same price as on Amazon. We use affiliate links, which means we may earn a small commission from Amazon at no additional cost to you. This helps us keep the site running and find more great deals!"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the minimum rating for products featured on DealNest.ca?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We only feature products with a rating of 4 stars or higher on Amazon to ensure quality and customer satisfaction."
+      }
+    }
+  ]
 }
 </script>
 
@@ -1036,7 +1169,7 @@
 
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div id="sidebar" aria-label="Navigation menu">
+<nav id="sidebar" aria-label="Main navigation">
   <div class="sidebar-header">
     <img id="logo" src="https://dealnest.ca/logo.png" alt="DealNest.CA - Best Amazon Deals Canada Logo" title="DealNest.CA - Homepage" onerror="this.src='https://via.placeholder.com/180x100?text=DealNest.CA'"/>
     <div id="productCount">Loading product count...</div>
@@ -1052,19 +1185,35 @@
   
 <div class="sidebar-content">
     <ul class="category-list" id="categoryList" tabindex="0"></ul>
-    
-    <div id="google_translate_element"></div>
   </div>
-</div>
+</nav>
 
-<div id="content" tabindex="0">
-  <div class="header">
+<main id="content" tabindex="0">
+  <header class="header">
     <button id="toggleBtn" aria-label="Toggle sidebar">☰</button>
     <div class="header-content">
       <h1 class="header-title">🔥 Best Daily Amazon Deals Canada</h1>
-      <div id="google_translate_element"></div>
+      <div id="google_translate_element_header"></div>
     </div>
-  </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="Breadcrumb" class="breadcrumb">
+    <ol itemscope itemtype="https://schema.org/BreadcrumbList" style="list-style: none; padding: 10px 20px; margin: 0; display: flex; gap: 8px; font-size: 14px; color: #565959;">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://dealnest.ca/" style="color: #146eb4; text-decoration: none;">
+          <span itemprop="name">Home</span>
+        </a>
+        <meta itemprop="position" content="1" />
+      </li>
+      <li style="color: #565959;">›</li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span itemprop="name" style="color: #0f1111;">All Deals</span>
+        <meta itemprop="item" content="https://dealnest.ca/" />
+        <meta itemprop="position" content="2" />
+      </li>
+    </ol>
+  </nav>
 
   <h2 id="mainTitle">📦 Best Amazon Deals in Canada – Daily Discounts & Hot Offers</h2>
   
@@ -1087,17 +1236,105 @@
     </p>
   </div>
   
-  <div id="products">
+  <section id="products" aria-label="Product deals">
     <div class="loading">
       <div class="loading-spinner"></div>
       <p>Loading the latest Amazon Canada deals...</p>
     </div>
-  </div>
-</div>
+  </section>
 
-<div style="text-align:center;">
-  <div id="google_translate_element" style="display:inline-block;"></div>
-</div>
+  <!-- FAQ Section for SEO -->
+  <section class="faq-section" style="padding: 40px 24px; background: white; border-radius: 12px; margin: 40px 0;">
+    <h2 style="color: #232f3e; font-size: 24px; margin-bottom: 24px; text-align: center;">❓ Frequently Asked Questions</h2>
+    
+    <article itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <h3 itemprop="name" style="color: #146eb4; font-size: 18px; margin: 0 0 12px 0;">How often are deals updated on DealNest.ca?</h3>
+      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text" style="margin: 0; color: #0f1111; line-height: 1.6;">Our Amazon Canada deals are updated daily, with new offers added throughout the day. We monitor Amazon's best discounts to ensure you never miss a great deal.</p>
+      </div>
+    </article>
+
+    <article itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <h3 itemprop="name" style="color: #146eb4; font-size: 18px; margin: 0 0 12px 0;">Are all products on DealNest.ca from Amazon Canada?</h3>
+      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text" style="margin: 0; color: #0f1111; line-height: 1.6;">Yes, all deals featured on DealNest.ca are exclusively from Amazon.ca, ensuring fast shipping and reliable customer service for Canadian shoppers.</p>
+      </div>
+    </article>
+
+    <article itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <h3 itemprop="name" style="color: #146eb4; font-size: 18px; margin: 0 0 12px 0;">How do I find the best deals in a specific category?</h3>
+      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text" style="margin: 0; color: #0f1111; line-height: 1.6;">Use our category navigation on the left sidebar to browse deals by category such as Electronics, Home & Kitchen, Fashion, Beauty, and more. Each category shows the top 10 deals sorted by discount percentage.</p>
+      </div>
+    </article>
+
+    <article itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <h3 itemprop="name" style="color: #146eb4; font-size: 18px; margin: 0 0 12px 0;">Do I pay extra when buying through DealNest.ca?</h3>
+      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text" style="margin: 0; color: #0f1111; line-height: 1.6;">No, you pay the same price as on Amazon. We use affiliate links, which means we may earn a small commission from Amazon at no additional cost to you. This helps us keep the site running and find more great deals!</p>
+      </div>
+    </article>
+
+    <article itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+      <h3 itemprop="name" style="color: #146eb4; font-size: 18px; margin: 0 0 12px 0;">What is the minimum rating for products featured on DealNest.ca?</h3>
+      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+        <p itemprop="text" style="margin: 0; color: #0f1111; line-height: 1.6;">We only feature products with a rating of 4 stars or higher on Amazon to ensure quality and customer satisfaction.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background: #232f3e; color: white; padding: 40px 24px; margin-top: 60px; border-radius: 12px 12px 0 0;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px;">
+        
+        <!-- About Section -->
+        <div>
+          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">About DealNest.ca</h3>
+          <p style="font-size: 14px; line-height: 1.6; color: #ddd;">Your trusted source for the best Amazon Canada deals. We handpick top-rated products with exclusive discounts across all categories.</p>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Quick Links</h3>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/" style="color: #ddd; text-decoration: none; font-size: 14px;">Home</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/about" style="color: #ddd; text-decoration: none; font-size: 14px;">About Us</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/contact" style="color: #ddd; text-decoration: none; font-size: 14px;">Contact</a></li>
+            <li style="margin-bottom: 8px;"><a href="https://dealnest.ca/privacy" style="color: #ddd; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+          </ul>
+        </div>
+        
+        <!-- Categories -->
+        <div>
+          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Popular Categories</h3>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="margin-bottom: 8px;"><a href="#electronics" style="color: #ddd; text-decoration: none; font-size: 14px;">Electronics Deals</a></li>
+            <li style="margin-bottom: 8px;"><a href="#home" style="color: #ddd; text-decoration: none; font-size: 14px;">Home & Kitchen</a></li>
+            <li style="margin-bottom: 8px;"><a href="#fashion" style="color: #ddd; text-decoration: none; font-size: 14px;">Fashion Deals</a></li>
+            <li style="margin-bottom: 8px;"><a href="#beauty" style="color: #ddd; text-decoration: none; font-size: 14px;">Beauty & Personal Care</a></li>
+          </ul>
+        </div>
+        
+        <!-- Connect -->
+        <div>
+          <h3 style="color: #ff9900; font-size: 18px; margin-bottom: 16px;">Connect With Us</h3>
+          <p style="font-size: 14px; line-height: 1.6; color: #ddd; margin-bottom: 12px;">Stay updated with the latest deals!</p>
+          <div style="display: flex; gap: 12px;">
+            <a href="https://facebook.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style="color: #ff9900; font-size: 24px; text-decoration: none;">📘</a>
+            <a href="https://twitter.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Twitter" style="color: #ff9900; font-size: 24px; text-decoration: none;">𝕏</a>
+            <a href="https://instagram.com/dealnestca" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style="color: #ff9900; font-size: 24px; text-decoration: none;">📷</a>
+          </div>
+        </div>
+      </div>
+      
+      <div style="border-top: 1px solid #3a4553; padding-top: 20px; text-align: center;">
+        <p style="font-size: 14px; color: #ddd; margin: 0 0 8px 0;">© 2025 DealNest.ca - All Rights Reserved</p>
+        <p style="font-size: 12px; color: #999; margin: 0;">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. We are a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for us to earn fees by linking to Amazon.ca and affiliated sites.</p>
+      </div>
+    </div>
+  </footer>
+</main>
 
 <script>
 // Configuration
@@ -1172,6 +1409,11 @@ const handleCategoryClick = debounce((category, li) => {
     selectedCategory = category;
     resetSearch();
     currentPage = 1;
+    
+    // Mettre à jour l'URL sans recharger la page
+    const categorySlug = category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const newUrl = `${window.location.origin}${window.location.pathname}?category=${encodeURIComponent(categorySlug)}`;
+    window.history.pushState({ category: category }, '', newUrl);
     
     displayProductsByCategory(category);
     setActiveCategory(li);
@@ -1465,26 +1707,6 @@ function shareOnTwitter(productUrl, productTitle) {
 function createProductElement(product) {
   const productElement = document.createElement('div');
   productElement.className = 'product';
-  productElement.style.background = 'white';
-  productElement.style.borderRadius = '8px';
-  productElement.style.overflow = 'hidden';
-  productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-  productElement.style.transition = 'transform 0.2s, box-shadow 0.2s';
-  productElement.style.height = '100%';
-  productElement.style.display = 'flex';
-  productElement.style.flexDirection = 'column';
-  productElement.style.cursor = 'pointer';
-  
-  // Au survol, effet de soulèvement
-  productElement.addEventListener('mouseenter', () => {
-    productElement.style.transform = 'translateY(-5px)';
-    productElement.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
-  });
-  
-  productElement.addEventListener('mouseleave', () => {
-    productElement.style.transform = 'translateY(0)';
-    productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-  });
   
   // Image du produit
   const imageContainer = document.createElement('div');
@@ -1719,23 +1941,30 @@ function displayAllDeals() {
   title.style.textAlign = 'center';
   container.appendChild(title);
   
-  // Pour chaque catégorie, afficher les 10 meilleurs deals
-  categoriesMap.forEach((products, category) => {
+  // Convertir la Map en tableau et mélanger l'ordre des catégories
+  const categoriesArray = Array.from(categoriesMap.entries());
+  const shuffledCategories = shuffleArray(categoriesArray);
+  
+  // Pour chaque catégorie (dans un ordre aléatoire), afficher les 10 meilleurs deals
+  shuffledCategories.forEach(([category, products]) => {
     // Trier les produits par rabais et prendre les 10 premiers
     const topProducts = sortProductsByDiscount(products).slice(0, 10);
     
     if (topProducts.length > 0) {
       // Créer une section pour la catégorie
-      const categorySection = document.createElement('div');
+      const categorySection = document.createElement('article');
       categorySection.className = 'category-section';
+      categorySection.setAttribute('itemscope', '');
+      categorySection.setAttribute('itemtype', 'https://schema.org/ItemList');
       categorySection.style.marginBottom = '50px';
       categorySection.style.backgroundColor = '#ffffff';
       categorySection.style.borderRadius = '12px';
       categorySection.style.padding = '20px';
       categorySection.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
       
-      // Ajouter le titre de la catégorie
-      const categoryTitle = document.createElement('h3');
+      // Ajouter le titre de la catégorie (H2 pour meilleure hiérarchie SEO)
+      const categoryTitle = document.createElement('h2');
+      categoryTitle.setAttribute('itemprop', 'name');
       categoryTitle.textContent = `🏷️ ${capitalizeWords(category)}`;
       categoryTitle.style.marginBottom = '20px';
       categoryTitle.style.color = '#146eb4';
@@ -1898,13 +2127,75 @@ function displayProductsByCategory(category) {
   
   isAllDealsMode = false;
   isSearchMode = false;
-  // Randomiser aussi les produits par catégorie
-  currentDisplayData = shuffleArray(categoryProducts);
   
-  displayDataWithPagination(
-    currentDisplayData, 
-    `🏷️ ${capitalizeWords(category)} (${currentDisplayData.length} deals)`
-  );
+  // Réinitialiser l'affichage
+  productsDiv.innerHTML = '';
+  
+  // Trier les produits par rabais
+  const sortedProducts = sortProductsByDiscount(categoryProducts);
+  
+  // Créer un conteneur pour la catégorie
+  const container = document.createElement('div');
+  container.className = 'categories-container';
+  container.style.padding = '20px';
+  
+  // Créer une section pour la catégorie
+  const categorySection = document.createElement('article');
+  categorySection.className = 'category-section';
+  categorySection.setAttribute('itemscope', '');
+  categorySection.setAttribute('itemtype', 'https://schema.org/ItemList');
+  categorySection.style.marginBottom = '50px';
+  categorySection.style.backgroundColor = '#ffffff';
+  categorySection.style.borderRadius = '12px';
+  categorySection.style.padding = '20px';
+  categorySection.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+  
+  // Ajouter le titre de la catégorie
+  const categoryTitle = document.createElement('h2');
+  categoryTitle.setAttribute('itemprop', 'name');
+  categoryTitle.textContent = `🏷️ ${capitalizeWords(category)}`;
+  categoryTitle.style.marginBottom = '20px';
+  categoryTitle.style.color = '#146eb4';
+  categoryTitle.style.fontSize = '22px';
+  categoryTitle.style.fontWeight = '600';
+  categoryTitle.style.borderBottom = '3px solid #ff9900';
+  categoryTitle.style.paddingBottom = '10px';
+  categoryTitle.style.display = 'inline-block';
+  
+  // Badge avec le nombre de deals
+  const badge = document.createElement('span');
+  badge.textContent = ` ${sortedProducts.length} deals`;
+  badge.style.fontSize = '14px';
+  badge.style.color = '#565959';
+  badge.style.fontWeight = '400';
+  badge.style.marginLeft = '10px';
+  categoryTitle.appendChild(badge);
+  
+  categorySection.appendChild(categoryTitle);
+  
+  // Créer un conteneur pour les produits
+  const productsContainer = document.createElement('div');
+  productsContainer.className = 'products-grid';
+  productsContainer.style.display = 'grid';
+  productsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+  productsContainer.style.gap = '20px';
+  productsContainer.style.marginTop = '20px';
+  
+  // Ajouter chaque produit
+  sortedProducts.forEach(product => {
+    const productElement = createProductElement(product);
+    productsContainer.appendChild(productElement);
+  });
+  
+  categorySection.appendChild(productsContainer);
+  container.appendChild(categorySection);
+  
+  // Vider et ajouter le conteneur principal
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(container);
+  
+  // Mettre à jour les données d'affichage actuelles
+  currentDisplayData = sortedProducts;
 }
 
 // Fonction pour effectuer une recherche
@@ -2223,7 +2514,9 @@ function loadData(retries = 3) {
       categoriesMap = organizeDataByCategories(data);
       
       displayCategories();
-      displayAllDeals();
+      
+      // Charger la catégorie depuis l'URL ou afficher tous les deals
+      loadCategoryFromURL();
       
       showNotification('<div style="text-align:center">✨ Deals loaded successfully!</div>', 'success');
     })
@@ -2283,6 +2576,45 @@ function closeSidebar() {
   toggleBtn.focus();
 }
 
+// Fonction pour charger une catégorie depuis l'URL
+function loadCategoryFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categorySlug = urlParams.get('category');
+  
+  if (categorySlug) {
+    // Convertir le slug en nom de catégorie
+    const categoryName = categorySlug.replace(/-/g, ' ');
+    
+    // Trouver la catégorie correspondante (insensible à la casse)
+    let foundCategory = null;
+    for (let [category, products] of categoriesMap.entries()) {
+      if (category.toLowerCase() === categoryName.toLowerCase()) {
+        foundCategory = category;
+        break;
+      }
+    }
+    
+    if (foundCategory) {
+      selectedCategory = foundCategory;
+      displayProductsByCategory(foundCategory);
+      
+      // Mettre en surbrillance la catégorie dans la sidebar
+      const categoryItems = document.querySelectorAll('#categoryList li');
+      categoryItems.forEach(li => {
+        if (li.dataset.category === foundCategory) {
+          setActiveCategory(li);
+        }
+      });
+    } else {
+      // Catégorie non trouvée, afficher tous les deals
+      displayAllDeals();
+    }
+  } else {
+    // Pas de catégorie dans l'URL, afficher tous les deals
+    displayAllDeals();
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
@@ -2317,6 +2649,11 @@ document.addEventListener('DOMContentLoaded', () => {
     clearSearch.classList.remove('visible');
     currentSearchQuery = '';
     document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+    
+    // Réinitialiser l'URL à la page d'accueil
+    const newUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.pushState({}, '', newUrl);
+    
     displayCategories();
     displayAllDeals(); // Ceci va automatiquement re-randomiser
     if(window.innerWidth <= 700) {
@@ -2348,6 +2685,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Gestion du bouton retour du navigateur
+window.addEventListener('popstate', (event) => {
+  if (event.state && event.state.category) {
+    // L'utilisateur a cliqué sur retour et il y a une catégorie dans l'état
+    displayProductsByCategory(event.state.category);
+    
+    // Mettre en surbrillance la catégorie dans la sidebar
+    const categoryItems = document.querySelectorAll('#categoryList li');
+    categoryItems.forEach(li => {
+      if (li.dataset.category === event.state.category) {
+        setActiveCategory(li);
+      }
+    });
+  } else {
+    // Retour à la page d'accueil (tous les deals)
+    selectedCategory = null;
+    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+    displayAllDeals();
+  }
+});
+
 // Gestion responsive
 function setViewportHeight() {
   document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
@@ -2366,9 +2724,12 @@ setViewportHeight();
     new google.translate.TranslateElement(
       {
         pageLanguage: 'en',
-        layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+        includedLanguages: 'en,fr,es,de,it,pt,zh-CN,ja,ko,ar',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false,
+        multilanguagePage: true
       },
-      'google_translate_element'
+      'google_translate_element_header'
     );
   }
 </script>
