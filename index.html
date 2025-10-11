@@ -1776,33 +1776,84 @@ function updateFooterCategories() {
   });
 }
 
-// Fonction principale de gestion des clics de catégories avec debouncing
-const handleCategoryClick = debounce((category, li) => {
+// Fonction utilitaire pour gérer le clic sur une catégorie
+function handleCategoryClick(category, li) {
   try {
+    console.log('Category clicked:', category);
+    
+    if (!category || !categoriesMap) {
+      throw new Error('Category data not loaded');
+    }
+    
+    // Vérifier si la catégorie existe
+    if (!categoriesMap.has(category)) {
+      // Essayer de trouver une correspondance insensible à la casse
+      const foundCategory = Array.from(categoriesMap.keys())
+        .find(cat => cat.toLowerCase() === category.toLowerCase());
+      
+      if (!foundCategory) {
+        throw new Error(`Category "${category}" not found`);
+      }
+      
+      // Utiliser la version correcte de la casse
+      category = foundCategory;
+    }
+    
+    // Mettre à jour l'interface utilisateur
     selectedCategory = category;
     resetSearch();
     currentPage = 1;
     
-    // Tracker le clic de catégorie
-    trackCategoryClick(category);
+    // Mettre en surbrillance la catégorie sélectionnée
+    if (li) {
+      setActiveCategory(li);
+    } else {
+      // Trouver l'élément li correspondant s'il n'est pas fourni
+      const categoryItems = document.querySelectorAll('#categoryList li');
+      categoryItems.forEach(item => {
+        if (item.dataset.category === category) {
+          setActiveCategory(item);
+        }
+      });
+    }
     
     // Mettre à jour l'URL sans recharger la page
     const categorySlug = category.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const newUrl = `${window.location.origin}${window.location.pathname}?category=${encodeURIComponent(categorySlug)}`;
     window.history.pushState({ category: category }, '', newUrl);
     
+    // Afficher les produits de la catégorie
     displayProductsByCategory(category);
-    setActiveCategory(li);
+    
+    // Faire défiler vers le haut
     scrollToTop();
     
+    // Fermer le menu latéral sur mobile
     if (isMobile()) {
       closeSidebar();
     }
+    
+    // Envoyer un événement de suivi
+    if (typeof trackCategoryClick === 'function') {
+      trackCategoryClick(category);
+    }
+    
   } catch (error) {
-    console.error('Error handling category click:', error);
-    showNotification('Error loading category', 'error');
+    console.error('Error in handleCategoryClick:', error);
+    showNotification(`Error loading category: ${error.message}`, 'error');
+    
+    // En cas d'erreur, afficher tous les produits
+    displayAllDeals();
   }
-}, CONFIG.DEBOUNCE_DELAY);
+}
+
+// Créer une version debounced de la fonction
+const debouncedCategoryClick = debounce(handleCategoryClick, CONFIG.DEBOUNCE_DELAY);
+
+// Fonction wrapper pour la compatibilité avec le code existant
+function handleCategoryClickWrapper(category, li) {
+  return debouncedCategoryClick(category, li);
+}
 
 // Fonction pour mélanger un tableau de manière aléatoire (algorithme Fisher-Yates)
 function shuffleArray(array) {
@@ -2031,25 +2082,42 @@ function parseCSV(text) {
 function organizeDataByCategories(data) {
   const categories = new Map();
   
+  // Afficher toutes les clés disponibles dans le premier produit pour le débogage
+  if (data.length > 0) {
+    console.log('Available keys in product data:', Object.keys(data[0]));
+  }
+
   data.forEach((product, index) => {
-    // Debug: voir les clés disponibles pour les premiers produits
-    if (index < 3) {
-      console.log(`Product ${index}:`, Object.keys(product), product);
-    }
-    
-    // Essayer différentes variantes du nom de colonne
-    let category = product.category || product.Category || product['category'] || product['"category"'] || product['category"'] || product['"category'];
+    // Essayer différentes variantes du nom de colonne de catégorie
+    let category = product.category || product.Category || product.CATEGORY || 
+                  product['category'] || product['Category'] || 
+                  product['"category"'] || product['"Category"'] ||
+                  product['category"'] || product['Category"'] ||
+                  product['"category'] || product['"Category'] ||
+                  product.cat || product.Cat || product.CAT ||
+                  'Uncategorized';
     
     // Nettoyer la catégorie
     if (category && typeof category === 'string') {
-      category = category.trim().replace(/^"|"$/g, '');
-    }
-    
-    if (!category || category === '') {
+      category = category.trim()
+        .replace(/^["\s]+|["\s]+$/g, '')  // Supprimer les guillemets et espaces au début/fin
+        .replace(/\s+/g, ' ')                // Remplacer les espaces multiples par un seul
+        .replace(/^\d+[\s\-_\.]?/i, '');   // Supprimer les préfixes numériques
+      
+      if (category === '') {
+        category = 'Uncategorized';
+      }
+    } else {
       category = 'Uncategorized';
     }
     
-    console.log(`Product "${product.title?.substring(0, 30)}..." -> Category: "${category}"`);
+    if (index < 3) {
+      console.log(`Product ${index + 1}:`, {
+        title: product.title || 'No Title',
+        category: category,
+        allKeys: Object.keys(product)
+      });
+    }
     
     if (!categories.has(category)) {
       categories.set(category, []);
@@ -2063,11 +2131,14 @@ function organizeDataByCategories(data) {
 
 // Fonction pour afficher les produits avec prix régulier et rabais
 function displayProducts(products, title = '📦 All Deals') {
-  // Réinitialiser les variables d'infinite scroll
+  // Désactiver la pagination et le chargement infini
   currentPage = 1;
   isLoadingMore = false;
-  hasMoreProducts = true;
+  hasMoreProducts = false; // Désactive le chargement infini
   currentDisplayData = products;
+  
+  // Désactiver l'écouteur de défilement
+  contentElement.removeEventListener('scroll', loadMoreOnScroll);
   
   if (!products || products.length === 0) {
     productsDiv.innerHTML = `
@@ -2082,11 +2153,13 @@ function displayProducts(products, title = '📦 All Deals') {
 
   mainTitle.innerHTML = title;
   
-  // Afficher seulement la première page (20 produits)
-  const productsToShow = products.slice(0, itemsPerPage);
+  // Afficher tous les produits sans pagination
+  const productsToShow = [...products]; // Créer une copie du tableau
   let html = '';
 
   productsToShow.forEach((product, index) => {
+    // Limiter le délai d'animation pour éviter un défilement trop long
+    const animationDelay = Math.min(index * 0.05, 1.5); // Maximum 1.5s de délai
     const currentPrice = product.price || '0';
     const discountPercent = parseFloat(product.percent || '0');
     const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
@@ -2378,11 +2451,13 @@ function createProductElement(product) {
   const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
   
   if (regularPrice && discountPercent > 0) {
-    const regularPriceElement = document.createElement('div');
-    regularPriceElement.style.fontSize = '14px';
-    regularPriceElement.style.color = '#565959';
+    const regularPriceElement = document.createElement('span');
+    regularPriceElement.style.fontSize = '11px';
+    regularPriceElement.style.color = '#767676';
     regularPriceElement.style.textDecoration = 'line-through';
-    regularPriceElement.style.marginBottom = '3px';
+    regularPriceElement.style.marginRight = '6px';
+    regularPriceElement.style.display = 'inline-block';
+    regularPriceElement.style.transform = 'translateY(-2px)';
     regularPriceElement.textContent = regularPrice;
     priceContainer.appendChild(regularPriceElement);
   }
@@ -2677,29 +2752,131 @@ function changeItemsPerPage(newItemsPerPage) {
   goToPage(1);
 }
 
-// Affichage des produits par catégorie (randomisés)
+// Affichage des produits par catégorie (tous les produits)
 function displayProductsByCategory(category) {
   const categoryProducts = categoriesMap.get(category) || [];
   
-  if(categoryProducts.length === 0) {
+  if (categoryProducts.length === 0) {
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
         <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
         <h3 style="margin-bottom: 16px; color: var(--text-primary); font-size: 20px;">No products found</h3>
-        <p style="font-size: 14px;">Try selecting a different category or search for something else.</p>
+        <p style="font-size: 14px;">Try a different category or check back later.</p>
       </div>
     `;
     return;
   }
   
-  isAllDealsMode = false;
-  isSearchMode = false;
+  // Désactiver la pagination et le chargement infini
+  currentPage = 1;
+  isLoadingMore = false;
+  hasMoreProducts = false;
+  currentDisplayData = categoryProducts;
+  
+  // Désactiver l'écouteur de défilement
+  contentElement.removeEventListener('scroll', loadMoreOnScroll);
+  
+  // Mettre à jour le titre
+  mainTitle.innerHTML = `🏷️ ${capitalizeWords(category)} (${categoryProducts.length} deals)`;
   
   // Trier les produits par rabais
   const sortedProducts = sortProductsByDiscount(categoryProducts);
   
-  // Utiliser displayProducts pour bénéficier de l'infinite scroll
-  displayProducts(sortedProducts, `🏷️ ${capitalizeWords(category)} Deals`);
+  // Créer le conteneur de la grille de produits
+  const container = document.createElement('div');
+  container.className = 'products-grid';
+  container.style.display = 'grid';
+  container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+  container.style.gap = '20px';
+  container.style.padding = '16px';
+  
+  // Ajouter chaque produit à la grille en utilisant createProductElement
+  sortedProducts.forEach(product => {
+    const productElement = createProductElement(product);
+    
+    // Assurer une hauteur uniforme pour toutes les cartes
+    productElement.style.height = '100%';
+    productElement.style.display = 'flex';
+    productElement.style.flexDirection = 'column';
+    
+    // Style de la carte de produit
+    productElement.style.border = '1px solid #e1e1e1';
+    productElement.style.borderRadius = '8px';
+    productElement.style.overflow = 'hidden';
+    productElement.style.background = '#fff';
+    productElement.style.transition = 'transform 0.2s, box-shadow 0.2s';
+    productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+    
+    // Effet de survol
+    productElement.addEventListener('mouseenter', () => {
+      productElement.style.transform = 'translateY(-4px)';
+      productElement.style.boxShadow = '0 6px 12px rgba(0,0,0,0.12)';
+    });
+    
+    productElement.addEventListener('mouseleave', () => {
+      productElement.style.transform = 'translateY(0)';
+      productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+    });
+    
+    // Ajuster les styles internes pour une meilleure uniformité
+    const imageContainer = productElement.querySelector('div:first-child');
+    if (imageContainer) {
+      imageContainer.style.height = '200px';
+      imageContainer.style.minHeight = '200px';
+      imageContainer.style.display = 'flex';
+      imageContainer.style.alignItems = 'center';
+      imageContainer.style.justifyContent = 'center';
+      imageContainer.style.backgroundColor = '#f8f9fa';
+      
+      const img = imageContainer.querySelector('img');
+      if (img) {
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '100%';
+        img.style.objectFit = 'contain';
+      }
+    }
+    
+    // Ajuster le style du contenu
+    const content = productElement.querySelector('div:last-child');
+    if (content) {
+      content.style.padding = '15px';
+      content.style.display = 'flex';
+      content.style.flexDirection = 'column';
+      content.style.flexGrow = '1';
+      
+      // Ajuster le style du titre
+      const title = content.querySelector('h3');
+      if (title) {
+        title.style.minHeight = '60px';
+        title.style.margin = '0 0 10px 0';
+        title.style.fontSize = '14px';
+        title.style.lineHeight = '1.4';
+      }
+      
+      // Ajuster le style du bouton
+      const button = content.querySelector('a');
+      if (button) {
+        button.style.marginTop = 'auto';
+        button.style.padding = '10px';
+        button.style.fontSize = '14px';
+      }
+    }
+    
+    container.appendChild(productElement);
+  });
+  
+  // Vider et ajouter le conteneur
+  productsDiv.innerHTML = '';
+  productsDiv.appendChild(container);
+  
+  // Faire défiler vers le haut
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Mettre à jour le nombre d'éléments par page pour afficher tout
+  const itemsPerPageSelect = document.getElementById('itemsPerPage');
+  if (itemsPerPageSelect) {
+    itemsPerPageSelect.value = sortedProducts.length;
+  }
 }
 
 // Fonction pour effectuer une recherche
@@ -2790,7 +2967,7 @@ function handleCategoryListClick(e) {
   if (!li) return;
   
   const category = li.dataset.category;
-  handleCategoryClick(category, li);
+  handleCategoryClickWrapper(category, li);
 }
 
 function handleCategoryListKeydown(e) {
@@ -2801,7 +2978,7 @@ function handleCategoryListKeydown(e) {
   
   e.preventDefault();
   const category = li.dataset.category;
-  handleCategoryClick(category, li);
+  handleCategoryClickWrapper(category, li);
 }
 
 // Affichage des catégories optimisé
@@ -3166,39 +3343,84 @@ function closeSidebar() {
 
 // Fonction pour charger une catégorie depuis l'URL
 function loadCategoryFromURL() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const categorySlug = urlParams.get('category');
-  
-  if (categorySlug) {
-    // Convertir le slug en nom de catégorie
-    const categoryName = categorySlug.replace(/-/g, ' ');
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categorySlug = urlParams.get('category');
     
-    // Trouver la catégorie correspondante (insensible à la casse)
+    console.log('URL Category Slug:', categorySlug);
+    console.log('Available Categories:', categoriesMap ? Array.from(categoriesMap.keys()) : 'Not loaded yet');
+    
+    if (!categorySlug) {
+      console.log('No category in URL, displaying all deals');
+      displayAllDeals();
+      return;
+    }
+    
+    // Convertir le slug en nom de catégorie
+    const categoryName = categorySlug
+      .replace(/-/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    console.log('Looking for category:', categoryName);
+    
+    // Trouver la catégorie correspondante (insensible à la casse et aux espaces)
     let foundCategory = null;
-    for (let [category, products] of categoriesMap.entries()) {
-      if (category.toLowerCase() === categoryName.toLowerCase()) {
-        foundCategory = category;
-        break;
+    
+    if (categoriesMap) {
+      // Essayer une correspondance exacte d'abord
+      if (categoriesMap.has(categoryName)) {
+        foundCategory = categoryName;
+      } else {
+        // Essayer une correspondance insensible à la casse
+        for (let category of categoriesMap.keys()) {
+          if (category.toLowerCase() === categoryName.toLowerCase()) {
+            foundCategory = category;
+            break;
+          }
+        }
+        
+        // Si toujours pas trouvé, essayer une correspondance partielle
+        if (!foundCategory) {
+          for (let category of categoriesMap.keys()) {
+            if (category.toLowerCase().includes(categoryName.toLowerCase()) || 
+                categoryName.toLowerCase().includes(category.toLowerCase())) {
+              foundCategory = category;
+              console.log('Found partial match:', category, 'for', categoryName);
+              break;
+            }
+          }
+        }
       }
     }
     
     if (foundCategory) {
+      console.log('Category found:', foundCategory);
       selectedCategory = foundCategory;
       displayProductsByCategory(foundCategory);
       
       // Mettre en surbrillance la catégorie dans la sidebar
       const categoryItems = document.querySelectorAll('#categoryList li');
+      let foundInUI = false;
+      
       categoryItems.forEach(li => {
         if (li.dataset.category === foundCategory) {
           setActiveCategory(li);
+          foundInUI = true;
         }
       });
+      
+      if (!foundInUI) {
+        console.warn('Category not found in UI:', foundCategory);
+      }
     } else {
-      // Catégorie non trouvée, afficher tous les deals
+      console.warn('Category not found in data, showing all deals');
+      showNotification(`Category "${categoryName}" not found. Showing all deals.`, 'warning');
       displayAllDeals();
     }
-  } else {
-    // Pas de catégorie dans l'URL, afficher tous les deals
+  } catch (error) {
+    console.error('Error in loadCategoryFromURL:', error);
+    showNotification('Error loading category. Showing all deals.', 'error');
     displayAllDeals();
   }
 }
