@@ -241,6 +241,32 @@
     width: 100%;
   }
 
+  /* Styles pour les publicités */
+  .ad-container {
+    width: 100%;
+    margin: 15px 0;
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  /* Style spécifique pour mobile */
+  @media (max-width: 768px) {
+    .ad-container {
+      margin: 10px 0;
+    }
+    
+    /* Réduire la hauteur des publicités sur mobile */
+    .ad-container ins.adsbygoogle[data-ad-format="auto"] {
+      height: 50px !important;
+      min-height: 50px !important;
+    }
+    
+    /* Masquer certaines publicités sur mobile si nécessaire */
+    .ad-container.mobile-hide {
+      display: none;
+    }
+  }
+  
   .clear-search {
     position: absolute;
     right: 12px;
@@ -2982,6 +3008,66 @@ function loadCategoryFromURL() {
   }
 }
 
+// Fonction pour charger les publicités de manière optimisée pour mobile
+function loadOptimizedAds() {
+  // Vérifier si on est sur mobile
+  const isMobile = window.innerWidth <= 768;
+  
+  // Sélectionner tous les conteneurs de publicités
+  const adContainers = document.querySelectorAll('.ad-container');
+  
+  // Si on est sur mobile, on charge moins de publicités et on les rend moins intrusives
+  if (isMobile) {
+    adContainers.forEach((container, index) => {
+      // Ne pas afficher plus de 2 publicités sur mobile
+      if (index >= 2) {
+        container.style.display = 'none';
+        return;
+      }
+      
+      // Ajouter une classe pour le style mobile
+      container.classList.add('mobile-ad');
+      
+      // Créer un conteneur plus petit pour mobile
+      const mobileAd = document.createElement('div');
+      mobileAd.className = 'mobile-ad-container';
+      mobileAd.style.width = '100%';
+      mobileAd.style.maxWidth = '320px';
+      mobileAd.style.margin = '0 auto';
+      mobileAd.style.overflow = 'hidden';
+      
+      // Remplacer le contenu par le conteneur mobile
+      container.innerHTML = '';
+      container.appendChild(mobileAd);
+      
+      // Charger la publicité avec un léger délai pour améliorer les performances
+      setTimeout(() => {
+        if (window.adsbygoogle) {
+          try {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          } catch (e) {
+            console.error('Erreur lors du chargement de la publicité mobile:', e);
+          }
+        }
+      }, 1000);
+    });
+  } else {
+    // Sur desktop, charger toutes les publicités normalement
+    adContainers.forEach(container => {
+      container.style.display = 'block';
+      container.classList.remove('mobile-ad');
+      
+      if (window.adsbygoogle) {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+          console.error('Erreur lors du chargement de la publicité desktop:', e);
+        }
+      }
+    });
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
@@ -2999,7 +3085,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Fermer la sidebar avec l'overlay
   sidebarOverlay.addEventListener('click', closeSidebar);
   
   // Fermer la sidebar avec la touche Escape
@@ -3055,8 +3140,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Gestion du bouton retour du navigateur
-window.addEventListener('popstate', (event) => {
+// Gestion du bouton retour du navigateur et des changements d'URL
+const handleUrlChange = (event) => {
   if (event.state && event.state.category) {
     // L'utilisateur a cliqué sur retour et il y a une catégorie dans l'état
     displayProductsByCategory(event.state.category);
@@ -3074,7 +3159,26 @@ window.addEventListener('popstate', (event) => {
     document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
     displayAllDeals();
   }
-});
+  
+  // Recharger les publicités après un court délai pour s'assurer que le DOM est mis à jour
+  setTimeout(loadOptimizedAds, 100);
+};
+
+// Écouter les changements d'URL
+window.addEventListener('popstate', handleUrlChange);
+
+// Surcharger la méthode pushState pour détecter les changements d'URL
+const originalPushState = history.pushState;
+history.pushState = function(state, title, url) {
+  originalPushState.apply(history, [state, title, url]);
+  // Déclencher un événement personnalisé pour les changements d'URL
+  const event = new Event('urlchange');
+  event.state = state;
+  window.dispatchEvent(event);
+};
+
+// Écouter les changements d'URL personnalisés
+window.addEventListener('urlchange', handleUrlChange);
 
 // Gestion responsive
 function setViewportHeight() {
@@ -3087,21 +3191,52 @@ window.addEventListener('orientationchange', () => {
 });
 
 setViewportHeight();
-</script>
 
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement(
-      {
-        pageLanguage: 'en',
-        includedLanguages: 'en,fr,es,de,it,pt,zh-CN,ja,ko,ar',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-        autoDisplay: false,
-        multilanguagePage: true
-      },
-      'google_translate_element_header'
-    );
+// Fonction pour gérer le redimensionnement de la fenêtre
+const handleResize = () => {
+  setViewportHeight();
+  loadOptimizedAds();
+};
+
+// Gestion du redimensionnement avec debounce
+window.addEventListener('resize', debounce(handleResize, 250));
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    setViewportHeight();
+    loadOptimizedAds();
+  }, 500);
+});
+
+// Initialisation de la traduction Google
+function googleTranslateElementInit() {
+  if (typeof google !== 'undefined' && google.translate) {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,fr,es,de,it,pt,zh-CN,ja,ko,ar',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+      autoDisplay: false,
+      multilanguagePage: true
+    }, 'google_translate_element_header');
+    
+    // S'assurer que les publicités sont rechargées après la traduction
+    google.translate.TranslateElement.prototype._setUp = google.translate.TranslateElement.prototype.setup;
+    google.translate.TranslateElement.prototype.setup = function() {
+      this._setUp();
+      this._originalCallback = this.callback;
+      this.callback = () => {
+        this._originalCallback();
+        // Recharger les publicités après la traduction
+        setTimeout(loadOptimizedAds, 1000);
+      };
+    };
   }
+}
+
+// Charger les publicités de manière optimisée
+loadOptimizedAds();
+
+// Initialisation de la hauteur de la vue
+setViewportHeight();
 </script>
 
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
