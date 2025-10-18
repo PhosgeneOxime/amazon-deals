@@ -2559,7 +2559,7 @@ function sortProductsByDiscount(products) {
   });
 }
 
-// Fonction pour afficher les 10 meilleurs deals par catégorie
+// Fonction pour afficher 10 objets aléatoires par catégorie
 function displayAllDeals() {
   if (data.length === 0) return;
   
@@ -2575,7 +2575,7 @@ function displayAllDeals() {
   
   // Ajouter un titre principal
   const title = document.createElement('h2');
-  title.textContent = '🔥 Top 10 Deals by Category';
+  title.textContent = '🔄 10 Random Deals by Category';
   title.style.marginBottom = '30px';
   title.style.color = '#232f3e';
   title.style.fontSize = '28px';
@@ -2587,12 +2587,13 @@ function displayAllDeals() {
   const categoriesArray = Array.from(categoriesMap.entries());
   const shuffledCategories = shuffleArray(categoriesArray);
   
-  // Pour chaque catégorie (dans un ordre aléatoire), afficher les 10 meilleurs deals
+  // Pour chaque catégorie (dans un ordre aléatoire), afficher 10 objets aléatoires
   shuffledCategories.forEach(([category, products]) => {
-    // Trier les produits par rabais et prendre les 10 premiers
-    const topProducts = sortProductsByDiscount(products).slice(0, 10);
+    // Mélanger les produits et prendre les 10 premiers
+    const shuffledProducts = shuffleArray([...products]);
+    const randomProducts = shuffledProducts.slice(0, Math.min(10, shuffledProducts.length));
     
-    if (topProducts.length > 0) {
+    if (randomProducts.length > 0) {
       // Créer une section pour la catégorie
       const categorySection = document.createElement('article');
       categorySection.className = 'category-section';
@@ -2618,7 +2619,7 @@ function displayAllDeals() {
       
       // Badge avec le nombre de deals
       const badge = document.createElement('span');
-      badge.textContent = ` ${topProducts.length} deals`;
+      badge.textContent = ` ${randomProducts.length} deals`;
       badge.style.fontSize = '14px';
       badge.style.color = '#565959';
       badge.style.fontWeight = '400';
@@ -2636,7 +2637,7 @@ function displayAllDeals() {
       productsContainer.style.marginTop = '20px';
       
       // Ajouter chaque produit
-      topProducts.forEach(product => {
+      randomProducts.forEach(product => {
         const productElement = createProductElement(product);
         productsContainer.appendChild(productElement);
       });
