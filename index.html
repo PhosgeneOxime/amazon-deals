@@ -2573,9 +2573,12 @@ function displayAllDeals() {
   container.className = 'categories-container';
   container.style.padding = '20px';
   
-  // Ajouter un titre principal
+  // Mettre à jour le titre principal
+  mainTitle.textContent = '📦 Best Amazon Deals in Canada – Daily Discounts & Hot Offers';
+  
+  // Ajouter un titre pour la section des catégories
   const title = document.createElement('h2');
-  title.textContent = '🔄 10 Random Deals by Category';
+  title.textContent = '🔄 Random Deals by Category';
   title.style.marginBottom = '30px';
   title.style.color = '#232f3e';
   title.style.fontSize = '28px';
@@ -2608,11 +2611,23 @@ function displayAllDeals() {
       // Ajouter le titre de la catégorie (H2 pour meilleure hiérarchie SEO)
       const categoryTitle = document.createElement('h2');
       categoryTitle.setAttribute('itemprop', 'name');
-      categoryTitle.textContent = `🏷️ ${capitalizeWords(category)}`;
+      
+      // Créer un lien pour la catégorie
+      const categoryLink = document.createElement('a');
+      categoryLink.href = `#category=${encodeURIComponent(category)}`;
+      categoryLink.textContent = `🏷️ ${capitalizeWords(category)}`;
+      categoryLink.style.color = '#146eb4';
+      categoryLink.style.textDecoration = 'none';
+      categoryLink.style.cursor = 'pointer';
+      categoryLink.onclick = (e) => {
+        e.preventDefault();
+        handleCategoryClick(category);
+      };
+      
+      // Ajouter le lien au titre
+      categoryTitle.appendChild(categoryLink);
       categoryTitle.style.marginBottom = '20px';
-      categoryTitle.style.color = '#146eb4';
       categoryTitle.style.fontSize = '22px';
-      categoryTitle.style.fontWeight = '600';
       categoryTitle.style.borderBottom = '3px solid #ff9900';
       categoryTitle.style.paddingBottom = '10px';
       categoryTitle.style.display = 'inline-block';
