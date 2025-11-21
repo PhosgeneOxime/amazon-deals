@@ -8,6 +8,7 @@
 <meta name="keywords" content="amazon deals canada, daily deals, amazon discounts, canadian deals, electronics deals, home deals, fashion deals, amazon promo codes, best deals canada" />
 <meta name="author" content="DealNest.CA" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 <meta name="language" content="en-CA" />
 <meta name="geo.region" content="CA" />
 <meta name="geo.country" content="Canada" />
@@ -21,10 +22,12 @@
 <meta property="og:title" content="DealNest.CA - Best Daily Amazon Deals Canada | Up to 80% Off" />
 <meta property="og:description" content="🔥 Discover the best daily Amazon deals in Canada! Updated hourly with exclusive discounts up to 80% off on electronics, home, fashion & more." />
 <meta property="og:image" content="https://dealnest.ca/og-image.jpg" />
+<meta property="og:image:alt" content="Collage of top-rated Amazon Canada products with big discount badges" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:site_name" content="DealNest.CA" />
 <meta property="og:locale" content="en_CA" />
+<meta property="og:locale:alternate" content="fr_CA" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
@@ -32,10 +35,14 @@
 <meta name="twitter:title" content="DealNest.CA - Best Daily Amazon Deals Canada" />
 <meta name="twitter:description" content="🔥 Discover the best daily Amazon deals in Canada! Updated hourly with exclusive discounts up to 80% off." />
 <meta name="twitter:image" content="https://dealnest.ca/twitter-image.jpg" />
+<meta name="twitter:image:alt" content="Curated Amazon Canada daily deals with savings callouts" />
 <meta name="twitter:creator" content="@dealnestca" />
 
 <!-- Canonical URL -->
 <link rel="canonical" href="https://dealnest.ca/" />
+<link rel="alternate" hreflang="en-ca" href="https://dealnest.ca/" />
+<link rel="alternate" hreflang="fr-ca" href="https://dealnest.ca/?lang=fr" />
+<link rel="alternate" hreflang="x-default" href="https://dealnest.ca/" />
 
 <!-- Preconnect for performance -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1170,6 +1177,7 @@
     }
   }
 }
+
 </script>
 
 <script type="application/ld+json">
@@ -1436,6 +1444,8 @@ const searchBox = document.getElementById('searchBox');
 const clearSearch = document.getElementById('clearSearch');
 const contentElement = document.getElementById('content');
 
+const DEFAULT_RENDER_OPTIONS = { highlight: false, highlightTerms: [] };
+
 let data = [];
 let categoriesMap = new Map(); // Map pour stocker les catégories avec leurs produits
 let selectedCategory = null;
@@ -1447,6 +1457,7 @@ let isSearchMode = false;
 let currentSearchQuery = '';
 let isLoadingMore = false; // Pour éviter les chargements multiples
 let hasMoreProducts = true; // Indique s'il reste des produits à charger
+let currentRenderOptions = { ...DEFAULT_RENDER_OPTIONS };
 
 // Système de tracking des clics de catégories
 let categoryClicks = JSON.parse(localStorage.getItem('categoryClicks') || '{}');
@@ -1472,15 +1483,26 @@ const isMobile = () => window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
 // Fonction pour charger plus de produits au scroll (Infinite Scroll)
 function loadMoreOnScroll() {
   if (isLoadingMore || !hasMoreProducts) return;
-  
+
   const scrollPosition = contentElement.scrollTop + contentElement.clientHeight;
   const scrollHeight = contentElement.scrollHeight;
   const threshold = 300; // Charger 300px avant la fin
-  
+
   // Si on approche de la fin du scroll
   if (scrollPosition >= scrollHeight - threshold) {
     loadMoreProducts();
   }
+}
+
+const debouncedLoadMoreOnScroll = debounce(loadMoreOnScroll, 200);
+
+function enableInfiniteScroll() {
+  contentElement.removeEventListener('scroll', debouncedLoadMoreOnScroll);
+  contentElement.addEventListener('scroll', debouncedLoadMoreOnScroll);
+}
+
+function disableInfiniteScroll() {
+  contentElement.removeEventListener('scroll', debouncedLoadMoreOnScroll);
 }
 
 // Fonction pour charger la page suivante de produits
@@ -1533,91 +1555,68 @@ function loadMoreProducts() {
 }
 
 // Fonction pour ajouter des produits (append au lieu de remplacer)
+function ensureProductsGrid() {
+  let productsGrid = productsDiv.querySelector('.products-grid');
+  if (!productsGrid) {
+    productsGrid = document.createElement('div');
+    productsGrid.className = 'products-grid';
+    productsGrid.style.display = 'grid';
+    productsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+    productsGrid.style.gap = '20px';
+    productsGrid.style.padding = '16px';
+    productsDiv.appendChild(productsGrid);
+  }
+  return productsGrid;
+}
+
+function resetProductsGrid() {
+  productsDiv.innerHTML = '';
+  const productsGrid = ensureProductsGrid();
+  productsGrid.innerHTML = '';
+  return productsGrid;
+}
+
 function appendProducts(products, page) {
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, products.length);
   const productsToShow = products.slice(startIndex, endIndex);
-  
+
   if (productsToShow.length === 0) return;
-  
-  let html = '';
-  productsToShow.forEach((product, index) => {
-    const currentPrice = product.price || '0';
-    const discountPercent = parseFloat(product.percent || '0');
-    const regularPrice = calculateRegularPrice(currentPrice, discountPercent);
-    const savings = regularPrice ? (parseFloat(regularPrice) - parseFloat(currentPrice.replace(/[^\d.-]/g, ''))).toFixed(2) : null;
 
-    // Gérer l'image
-    let imageHtml;
-    if (product.imageUrl && product.imageUrl.trim() && product.imageUrl !== 'N/A') {
-      const optimizedImageUrl = optimizeAmazonImageUrl(product.imageUrl);
-      imageHtml = `<img class="product-image" src="${optimizedImageUrl}" alt="Product image" loading="lazy" onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;></div>';">`;
-    } else {
-      imageHtml = '<div class="image-placeholder"></div>';
-    }
-
-    let productTitle = product.title || 'Product Title';
-    let cleanProductTitle = productTitle;
-    if (isSearchMode && currentSearchQuery) {
-      const searchTerms = currentSearchQuery.toLowerCase().trim().split(/\s+/);
-      productTitle = highlightSearchTerms(productTitle, searchTerms);
-      cleanProductTitle = product.title || 'Product Title';
-    }
-
-    html += `
-      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="window.open('${product.link || '#'}', '_blank');" style="cursor: pointer;">
-        ${imageHtml}
-        
-        <div class="product-content">
-          <strong>${productTitle}</strong>
-          
-          <div class="price-section">
-            <div class="price-row">
-              <div class="current-price">${currentPrice}</div>
-              ${regularPrice ? `<div class="regular-price">${regularPrice}</div>` : ''}
-            </div>
-            <div class="badges-row">
-              ${discountPercent > 0 ? `<div class="discount-badge">${discountPercent}% OFF</div>` : ''}
-              ${savings && parseFloat(savings) > 0 ? `<div class="savings">Save ${savings}</div>` : ''}
-            </div>
-          </div>
-          
-          ${product.rating ? `
-            <div class="product-meta">
-              <div class="product-rating">
-                ${'★'.repeat(Math.floor(parseFloat(product.rating)))}${'☆'.repeat(5 - Math.floor(parseFloat(product.rating)))}
-                <span>${product.rating}</span>
-              </div>
-              ${product.reviews ? `<div class="review-count">(${product.reviews} reviews)</div>` : ''}
-            </div>
-          ` : ''}
-          
-          <div class="product-actions">
-            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">
-              🛒 View Offer
-            </a>
-            <div class="share-buttons">
-              <button class="facebook-share-btn" onclick="shareOnFacebook('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on Facebook Timeline">
-                📢 Share
-              </button>
-              <button class="messenger-share-btn" onclick="shareOnFacebookMessenger('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share via Messenger">
-                💬 Message
-              </button>
-              <button class="twitter-share-btn" onclick="shareOnTwitter('${product.link || '#'}', '${encodeURIComponent(cleanProductTitle)}'); event.stopPropagation(); event.preventDefault();" aria-label="Share on X.com">
-                𝕏 Post
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+  const productsGrid = ensureProductsGrid();
+  if (!productsGrid) return;
+  const fragment = document.createDocumentFragment();
+  productsToShow.forEach(product => {
+    const productElement = createProductElement(product, currentRenderOptions);
+    fragment.appendChild(productElement);
   });
+  productsGrid.appendChild(fragment);
+}
 
-  // Trouver la grille de produits et ajouter les nouveaux produits
-  const productsGrid = productsDiv.querySelector('.products-grid');
-  if (productsGrid) {
-    productsGrid.innerHTML += html;
+function renderProductResults(products, title, options = {}) {
+  mainTitle.innerHTML = title;
+  currentDisplayData = products;
+  currentRenderOptions = { ...DEFAULT_RENDER_OPTIONS, ...options };
+  currentPage = 1;
+  isLoadingMore = false;
+  hasMoreProducts = products.length > itemsPerPage;
+
+  resetProductsGrid();
+
+  if (products.length === 0) {
+    disableInfiniteScroll();
+    return;
   }
+
+  appendProducts(products, currentPage);
+
+  if (hasMoreProducts) {
+    enableInfiniteScroll();
+  } else {
+    disableInfiniteScroll();
+  }
+
+  scrollToTop();
 }
 
 // Fonctions d'aide pour les catégories
@@ -2138,7 +2137,7 @@ function displayProducts(products, title = '📦 All Deals') {
   currentDisplayData = products;
   
   // Désactiver l'écouteur de défilement
-  contentElement.removeEventListener('scroll', loadMoreOnScroll);
+  disableInfiniteScroll();
   
   if (!products || products.length === 0) {
     productsDiv.innerHTML = `
@@ -2315,8 +2314,55 @@ function optimizeAmazonImageUrl(imageUrl) {
   return imageUrl;
 }
 
+function applyProductCardStyles(productElement) {
+  if (!productElement) return;
+
+  productElement.style.height = '100%';
+  productElement.style.display = 'flex';
+  productElement.style.flexDirection = 'column';
+  productElement.style.border = '1px solid #e1e1e1';
+  productElement.style.borderRadius = '8px';
+  productElement.style.overflow = 'hidden';
+  productElement.style.background = '#fff';
+  productElement.style.transition = 'transform 0.2s, box-shadow 0.2s';
+  productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+
+  productElement.addEventListener('mouseenter', () => {
+    productElement.style.transform = 'translateY(-4px)';
+    productElement.style.boxShadow = '0 6px 12px rgba(0,0,0,0.12)';
+  });
+
+  productElement.addEventListener('mouseleave', () => {
+    productElement.style.transform = 'translateY(0)';
+    productElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+  });
+
+  const content = productElement.querySelector('div:last-child');
+  if (content) {
+    content.style.padding = '15px';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.flexGrow = '1';
+
+    const title = content.querySelector('h3');
+    if (title) {
+      title.style.minHeight = '60px';
+      title.style.margin = '0 0 10px 0';
+      title.style.fontSize = '14px';
+      title.style.lineHeight = '1.4';
+    }
+
+    const button = content.querySelector('a');
+    if (button) {
+      button.style.marginTop = 'auto';
+      button.style.padding = '10px';
+      button.style.fontSize = '14px';
+    }
+  }
+}
+
 // Fonction utilitaire pour créer un élément produit
-function createProductElement(product) {
+function createProductElement(product, renderOptions = DEFAULT_RENDER_OPTIONS) {
   const productElement = document.createElement('div');
   productElement.className = 'product';
   
@@ -2428,7 +2474,13 @@ function createProductElement(product) {
   
   // Titre du produit
   const title = document.createElement('h3');
-  title.textContent = product.title || product.Title || 'No title available';
+  const rawTitle = product.title || product.Title || 'No title available';
+  const shouldHighlight = renderOptions.highlight && Array.isArray(renderOptions.highlightTerms) && renderOptions.highlightTerms.length > 0;
+  if (shouldHighlight) {
+    title.innerHTML = highlightSearchTerms(rawTitle, renderOptions.highlightTerms);
+  } else {
+    title.textContent = rawTitle;
+  }
   title.style.margin = '0 0 10px 0';
   title.style.fontSize = '14px';
   title.style.fontWeight = '500';
@@ -2531,6 +2583,8 @@ function createProductElement(product) {
   
   productElement.appendChild(imageContainer);
   productElement.appendChild(details);
+
+  applyProductCardStyles(productElement);
   
   return productElement;
 }
@@ -2567,6 +2621,7 @@ function displayAllDeals() {
   productsDiv.innerHTML = '';
   isAllDealsMode = true;
   isSearchMode = false;
+  disableInfiniteScroll();
   
   // Créer un conteneur pour toutes les catégories
   const container = document.createElement('div');
@@ -2790,13 +2845,13 @@ function displayProductsByCategory(category) {
   currentDisplayData = categoryProducts;
   
   // Désactiver l'écouteur de défilement
-  contentElement.removeEventListener('scroll', loadMoreOnScroll);
+  disableInfiniteScroll();
   
   // Mettre à jour le titre
   mainTitle.innerHTML = `🏷️ ${capitalizeWords(category)} (${categoryProducts.length} deals)`;
   
-  // Trier les produits par rabais
-  const sortedProducts = sortProductsByDiscount(categoryProducts);
+  // Mélanger les produits pour un affichage aléatoire
+  const randomizedProducts = shuffleArray([...categoryProducts]);
   
   // Créer le conteneur de la grille de produits
   const container = document.createElement('div');
@@ -2807,7 +2862,7 @@ function displayProductsByCategory(category) {
   container.style.padding = '16px';
   
   // Ajouter chaque produit à la grille en utilisant createProductElement
-  sortedProducts.forEach(product => {
+  randomizedProducts.forEach(product => {
     const productElement = createProductElement(product);
     
     // Assurer une hauteur uniforme pour toutes les cartes
@@ -2900,8 +2955,9 @@ function performSearch(query) {
   const trimmedQuery = query.trim();
   
   if (trimmedQuery === '') {
-    clearSearch.classList.remove('visible');
-    displayCategories();
+    clearSearchBox();
+    selectedCategory = null;
+    displayAllDeals();
     return;
   }
   
@@ -2937,8 +2993,10 @@ function performSearch(query) {
   // Préparer le message de résultats
   const resultsCount = searchResults.length;
   const resultsText = resultsCount === 1 ? 'result' : 'results';
+  const highlightTerms = trimmedQuery.toLowerCase().split(/\s+/).filter(term => term.length > 0);
   
   if (resultsCount === 0) {
+    disableInfiniteScroll();
     productsDiv.innerHTML = `
       <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
         <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
@@ -2951,9 +3009,13 @@ function performSearch(query) {
     `;
     mainTitle.innerHTML = `🔍 Search: "${trimmedQuery}" (0 ${resultsText})`;
   } else {
-    displayDataWithPagination(
-      searchResults, 
-      `🔍 Search: "${trimmedQuery}"${translatedQuery !== trimmedQuery ? ` ("${translatedQuery}")` : ''} (${resultsCount} ${resultsText})`
+    renderProductResults(
+      searchResults,
+      `🔍 Search: "${trimmedQuery}"${translatedQuery !== trimmedQuery ? ` ("${translatedQuery}")` : ''} (${resultsCount} ${resultsText})`,
+      {
+        highlight: true,
+        highlightTerms
+      }
     );
   }
   
@@ -3504,9 +3566,6 @@ function loadOptimizedAds() {
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
-  
-  // Activer l'infinite scroll
-  contentElement.addEventListener('scroll', debounce(loadMoreOnScroll, 200));
   
   // Toggle sidebar au clic sur le bouton
   toggleBtn.addEventListener('click', (e) => {
