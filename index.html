@@ -1479,6 +1479,66 @@ const debounce = (func, delay) => {
 };
 
 const isMobile = () => window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
+const isIOSDevice = () => /iphone|ipad|ipod/i.test((navigator.userAgent || ''));
+const isAndroidDevice = () => /android/i.test((navigator.userAgent || ''));
+
+function extractASIN(url = '') {
+  try {
+    const asinRegex = /(?:dp|gp\/product|gp\/aw\/d|gp\/offer-listing|ASIN=)([A-Z0-9]{10})/i;
+    const match = url.match(asinRegex);
+    if (match && match[1]) {
+      return match[1].toUpperCase();
+    }
+
+    const parsedUrl = new URL(url, window.location.origin);
+    const asinParam = parsedUrl.searchParams.get('asin') || parsedUrl.searchParams.get('ASIN');
+    if (asinParam && /^[A-Z0-9]{10}$/i.test(asinParam)) {
+      return asinParam.toUpperCase();
+    }
+  } catch (error) {
+    console.warn('Unable to extract ASIN from URL:', url, error);
+  }
+  return null;
+}
+
+function buildAmazonAppDeepLink(productLink) {
+  const asin = extractASIN(productLink);
+  if (!asin) return null;
+
+  if (isAndroidDevice()) {
+    const fallbackUrl = encodeURIComponent(productLink);
+    return `intent://www.amazon.ca/dp/${asin}#Intent;scheme=https;package=com.amazon.mShop.android.shopping;S.browser_fallback_url=${fallbackUrl};end`;
+  }
+
+  if (isIOSDevice()) {
+    return `amazon://products/${asin}`;
+  }
+
+  return null;
+}
+
+function tryOpenAmazonApp(productLink) {
+  if (!productLink || !isMobile()) return false;
+
+  const appLink = buildAmazonAppDeepLink(productLink);
+  if (!appLink) return false;
+
+  if (isIOSDevice()) {
+    setTimeout(() => {
+      window.location.href = productLink;
+    }, 1200);
+  }
+
+  window.location.href = appLink;
+  return true;
+}
+
+function handleProductLinkNavigation(productLink) {
+  if (!productLink || productLink === '#') return;
+  if (!tryOpenAmazonApp(productLink)) {
+    window.open(productLink, '_blank', 'noopener,noreferrer');
+  }
+}
 
 // Fonction pour charger plus de produits au scroll (Infinite Scroll)
 function loadMoreOnScroll() {
@@ -2211,8 +2271,11 @@ function displayProducts(products, title = '📦 All Deals') {
       cleanProductTitle = product.title || 'Product Title';
     }
 
+    const productLink = product.link || product.url || '#';
+    const safeProductLink = (productLink || '#').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
     html += `
-      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="window.open('${product.link || '#'}', '_blank');" style="cursor: pointer;">
+      <div class="product" style="animation-delay: ${index * 0.05}s" onclick="handleProductLinkNavigation('${safeProductLink}');" style="cursor: pointer;">
         ${imageHtml}
         
         <div class="product-content">
@@ -2240,7 +2303,7 @@ function displayProducts(products, title = '📦 All Deals') {
           ` : ''}
           
           <div class="product-actions">
-            <a href="${product.link || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">
+            <a href="${productLink || '#'}" class="see-offer-btn" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation(); handleProductLinkNavigation('${safeProductLink}'); return false;">
               🛒 View Offer
             </a>
             <div class="share-buttons">
@@ -2393,6 +2456,7 @@ function applyProductCardStyles(productElement) {
 function createProductElement(product, renderOptions = DEFAULT_RENDER_OPTIONS) {
   const productElement = document.createElement('div');
   productElement.className = 'product';
+  const productLink = product.link || product.url || '#';
   
   // Rendre toute la carte cliquable
   productElement.style.cursor = 'pointer';
@@ -2401,11 +2465,7 @@ function createProductElement(product, renderOptions = DEFAULT_RENDER_OPTIONS) {
     if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.closest('a') || e.target.closest('button')) {
       return;
     }
-    // Ouvrir le lien Amazon dans un nouvel onglet
-    const productLink = product.link || product.url || '#';
-    if (productLink !== '#') {
-      window.open(productLink, '_blank', 'noopener,noreferrer');
-    }
+    handleProductLinkNavigation(productLink);
   });
   
   // Ajouter le Schema.org Product en JSON-LD
@@ -2566,7 +2626,7 @@ function createProductElement(product, renderOptions = DEFAULT_RENDER_OPTIONS) {
   
   // Bouton Voir l'offre
   const button = document.createElement('a');
-  button.href = product.link || product.url || '#';
+  button.href = productLink;
   button.target = '_blank';
   button.rel = 'noopener noreferrer';
   button.textContent = '🛒 View Offer';
@@ -2601,7 +2661,9 @@ function createProductElement(product, renderOptions = DEFAULT_RENDER_OPTIONS) {
   });
   
   button.addEventListener('click', (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    handleProductLinkNavigation(productLink);
   });
   
   // Assembler les éléments
