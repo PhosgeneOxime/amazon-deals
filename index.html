@@ -1330,7 +1330,7 @@
       Welcome to <strong>Dealnest.ca</strong> – your trusted source for the <strong>best Amazon deals in Canada</strong>. Updated daily, we feature <em>exclusive Amazon discounts, limited-time offers, and hot deals</em> across every category, including <strong>electronics, home essentials, kitchen, fashion, beauty, and more</strong>.
     </p>
     <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6;">
-      Our team handpicks only the <strong>top-rated Amazon products (4★+)</strong> so you can shop with confidence, save money online, and discover today’s biggest <strong>Amazon Canada savings</strong>.
+      Our team picks only the <strong>top-rated Amazon products (4★+)</strong> so you can shop with confidence, save money online, and discover today’s biggest <strong>Amazon Canada savings</strong>.
     </p>
     <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; font-style: italic;">
       Note: All links are <strong>Amazon affiliate links</strong>. We may earn a small commission when you buy through them – at no extra cost to you.
@@ -1481,6 +1481,13 @@ const debounce = (func, delay) => {
 const isMobile = () => window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
 const isIOSDevice = () => /iphone|ipad|ipod/i.test((navigator.userAgent || ''));
 const isAndroidDevice = () => /android/i.test((navigator.userAgent || ''));
+const isMobileDevice = () => {
+  if (navigator.userAgentData && typeof navigator.userAgentData.mobile === 'boolean') {
+    return navigator.userAgentData.mobile;
+  }
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  return /android|iphone|ipad|ipod|mobile/i.test(ua);
+};
 
 function extractASIN(url = '') {
   try {
@@ -1518,7 +1525,9 @@ function buildAmazonAppDeepLink(productLink) {
 }
 
 function tryOpenAmazonApp(productLink) {
-  if (!productLink || !isMobile()) return false;
+  if (!productLink) return false;
+  const isEligibleDevice = (isMobile() || isMobileDevice()) && (isAndroidDevice() || isIOSDevice());
+  if (!isEligibleDevice) return false;
 
   const appLink = buildAmazonAppDeepLink(productLink);
   if (!appLink) return false;
