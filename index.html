@@ -216,9 +216,10 @@
   #searchBox {
     width: 100%;
     padding: 16px 20px;
-    margin-bottom: 18px;
+    margin: 0;
     border: 2px solid #e2e8f0;
-    border-radius: var(--border-radius);
+    border-bottom: 0;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
     font-size: 16px;
     box-sizing: border-box;
     background: white;
@@ -242,8 +243,17 @@
     transform: translateY(-1px);
   }
 
-  /* Clear search button */
   .search-container {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    box-shadow: 0 6px 20px rgba(15, 17, 17, 0.12);
+    overflow: hidden;
+  }
+
+  .search-input-wrapper {
     position: relative;
     width: 100%;
   }
@@ -378,6 +388,55 @@
     overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+
+  .search-trigger {
+    width: 100%;
+    padding: 12px 18px;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    margin: 0 0 8px 0;
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    font-size: 1.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .search-trigger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+  }
+
+  .search-trigger:hover,
+  .search-trigger:focus {
+    outline: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .search-trigger:hover::before {
+    left: 100%;
+  }
+
+  .search-trigger:active {
+    transform: translateY(0);
   }
 
   #btnAllDeals::before {
@@ -1280,8 +1339,11 @@
     </div>
 
     <div class="search-container">
-      <input type="search" id="searchBox" placeholder="🔍 Search in all deals..." aria-label="Search products" autocomplete="off" />
-      <button class="clear-search" id="clearSearch" aria-label="Clear search">×</button>
+      <div class="search-input-wrapper">
+        <input type="search" id="searchBox" placeholder="🔍 Search in all deals..." aria-label="Search products" autocomplete="off" />
+        <button class="clear-search" id="clearSearch" aria-label="Clear search">×</button>
+      </div>
+      <button class="search-trigger" id="searchButton" aria-label="Run search">🔍 Search</button>
     </div>
 
     <button id="btnAllDeals" aria-label="Show All Deals">📦 All Deals</button>
@@ -1442,6 +1504,7 @@ const mainTitle = document.getElementById('mainTitle');
 const btnAllDeals = document.getElementById('btnAllDeals');
 const searchBox = document.getElementById('searchBox');
 const clearSearch = document.getElementById('clearSearch');
+const searchButton = document.getElementById('searchButton');
 const contentElement = document.getElementById('content');
 
 const DEFAULT_RENDER_OPTIONS = { highlight: false, highlightTerms: [] };
@@ -3050,11 +3113,12 @@ function displayProductsByCategory(category) {
 }
 
 // Fonction pour effectuer une recherche
-function performSearch(query) {
+function performSearch(query, options = {}) {
+  const { updateHistory = true } = options;
   const trimmedQuery = query.trim();
   
   if (trimmedQuery === '') {
-    clearSearchBox();
+    clearSearchBox({ updateHistory });
     selectedCategory = null;
     displayAllDeals();
     return;
@@ -3118,12 +3182,21 @@ function performSearch(query) {
     );
   }
   
+  if (updateHistory) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', trimmedQuery);
+    url.searchParams.delete('category');
+    const newUrl = `${url.origin}${url.pathname}${url.searchParams.toString() ? `?${url.searchParams.toString()}` : ''}`;
+    window.history.pushState({ search: trimmedQuery }, '', newUrl);
+  }
+  
   // Garder toutes les catégories visibles pendant la recherche
   displayCategories();
 }
 
 // Fonction pour effacer la recherche
-function clearSearchBox() {
+function clearSearchBox(options = {}) {
+  const { updateHistory = true } = options;
   searchBox.value = '';
   currentSearchQuery = '';
   clearSearch.classList.remove('visible');
@@ -3135,6 +3208,13 @@ function clearSearchBox() {
   // Remettre tous les deals si on était en mode recherche
   if (!selectedCategory) {
     displayAllDeals();
+  }
+  
+  if (updateHistory) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('q');
+    const newUrl = `${url.origin}${url.pathname}${url.searchParams.toString() ? `?${url.searchParams.toString()}` : ''}`;
+    window.history.pushState({}, '', newUrl);
   }
 }
 
@@ -3389,7 +3469,7 @@ function loadData(retries = 3) {
         
         displayCategories();
         updateFooterCategories();
-        loadCategoryFromURL();
+        loadStateFromURL();
         
         showNotification('<div style="text-align:center">⚡ Deals loaded from cache!</div>', 'success');
         return; // Sortir de la fonction, pas besoin de fetch
@@ -3457,8 +3537,8 @@ function loadData(retries = 3) {
       // Mettre à jour le footer avec les catégories populaires
       updateFooterCategories();
       
-      // Charger la catégorie depuis l'URL ou afficher tous les deals
-      loadCategoryFromURL();
+      // Charger l'état depuis l'URL ou afficher tous les deals
+      loadStateFromURL();
       
       showNotification('<div style="text-align:center">✨ Deals loaded successfully!</div>', 'success');
     })
@@ -3518,17 +3598,28 @@ function closeSidebar() {
   toggleBtn.focus();
 }
 
-// Fonction pour charger une catégorie depuis l'URL
-function loadCategoryFromURL() {
+// Fonction pour charger l'état (recherche ou catégorie) depuis l'URL
+function loadStateFromURL() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('q');
     const categorySlug = urlParams.get('category');
+    
+    if (searchQuery) {
+      console.log('URL Search Query:', searchQuery);
+      searchBox.value = searchQuery;
+      performSearch(searchQuery, { updateHistory: false });
+      window.history.replaceState({ search: searchQuery }, '', window.location.href);
+      return;
+    }
     
     console.log('URL Category Slug:', categorySlug);
     console.log('Available Categories:', categoriesMap ? Array.from(categoriesMap.keys()) : 'Not loaded yet');
     
     if (!categorySlug) {
       console.log('No category in URL, displaying all deals');
+      document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
+      selectedCategory = null;
       displayAllDeals();
       return;
     }
@@ -3709,23 +3800,28 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('content').scrollTop = 0;
   });
   
-  // Recherche avec debouncing optimisé
-  let searchTimeout;
+  // Mise à jour de l'état du bouton Clear lors de la saisie
   searchBox.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      performSearch(e.target.value);
-    }, CONFIG.SEARCH_DELAY);
+    if (e.target.value.trim().length > 0) {
+      clearSearch.classList.add('visible');
+    } else {
+      clearSearch.classList.remove('visible');
+    }
   });
   
+  if (searchButton) {
+    searchButton.addEventListener('click', () => {
+      performSearch(searchBox.value);
+    });
+  }
+  
   // Clear search button
-  clearSearch.addEventListener('click', clearSearchBox);
+  clearSearch.addEventListener('click', () => clearSearchBox());
   
   // Enter key pour recherche
   searchBox.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      clearTimeout(searchTimeout);
       performSearch(e.target.value);
     }
   });
@@ -3744,11 +3840,11 @@ const handleUrlChange = (event) => {
         setActiveCategory(li);
       }
     });
+  } else if (event.state && event.state.search) {
+    searchBox.value = event.state.search;
+    performSearch(event.state.search, { updateHistory: false });
   } else {
-    // Retour à la page d'accueil (tous les deals)
-    selectedCategory = null;
-    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
-    displayAllDeals();
+    loadStateFromURL();
   }
   
   // Recharger les publicités après un court délai pour s'assurer que le DOM est mis à jour
