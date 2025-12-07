@@ -15,34 +15,6 @@
     <priority>1.0</priority>
   </url>
   
-  <url>
-    <loc>https://dealnest.ca/about.html</loc>
-    <lastmod>2025-12-07T06:53:53-05:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://dealnest.ca/privacy.html</loc>
-    <lastmod>2025-12-07T06:53:53-05:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://dealnest.ca/terms.html</loc>
-    <lastmod>2025-12-07T06:53:53-05:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://dealnest.ca/disclosure.html</loc>
-    <lastmod>2025-12-07T06:53:53-05:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
   <!-- Pages de catégories - TOUTES LES CATÉGORIES (37 catégories) -->
   <url>
     <loc>https://dealnest.ca/?category=arts--crafts</loc>
