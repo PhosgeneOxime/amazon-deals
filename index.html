@@ -1653,7 +1653,7 @@
       <h1 class="header-title">🔥 Best Daily Amazon Deals Canada</h1>
       <div class="header-actions">
         <button type="button" class="theme-toggle" id="themeToggleBtn" aria-pressed="false">
-          🌙 Mode sombre
+          🌙 Dark Mode
         </button>
         <div id="google_translate_element_header"></div>
       </div>
@@ -3676,7 +3676,7 @@ function showTranslationNotification(message) {
 
 function updateThemeToggleText(isDarkMode) {
   if (!themeToggleBtn) return;
-  themeToggleBtn.innerHTML = isDarkMode ? '☀️ Mode clair' : '🌙 Mode sombre';
+  themeToggleBtn.innerHTML = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
   themeToggleBtn.setAttribute('aria-pressed', String(isDarkMode));
 }
 
