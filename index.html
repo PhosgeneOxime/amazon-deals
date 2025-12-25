@@ -264,16 +264,57 @@
     margin: 15px 0;
     text-align: center;
     overflow: hidden;
+    padding: 10px 0;
+    transition: max-height 0.2s ease, padding 0.2s ease;
+  }
+  
+  .ad-container.mobile-ad {
+    padding: 6px 0;
+  }
+  
+  .mobile-ad-container {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    min-height: 60px;
+    max-height: 90px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(20, 110, 180, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-ad-container ins.adsbygoogle {
+    display: block !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    height: 60px !important;
+    min-height: 60px !important;
   }
   
   /* Style spécifique pour mobile */
   @media (max-width: 768px) {
     .ad-container {
-      margin: 10px 0;
+      margin: 8px auto;
+      padding: 4px 0;
+      max-height: 90px;
+    }
+    
+    .ad-container.mobile-ad {
+      padding: 0;
+    }
+    
+    .mobile-ad-container {
+      max-width: 320px;
+      min-height: 50px;
+      max-height: 70px;
     }
     
     /* Réduire la hauteur des publicités sur mobile */
-    .ad-container ins.adsbygoogle[data-ad-format="auto"] {
+    .ad-container ins.adsbygoogle[data-ad-format="auto"],
+    .mobile-ad-container ins.adsbygoogle {
       height: 50px !important;
       min-height: 50px !important;
     }
