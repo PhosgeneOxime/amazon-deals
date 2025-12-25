@@ -370,6 +370,288 @@
     display: block;
   }
 
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(20, 110, 180, 0.1);
+    color: #0f172a;
+    transition: var(--transition);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    outline: none;
+    background: rgba(20, 110, 180, 0.2);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+  }
+
+  .theme-toggle:active {
+    transform: translateY(1px);
+  }
+
+  body.dark-mode {
+    background: radial-gradient(circle at top, #0b1120 0%, #0f172a 45%, #050b16 100%);
+    color: #e2e8f0;
+  }
+
+  body.dark-mode #sidebar {
+    background: rgba(19, 26, 34, 0.95);
+    border-right: 1px solid #2c3a4d;
+    color: #f8fbff;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+  }
+
+  body.dark-mode #sidebar::before {
+    background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+  }
+
+  body.dark-mode #content {
+    background: rgba(9, 13, 23, 0.9);
+    color: #f8fafc;
+    border-left: 1px solid #1f2937;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  body.dark-mode .header {
+    border-color: #1e293b;
+  }
+
+  body.dark-mode .header-title,
+  body.dark-mode #productCount,
+  body.dark-mode #updateDate {
+    color: #f8fafc !important;
+  }
+
+  body.dark-mode #updateDate {
+    color: #fbbf24 !important;
+  }
+
+  body.dark-mode .breadcrumb {
+    color: #94a3b8 !important;
+  }
+
+  body.dark-mode .breadcrumb a {
+    color: #60a5fa !important;
+  }
+
+  body.dark-mode .search-container,
+  body.dark-mode #searchBox {
+    background: rgba(15, 23, 42, 0.7);
+    color: #e2e8f0;
+  }
+
+  body.dark-mode #searchBox {
+    border-color: #1f2937;
+    box-shadow: none;
+  }
+
+  body.dark-mode #searchBox::placeholder {
+    color: #94a3b8;
+  }
+
+  body.dark-mode .search-trigger {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+  }
+
+  body.dark-mode #btnAllDeals {
+    background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+    box-shadow: 0 15px 35px rgba(249, 115, 22, 0.4);
+  }
+
+  body.dark-mode ul.category-list li {
+    background: rgba(15, 23, 42, 0.75);
+    color: #e2e8f0;
+    border-color: #1f2937;
+  }
+
+  body.dark-mode ul.category-list li.active,
+  body.dark-mode ul.category-list li:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+  }
+
+  body.dark-mode ul.category-list li::before {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  }
+
+  body.dark-mode ul.category-list li .category-count {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fbbf24;
+  }
+
+  body.dark-mode .products-grid {
+    gap: 24px;
+  }
+
+  body.dark-mode .product {
+    background: #0f172a !important;
+    border: 1px solid #1f2937 !important;
+    box-shadow: 0 20px 35px rgba(3, 7, 18, 0.65) !important;
+  }
+
+  body.dark-mode .product strong,
+  body.dark-mode .product h3,
+  body.dark-mode a.product p {
+    color: #f8fafc !important;
+    border-color: #1e293b;
+  }
+
+  body.dark-mode .product p,
+  body.dark-mode .product-description,
+  body-dark-mode .product-content {
+    color: #e2e8f0 !important;
+  }
+
+  body.dark-mode .price-container,
+  body.dark-mode .price-row {
+    color: #e2e8f0 !important;
+  }
+
+  body.dark-mode .regular-price {
+    color: #cbd5f5 !important;
+  }
+
+  body.dark-mode .current-price {
+    color: #fcd34d !important;
+  }
+
+  body.dark-mode .savings {
+    color: #bbf7d0 !important;
+    background: rgba(34, 197, 94, 0.2) !important;
+    box-shadow: none !important;
+  }
+
+  body.dark-mode .product-image {
+    background: #0b1220;
+    border-color: #1f2937;
+  }
+
+  body.dark-mode .price-row .regular-price {
+    color: #94a3b8;
+  }
+
+  body.dark-mode .see-offer-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.45);
+  }
+
+  body.dark-mode .see-offer-btn:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+
+  body.dark-mode .welcome-section {
+    background: rgba(15, 23, 42, 0.85) !important;
+    color: #f8fafc !important;
+    border: 1px solid #1f2937 !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  body.dark-mode .welcome-section strong {
+    color: #facc15 !important;
+  }
+
+  body.dark-mode .faq-section {
+    background: rgba(4, 7, 13, 0.95) !important;
+    border: 1px solid #1f2937 !important;
+    color: #f8fafc !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  body.dark-mode .faq-section article {
+    background: rgba(16, 24, 44, 0.95) !important;
+    color: #e2e8f0 !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 12px 30px rgba(3, 7, 18, 0.45) !important;
+  }
+
+  body.dark-mode .faq-section h2 {
+    color: #ffb347 !important;
+  }
+
+  body.dark-mode .faq-section h3 {
+    color: #fcd34d !important;
+  }
+
+  body.dark-mode .faq-section p {
+    color: #e0e7ff !important;
+  }
+  
+  body.dark-mode .categories-container {
+    background: transparent !important;
+  }
+
+  body.dark-mode .category-section {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border: 1px solid #1f2937 !important;
+    box-shadow: 0 20px 45px rgba(2, 6, 23, 0.6) !important;
+    color: #e2e8f0 !important;
+  }
+
+  body.dark-mode .category-section h2 {
+    color: #ffb347 !important;
+    border-color: #ff9900 !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  body.dark-mode .category-section h2 a {
+    color: #93c5fd !important;
+  }
+
+  body.dark-mode .category-section span {
+    color: #cbd5f5 !important;
+  }
+
+  body.dark-mode footer {
+    background: linear-gradient(135deg, #050b16 0%, #0f172a 100%) !important;
+  }
+
+  body.dark-mode footer h3 {
+    color: #fbbf24 !important;
+  }
+
+  body.dark-mode footer p {
+    color: #cbd5f5 !important;
+  }
+
+  body.dark-mode .theme-toggle {
+    background: rgba(14, 165, 233, 0.12);
+    color: #e0f2fe;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    box-shadow: 0 12px 25px rgba(14, 165, 233, 0.15);
+  }
+
+  body.dark-mode .theme-toggle:hover {
+    background: rgba(14, 165, 233, 0.25);
+  }
+
+  @media (max-width: 700px) {
+    .header-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .theme-toggle {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
   #btnAllDeals {
     width: 100%;
     background: var(--primary-gradient);
@@ -614,6 +896,16 @@
     height: 4px;
     background: var(--primary-gradient);
     border-radius: 2px;
+  }
+  
+  body.dark-mode #content h2,
+  body.dark-mode .category-section h2 {
+    color: #ffb347 !important;
+  }
+
+  body.dark-mode #content h2::after,
+  body.dark-mode .category-section h2::after {
+    background: linear-gradient(135deg, #ffb347 0%, #ff8c00 100%) !important;
   }
   
   .products-grid {
@@ -1359,7 +1651,12 @@
     <button id="toggleBtn" aria-label="Toggle sidebar">☰</button>
     <div class="header-content">
       <h1 class="header-title">🔥 Best Daily Amazon Deals Canada</h1>
-      <div id="google_translate_element_header"></div>
+      <div class="header-actions">
+        <button type="button" class="theme-toggle" id="themeToggleBtn" aria-pressed="false">
+          🌙 Mode sombre
+        </button>
+        <div id="google_translate_element_header"></div>
+      </div>
     </div>
   </header>
 
@@ -1470,13 +1767,23 @@
             <span style="position: absolute; bottom: 0; left: 0; width: 50px; height: 3px; background: #ff9900; border-radius: 2px; display: block;"></span>
           </h3>
           <ul id="footerCategoriesList" style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 30px;">
-            <!-- Les catégories seront générées dynamiquement par JavaScript -->
+            <li><a href="https://dealnest.ca/electronics" style="color: #146eb4; text-decoration: none;">Electronics</a></li>
+            <li><a href="https://dealnest.ca/home-kitchen" style="color: #146eb4; text-decoration: none;">Home & Kitchen</a></li>
+            <li><a href="https://dealnest.ca/fashion" style="color: #146eb4; text-decoration: none;">Fashion</a></li>
+            <li><a href="https://dealnest.ca/beauty" style="color: #146eb4; text-decoration: none;">Beauty</a></li>
+            <li><a href="https://dealnest.ca/sports-outdoors" style="color: #146eb4; text-decoration: none;">Sports & Outdoors</a></li>
+            <li><a href="https://dealnest.ca/baby-products" style="color: #146eb4; text-decoration: none;">Baby Products</a></li>
+            <li><a href="https://dealnest.ca/pet-products" style="color: #146eb4; text-decoration: none;">Pet Products</a></li>
+            <li><a href="https://dealnest.ca/health-personal-care" style="color: #146eb4; text-decoration: none;">Health & Personal Care</a></li>
+            <li><a href="https://dealnest.ca/grocery-gourmet-food" style="color: #146eb4; text-decoration: none;">Grocery & Gourmet Food</a></li>
+            <li><a href="https://dealnest.ca/office-products" style="color: #146eb4; text-decoration: none;">Office Products</a></li>
           </ul>
         </div>
       </div>
       
       <div style="border-top: 1px solid rgba(255, 153, 0, 0.3); padding-top: 30px; text-align: center;">
-        <p style="font-size: 14px; color: #ddd; margin: 0 0 12px 0; font-weight: 500;">© 2025 DealNest.ca - All Rights Reserved</p>
+        <p style="font-size: 14px; color: #ddd; margin: 0 0 12px 0; font-weight: 500;">&copy; 2025 DealNest.ca - All Rights Reserved</p>
+        <p style="font-size: 13px; color: #ffb347; margin: 0 0 12px 0; font-weight: 600;">DealNest.ca is officially registered in Quebec, Canada (NEQ&nbsp;2281635823).</p>
         <p style="font-size: 12px; color: #999; margin: 0; line-height: 1.6; max-width: 900px; margin-left: auto; margin-right: auto;">Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. We are a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for us to earn fees by linking to Amazon.ca and affiliated sites.</p>
       </div>
     </div>
@@ -1506,6 +1813,8 @@ const searchBox = document.getElementById('searchBox');
 const clearSearch = document.getElementById('clearSearch');
 const searchButton = document.getElementById('searchButton');
 const contentElement = document.getElementById('content');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeMetaTag = document.querySelector('meta[name="theme-color"]');
 
 const DEFAULT_RENDER_OPTIONS = { highlight: false, highlightTerms: [] };
 
@@ -1530,6 +1839,16 @@ const CACHE_CONFIG = {
   KEY: 'deals_cache_v1',
   TIME_KEY: 'deals_cache_time_v1',
   DURATION: 3600000 // 1 heure en millisecondes
+};
+
+const THEME_CONFIG = {
+  KEY: 'dealnest_theme',
+  LIGHT: 'light',
+  DARK: 'dark',
+  META: {
+    light: '#2563eb',
+    dark: '#0f172a'
+  }
 };
 
 // Fonctions utilitaires
@@ -3355,6 +3674,42 @@ function showTranslationNotification(message) {
   showNotification(message, 'info');
 }
 
+function updateThemeToggleText(isDarkMode) {
+  if (!themeToggleBtn) return;
+  themeToggleBtn.innerHTML = isDarkMode ? '☀️ Mode clair' : '🌙 Mode sombre';
+  themeToggleBtn.setAttribute('aria-pressed', String(isDarkMode));
+}
+
+function applyTheme(theme) {
+  const isDarkMode = theme === THEME_CONFIG.DARK;
+  document.body.classList.toggle('dark-mode', isDarkMode);
+  updateThemeToggleText(isDarkMode);
+  if (themeMetaTag) {
+    themeMetaTag.setAttribute('content', isDarkMode ? THEME_CONFIG.META.dark : THEME_CONFIG.META.light);
+  }
+  try {
+    localStorage.setItem(THEME_CONFIG.KEY, theme);
+  } catch (error) {
+    console.warn('Unable to persist theme preference:', error);
+  }
+}
+
+function toggleTheme() {
+  const isDarkMode = document.body.classList.contains('dark-mode');
+  applyTheme(isDarkMode ? THEME_CONFIG.LIGHT : THEME_CONFIG.DARK);
+}
+
+function initTheme() {
+  let storedTheme = null;
+  try {
+    storedTheme = localStorage.getItem(THEME_CONFIG.KEY);
+  } catch (error) {
+    console.warn('Unable to read theme preference:', error);
+  }
+  const initialTheme = storedTheme || THEME_CONFIG.LIGHT;
+  applyTheme(initialTheme);
+}
+
 // Fonctions de sidebar
 function closeSidebar() {
   sidebar.classList.remove('open');
@@ -3755,11 +4110,11 @@ function loadOptimizedAds() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   loadData();
   
   // Toggle sidebar au clic sur le bouton
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
+  toggleBtn.addEventListener('click', () => {
     if (sidebar.classList.contains('open')) {
       closeSidebar();
     } else {
@@ -3768,63 +4123,69 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   sidebarOverlay.addEventListener('click', closeSidebar);
-  
-  // Fermer la sidebar avec la touche Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-      closeSidebar();
-    }
-  });
-  
-  // All deals button (re-randomise)
-  btnAllDeals.addEventListener('click', () => {
-    selectedCategory = null;
-    isAllDealsMode = true;
-    isSearchMode = false;
-    currentPage = 1;
-    searchBox.value = '';
-    clearSearch.classList.remove('visible');
-    currentSearchQuery = '';
-    document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
-    
-    // Réinitialiser l'URL à la page d'accueil
-    const newUrl = `${window.location.origin}${window.location.pathname}`;
-    window.history.pushState({}, '', newUrl);
-    
-    displayCategories();
-    displayAllDeals(); // Ceci va automatiquement re-randomiser
-    if(window.innerWidth <= 700) {
-      closeSidebar();
-    }
-    // Scroll to top
-    document.getElementById('content').scrollTop = 0;
-  });
-  
-  // Mise à jour de l'état du bouton Clear lors de la saisie
-  searchBox.addEventListener('input', (e) => {
-    if (e.target.value.trim().length > 0) {
-      clearSearch.classList.add('visible');
-    } else {
-      clearSearch.classList.remove('visible');
-    }
-  });
-  
-  if (searchButton) {
-    searchButton.addEventListener('click', () => {
-      performSearch(searchBox.value);
-    });
+
+  // Toggle sidebar sur mobile (bouton principal)
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
   }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+    closeSidebar();
+  }
+});
+
+// All deals button (re-randomise)
+btnAllDeals.addEventListener('click', () => {
+  selectedCategory = null;
+  isAllDealsMode = true;
+  isSearchMode = false;
+  currentPage = 1;
+  searchBox.value = '';
+  clearSearch.classList.remove('visible');
+  currentSearchQuery = '';
+  document.querySelectorAll('#categoryList li').forEach(el => el.classList.remove('active'));
   
-  // Clear search button
-  clearSearch.addEventListener('click', () => clearSearchBox());
+  // Réinitialiser l'URL à la page d'accueil
+  const newUrl = `${window.location.origin}${window.location.pathname}`;
+  window.history.pushState({}, '', newUrl);
   
-  // Enter key pour recherche
-  searchBox.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      performSearch(e.target.value);
-    }
+  displayCategories();
+  displayAllDeals(); // Ceci va automatiquement re-randomiser
+  if(window.innerWidth <= 700) {
+    closeSidebar();
+  }
+  // Scroll to top
+  document.getElementById('content').scrollTop = 0;
+});
+
+// Mise à jour de l'état du bouton Clear lors de la saisie
+searchBox.addEventListener('input', (e) => {
+  if (e.target.value.trim().length > 0) {
+    clearSearch.classList.add('visible');
+  } else {
+    clearSearch.classList.remove('visible');
+  }
+});
+
+if (searchButton) {
+  searchButton.addEventListener('click', () => {
+    performSearch(searchBox.value);
   });
+}
+
+// Clear search button
+clearSearch.addEventListener('click', () => clearSearchBox());
+
+// Enter key pour recherche
+searchBox.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    performSearch(e.target.value);
+  }
 });
 
 // Gestion du bouton retour du navigateur et des changements d'URL
