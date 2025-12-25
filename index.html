@@ -2343,6 +2343,14 @@ function shuffleArray(array) {
   return shuffled;
 }
 
+// Estimer le nombre de colonnes pouvant être affichées dans la grille principale
+function estimateCategoryGridColumns() {
+  const containerWidth = contentElement?.clientWidth || document.body.clientWidth || window.innerWidth;
+  const baseCardWidth = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT ? 220 : 250;
+  const gap = 20;
+  return Math.max(1, Math.floor((containerWidth + gap) / (baseCardWidth + gap)));
+}
+
 // Fonction pour calculer le prix régulier
 function calculateRegularPrice(currentPrice, discountPercent) {
   const cleanPrice = parseFloat(currentPrice.replace(/[^\d.-]/g, ''));
@@ -3126,11 +3134,14 @@ function displayAllDeals() {
   const categoriesArray = Array.from(categoriesMap.entries());
   const shuffledCategories = shuffleArray(categoriesArray);
   
-  // Pour chaque catégorie (dans un ordre aléatoire), afficher 10 objets aléatoires
+  const cardsPerRow = estimateCategoryGridColumns();
+  const cardsPerCategory = Math.max(cardsPerRow * 2, 10);
+  
+  // Pour chaque catégorie (dans un ordre aléatoire), afficher un nombre optimisé d'objets aléatoires
   shuffledCategories.forEach(([category, products]) => {
-    // Mélanger les produits et prendre les 10 premiers
+    // Mélanger les produits et prendre le nombre requis pour remplir la grille
     const shuffledProducts = shuffleArray([...products]);
-    const randomProducts = shuffledProducts.slice(0, Math.min(10, shuffledProducts.length));
+    const randomProducts = shuffledProducts.slice(0, Math.min(cardsPerCategory, shuffledProducts.length));
     
     if (randomProducts.length > 0) {
       // Créer une section pour la catégorie
@@ -3170,7 +3181,7 @@ function displayAllDeals() {
       
       // Badge avec le nombre de deals
       const badge = document.createElement('span');
-      badge.textContent = ` ${randomProducts.length} deals`;
+      badge.textContent = ` ${products.length} total deals`;
       badge.style.fontSize = '14px';
       badge.style.color = '#565959';
       badge.style.fontWeight = '400';
