@@ -184,9 +184,10 @@
   #searchBox {
     width: 100%;
     padding: 16px 20px;
-    margin-bottom: 18px;
+    margin: 0;
     border: 2px solid #e2e8f0;
-    border-radius: var(--border-radius);
+    border-bottom: 0;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
     font-size: 16px;
     box-sizing: border-box;
     background: white;
@@ -210,12 +211,21 @@
     transform: translateY(-1px);
   }
 
-  /* Clear search button */
   .search-container {
-    position: relative;
     width: 100%;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    box-shadow: 0 6px 20px rgba(15, 17, 17, 0.12);
+    overflow: hidden;
   }
+
+  .search-input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
   .clear-search {
     position: absolute;
     right: 12px;
@@ -239,6 +249,57 @@
 
   .clear-search.visible {
     display: block;
+  }
+
+  .search-trigger {
+    width: 100%;
+    padding: 12px 18px;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    margin: 0 0 8px 0;
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    font-size: 1.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .search-trigger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+  }
+
+  .search-trigger:hover,
+  .search-trigger:focus {
+    outline: none;
+    background: var(--primary-gradient);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .search-trigger:hover::before {
+    left: 100%;
+  }
+
+  .search-trigger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 
   #btnAllDeals {
